@@ -135,7 +135,6 @@
             font-size: 12px;
             color: #777;
         }
-        
         @media (max-width: 600px) {
             .controls, .action-buttons {
                 flex-direction: column;
@@ -144,7 +143,6 @@
                 width: 100%;
             }
         }
-        
         .tab-container {
             display: flex;
             margin-bottom: 10px;
@@ -213,14 +211,13 @@
             border: 1px solid #ccc;
             width: 100%;
             height: 200px;
-            touch-action: none; /* Prevent default touch behaviors */
+            touch-action: none;
         }
         .modal-buttons {
             margin-top: 15px;
             display: flex;
             justify-content: space-between;
         }
-        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -322,7 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         tab.textContent = doc.name;
         tab.dataset.path = doc.path;
-        documentElements[doc.path] = [];
+        documentElements[doc.path] = []; // Initialize empty array for each document
         
         tab.addEventListener('click', onTabClick);
         tabContainer.appendChild(tab);
@@ -346,6 +343,8 @@ document.addEventListener('DOMContentLoaded', function() {
             loading.style.display = 'none';
             originalDocWidth = documentImage.naturalWidth;
             originalDocHeight = documentImage.naturalHeight;
+            // Restore elements for the loaded document
+            restoreElementsForDocument(path);
         };
     }
     
@@ -461,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function() {
             createDraggableElement(currentDrawingType, drawingImage, left, top, width, height);
         }
         
-        if (currentDrawingType) {
+        if (currentDrawingType && activeDocument) {
             const elementData = {
                 type: currentDrawingType,
                 content: drawingImage,
@@ -475,11 +474,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 computedHeight: parseFloat(height)
             };
             
-            if (activeDocument) {
-                if (!documentElements[activeDocument.path]) documentElements[activeDocument.path] = [];
-                documentElements[activeDocument.path] = documentElements[activeDocument.path].filter(el => el.type !== currentDrawingType);
-                documentElements[activeDocument.path].push(elementData);
-            }
+            if (!documentElements[activeDocument.path]) documentElements[activeDocument.path] = [];
+            documentElements[activeDocument.path] = documentElements[activeDocument.path].filter(el => el.type !== currentDrawingType);
+            documentElements[activeDocument.path].push(elementData);
         }
         
         drawingModal.style.display = 'none';
@@ -588,7 +585,7 @@ document.addEventListener('DOMContentLoaded', function() {
             pos3 = e.clientX;
             pos4 = e.clientY;
             element.style.top = (element.offsetTop - pos2) + "px";
-            element.style.left = Goddamn (element.offsetLeft - pos1) + "px";
+            element.style.left = (element.offsetLeft - pos1) + "px";
             
             if (activeDocument && element.dataset.type) {
                 const type = element.dataset.type;
@@ -597,6 +594,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (index !== -1) {
                         documentElements[activeDocument.path][index].left = element.style.left;
                         documentElements[activeDocument.path][index].top = element.style.top;
+                        documentElements[activeDocument.path][index].computedLeft = parseFloat(element.style.left);
+                        documentElements[activeDocument.path][index].computedTop = parseFloat(element.style.top);
                     }
                 }
             }
@@ -620,6 +619,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (index !== -1) {
                         documentElements[activeDocument.path][index].left = element.style.left;
                         documentElements[activeDocument.path][index].top = element.style.top;
+                        documentElements[activeDocument.path][index].computedLeft = parseFloat(element.style.left);
+                        documentElements[activeDocument.path][index].computedTop = parseFloat(element.style.top);
                     }
                 }
             }
@@ -666,6 +667,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (index !== -1) {
                             documentElements[activeDocument.path][index].width = element.style.width;
                             documentElements[activeDocument.path][index].height = element.style.height;
+                            documentElements[activeDocument.path][index].computedWidth = width;
+                            documentElements[activeDocument.path][index].computedHeight = height;
                         }
                     }
                 }
@@ -687,6 +690,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (index !== -1) {
                             documentElements[activeDocument.path][index].width = element.style.width;
                             documentElements[activeDocument.path][index].height = element.style.height;
+                            documentElements[activeDocument.path][index].computedWidth = width;
+                            documentElements[activeDocument.path][index].computedHeight = height;
                         }
                     }
                 }
@@ -728,14 +733,12 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             currentElements.push(elementData);
         });
-        if (currentElements.length > 0) {
-            documentElements[activeDocument.path] = currentElements;
-        }
+        documentElements[activeDocument.path] = currentElements;
     }
     
     function restoreElementsForDocument(docPath) {
         document.querySelectorAll('.draggable-resizable').forEach(el => el.remove());
-        if (documentElements[doc途徑] && documentElements[docPath].length > 0) {
+        if (documentElements[docPath]) {
             documentElements[docPath].forEach(el => {
                 if (['signature', 'name', 'cedula', 'date'].includes(el.type)) {
                     createDraggableElement(
@@ -757,31 +760,20 @@ document.addEventListener('DOMContentLoaded', function() {
         storeCurrentElements();
         activeDocument = { path: this.dataset.path, name: this.textContent };
         loadDocument(this.dataset.path);
-        setTimeout(() => {
-            if (!documentElements[this.dataset.path] || documentElements[this.dataset.path].length === 0) {
-                for (const docPath in documentElements) {
-                    if (documentElements[docPath] && documentElements[docPath].length > 0) {
-                        documentElements[this.dataset.path] = JSON.parse(JSON.stringify(documentElements[docPath]));
-                        break;
-                    }
-                }
-            }
-            restoreElementsForDocument(this.dataset.path);
-        }, 200);
     }
     
     document.getElementById('download-btn').addEventListener('click', function() {
         if (!activeDocument) return;
         const loadingElement = document.getElementById('loading');
         loadingElement.style.display = 'flex';
-        setTimeout(() => exportDocument('download'), 500);
+        setTimeout(() => exportDocument('download'), 100);
     });
     
     document.getElementById('share-btn').addEventListener('click', function() {
         if (!activeDocument) return;
         const loadingElement = document.getElementById('loading');
         loadingElement.style.display = 'flex';
-        setTimeout(() => exportDocument('share'), 500);
+        setTimeout(() => exportDocument('share'), 100);
     });
     
     function exportDocument(action) {
@@ -793,16 +785,27 @@ document.addEventListener('DOMContentLoaded', function() {
         finalContext.drawImage(docImage, 0, 0, finalCanvas.width, finalCanvas.height);
         
         const docContainer = document.getElementById('document-content');
-        const docRect = docContainer.getBoundingClientRect();
-        const scaleX = docImage.naturalWidth / docRect.width;
-        const scaleY = docImage.naturalHeight / docRect.height;
+        const docContainerRect = docContainer.getBoundingClientRect();
+        const docImageRect = docImage.getBoundingClientRect();
+        
+        // Calculate offsets to account for padding/margins
+        const offsetX = docImageRect.left - docContainerRect.left;
+        const offsetY = docImageRect.top - docContainerRect.top;
+        
+        // Calculate scale factors based on natural dimensions
+        const scaleX = docImage.naturalWidth / docImageRect.width;
+        const scaleY = docImage.naturalHeight / docImageRect.height;
         
         const elements = document.querySelectorAll('.draggable-resizable');
         const drawElementPromises = Array.from(elements).map(el => {
             return new Promise(resolve => {
                 const rect = el.getBoundingClientRect();
-                const elementLeft = rect.left - docRect.left;
-                const elementTop = rect.top - docRect.top;
+                
+                // Calculate position relative to the document image
+                const elementLeft = rect.left - docImageRect.left;
+                const elementTop = rect.top - docImageRect.top;
+                
+                // Apply scaling and round for pixel-perfect rendering
                 const canvasX = Math.round(elementLeft * scaleX);
                 const canvasY = Math.round(elementTop * scaleY);
                 const canvasWidth = Math.round(rect.width * scaleX);
@@ -883,16 +886,23 @@ document.addEventListener('DOMContentLoaded', function() {
         finalContext.drawImage(docImage, 0, 0, finalCanvas.width, finalCanvas.height);
         
         const docContainer = document.getElementById('document-content');
-        const docRect = docContainer.getBoundingClientRect();
-        const scaleX = docImage.naturalWidth / docRect.width;
-        const scaleY = docImage.naturalHeight / docRect.height;
+        const docContainerRect = docContainer.getBoundingClientRect();
+        const docImageRect = docImage.getBoundingClientRect();
+        
+        const offsetX = docImageRect.left - docContainerRect.left;
+        const offsetY = docImageRect.top - docContainerRect.top;
+        
+        const scaleX = docImage.naturalWidth / docImageRect.width;
+        const scaleY = docImage.naturalHeight / docImageRect.height;
         
         const elements = document.querySelectorAll('.draggable-resizable');
         const drawElementPromises = Array.from(elements).map(el => {
             return new Promise(resolve => {
                 const rect = el.getBoundingClientRect();
-                const elementLeft = rect.left - docRect.left;
-                const elementTop = rect.top - docRect.top;
+                
+                const elementLeft = rect.left - docImageRect.left;
+                const elementTop = rect.top - docImageRect.top;
+                
                 const canvasX = Math.round(elementLeft * scaleX);
                 const canvasY = Math.round(elementTop * scaleY);
                 const canvasWidth = Math.round(rect.width * scaleX);
