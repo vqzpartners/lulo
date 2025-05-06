@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const tabContainer = document.getElementById('tab-container');
     let activeDocument = null;
-    const documentElements = {};
+    let sharedElements = [];
     
     // Create tabs
     documents.forEach((doc, index) => {
@@ -319,7 +319,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         tab.textContent = doc.name;
         tab.dataset.path = doc.path;
-        documentElements[doc.path] = []; // Initialize empty array for each document
         
         tab.addEventListener('click', onTabClick);
         tabContainer.appendChild(tab);
@@ -343,8 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
             loading.style.display = 'none';
             originalDocWidth = documentImage.naturalWidth;
             originalDocHeight = documentImage.naturalHeight;
-            // Restore elements for the loaded document
-            restoreElementsForDocument(path);
+            restoreSharedElements();
         };
     }
     
@@ -362,7 +360,6 @@ document.addEventListener('DOMContentLoaded', function() {
     drawingContext.lineCap = 'round';
     drawingContext.strokeStyle = '#000000';
     
-    // Improved drawing events
     function getCanvasCoordinates(event) {
         const rect = drawingCanvas.getBoundingClientRect();
         const scaleX = drawingCanvas.width / rect.width;
@@ -460,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
             createDraggableElement(currentDrawingType, drawingImage, left, top, width, height);
         }
         
-        if (currentDrawingType && activeDocument) {
+        if (currentDrawingType) {
             const elementData = {
                 type: currentDrawingType,
                 content: drawingImage,
@@ -474,9 +471,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 computedHeight: parseFloat(height)
             };
             
-            if (!documentElements[activeDocument.path]) documentElements[activeDocument.path] = [];
-            documentElements[activeDocument.path] = documentElements[activeDocument.path].filter(el => el.type !== currentDrawingType);
-            documentElements[activeDocument.path].push(elementData);
+            sharedElements = sharedElements.filter(el => el.type !== currentDrawingType);
+            sharedElements.push(elementData);
+            
+            restoreSharedElements();
         }
         
         drawingModal.style.display = 'none';
@@ -587,16 +585,14 @@ document.addEventListener('DOMContentLoaded', function() {
             element.style.top = (element.offsetTop - pos2) + "px";
             element.style.left = (element.offsetLeft - pos1) + "px";
             
-            if (activeDocument && element.dataset.type) {
+            if (element.dataset.type) {
                 const type = element.dataset.type;
-                if (documentElements[activeDocument.path]) {
-                    const index = documentElements[activeDocument.path].findIndex(el => el.type === type);
-                    if (index !== -1) {
-                        documentElements[activeDocument.path][index].left = element.style.left;
-                        documentElements[activeDocument.path][index].top = element.style.top;
-                        documentElements[activeDocument.path][index].computedLeft = parseFloat(element.style.left);
-                        documentElements[activeDocument.path][index].computedTop = parseFloat(element.style.top);
-                    }
+                const index = sharedElements.findIndex(el => el.type === type);
+                if (index !== -1) {
+                    sharedElements[index].left = element.style.left;
+                    sharedElements[index].top = element.style.top;
+                    sharedElements[index].computedLeft = parseFloat(element.style.left);
+                    sharedElements[index].computedTop = parseFloat(element.style.top);
                 }
             }
         }
@@ -612,16 +608,14 @@ document.addEventListener('DOMContentLoaded', function() {
             element.style.top = (element.offsetTop - pos2) + "px";
             element.style.left = (element.offsetLeft - pos1) + "px";
             
-            if (activeDocument && element.dataset.type) {
+            if (element.dataset.type) {
                 const type = element.dataset.type;
-                if (documentElements[activeDocument.path]) {
-                    const index = documentElements[activeDocument.path].findIndex(el => el.type === type);
-                    if (index !== -1) {
-                        documentElements[activeDocument.path][index].left = element.style.left;
-                        documentElements[activeDocument.path][index].top = element.style.top;
-                        documentElements[activeDocument.path][index].computedLeft = parseFloat(element.style.left);
-                        documentElements[activeDocument.path][index].computedTop = parseFloat(element.style.top);
-                    }
+                const index = sharedElements.findIndex(el => el.type === type);
+                if (index !== -1) {
+                    sharedElements[index].left = element.style.left;
+                    sharedElements[index].top = element.style.top;
+                    sharedElements[index].computedLeft = parseFloat(element.style.left);
+                    sharedElements[index].computedTop = parseFloat(element.style.top);
                 }
             }
         }
@@ -660,16 +654,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (height >= 20) {
                 element.style.width = width + 'px';
                 element.style.height = height + 'px';
-                if (activeDocument && element.dataset.type) {
+                if (element.dataset.type) {
                     const type = element.dataset.type;
-                    if (documentElements[activeDocument.path]) {
-                        const index = documentElements[activeDocument.path].findIndex(el => el.type === type);
-                        if (index !== -1) {
-                            documentElements[activeDocument.path][index].width = element.style.width;
-                            documentElements[activeDocument.path][index].height = element.style.height;
-                            documentElements[activeDocument.path][index].computedWidth = width;
-                            documentElements[activeDocument.path][index].computedHeight = height;
-                        }
+                    const index = sharedElements.findIndex(el => el.type === type);
+                    if (index !== -1) {
+                        sharedElements[index].width = element.style.width;
+                        sharedElements[index].height = element.style.height;
+                        sharedElements[index].computedWidth = width;
+                        sharedElements[index].computedHeight = height;
                     }
                 }
             }
@@ -683,16 +675,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (height >= 20) {
                 element.style.width = width + 'px';
                 element.style.height = height + 'px';
-                if (activeDocument && element.dataset.type) {
+                if (element.dataset.type) {
                     const type = element.dataset.type;
-                    if (documentElements[activeDocument.path]) {
-                        const index = documentElements[activeDocument.path].findIndex(el => el.type === type);
-                        if (index !== -1) {
-                            documentElements[activeDocument.path][index].width = element.style.width;
-                            documentElements[activeDocument.path][index].height = element.style.height;
-                            documentElements[activeDocument.path][index].computedWidth = width;
-                            documentElements[activeDocument.path][index].computedHeight = height;
-                        }
+                    const index = sharedElements.findIndex(el => el.type === type);
+                    if (index !== -1) {
+                        sharedElements[index].width = element.style.width;
+                        sharedElements[index].height = element.style.height;
+                        sharedElements[index].computedWidth = width;
+                        sharedElements[index].computedHeight = height;
                     }
                 }
             }
@@ -714,8 +704,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    function storeCurrentElements() {
-        if (!activeDocument) return;
+    function storeSharedElements() {
         const currentElements = [];
         document.querySelectorAll('.draggable-resizable').forEach(el => {
             const style = window.getComputedStyle(el);
@@ -733,31 +722,29 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             currentElements.push(elementData);
         });
-        documentElements[activeDocument.path] = currentElements;
+        sharedElements = currentElements;
     }
     
-    function restoreElementsForDocument(docPath) {
+    function restoreSharedElements() {
         document.querySelectorAll('.draggable-resizable').forEach(el => el.remove());
-        if (documentElements[docPath]) {
-            documentElements[docPath].forEach(el => {
-                if (['signature', 'name', 'cedula', 'date'].includes(el.type)) {
-                    createDraggableElement(
-                        el.type,
-                        el.content,
-                        el.left,
-                        el.top,
-                        el.width,
-                        el.height
-                    );
-                }
-            });
-        }
+        sharedElements.forEach(el => {
+            if (['signature', 'name', 'cedula', 'date'].includes(el.type)) {
+                createDraggableElement(
+                    el.type,
+                    el.content,
+                    el.left,
+                    el.top,
+                    el.width,
+                    el.height
+                );
+            }
+        });
     }
     
     function onTabClick() {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         this.classList.add('active');
-        storeCurrentElements();
+        storeSharedElements();
         activeDocument = { path: this.dataset.path, name: this.textContent };
         loadDocument(this.dataset.path);
     }
@@ -788,28 +775,59 @@ document.addEventListener('DOMContentLoaded', function() {
         const docContainerRect = docContainer.getBoundingClientRect();
         const docImageRect = docImage.getBoundingClientRect();
         
-        // Calculate offsets to account for padding/margins
-        const offsetX = docImageRect.left - docContainerRect.left;
-        const offsetY = docImageRect.top - docContainerRect.top;
+        // Adjust for padding in document-container (20px on all sides)
+        const containerPadding = 20;
+        const adjustedImageLeft = docImageRect.left - docContainerRect.left - containerPadding;
+        const adjustedImageTop = docImageRect.top - docContainerRect.top - containerPadding;
         
-        // Calculate scale factors based on natural dimensions
-        const scaleX = docImage.naturalWidth / docImageRect.width;
-        const scaleY = docImage.naturalHeight / docImageRect.height;
+        // Calculate the displayed size of the image, accounting for object-fit: contain
+        const imageAspectRatio = docImage.naturalWidth / docImage.naturalHeight;
+        const containerAspectRatio = docContainerRect.width / docContainerRect.height;
+        
+        let displayedWidth, displayedHeight;
+        if (imageAspectRatio > containerAspectRatio) {
+            // Image is constrained by width
+            displayedWidth = docContainerRect.width;
+            displayedHeight = displayedWidth / imageAspectRatio;
+        } else {
+            // Image is constrained by height
+            displayedHeight = docContainerRect.height;
+            displayedWidth = displayedHeight * imageAspectRatio;
+        }
+        
+        // Calculate offsets due to centering (object-fit: contain centers the image)
+        const offsetX = (docContainerRect.width - displayedWidth) / 2;
+        const offsetY = (docContainerRect.height - displayedHeight) / 2;
+        
+        // Calculate scale factors based on the actual displayed size of the image
+        const scaleX = docImage.naturalWidth / displayedWidth;
+        const scaleY = docImage.naturalHeight / displayedHeight;
         
         const elements = document.querySelectorAll('.draggable-resizable');
         const drawElementPromises = Array.from(elements).map(el => {
             return new Promise(resolve => {
                 const rect = el.getBoundingClientRect();
                 
-                // Calculate position relative to the document image
-                const elementLeft = rect.left - docImageRect.left;
-                const elementTop = rect.top - docImageRect.top;
+                // Calculate position relative to the document container
+                let elementLeft = rect.left - docContainerRect.left;
+                let elementTop = rect.top - docContainerRect.top;
                 
-                // Apply scaling and round for pixel-perfect rendering
+                // Adjust for container padding and image centering offsets
+                elementLeft -= containerPadding + offsetX;
+                elementTop -= containerPadding + offsetY;
+                
+                // Apply scaling to map to canvas coordinates
                 const canvasX = Math.round(elementLeft * scaleX);
                 const canvasY = Math.round(elementTop * scaleY);
                 const canvasWidth = Math.round(rect.width * scaleX);
                 const canvasHeight = Math.round(rect.height * scaleY);
+                
+                // Debugging logs
+                console.log(`Export Element ${el.dataset.type}:`, {
+                    elementLeft, elementTop, canvasX, canvasY, canvasWidth, canvasHeight,
+                    scaleX, scaleY, displayedWidth, displayedHeight, offsetX, offsetY,
+                    docContainerRect, rect
+                });
                 
                 const img = el.querySelector('img');
                 if (img && img.src) {
@@ -889,24 +907,49 @@ document.addEventListener('DOMContentLoaded', function() {
         const docContainerRect = docContainer.getBoundingClientRect();
         const docImageRect = docImage.getBoundingClientRect();
         
-        const offsetX = docImageRect.left - docContainerRect.left;
-        const offsetY = docImageRect.top - docContainerRect.top;
+        const containerPadding = 20;
+        const adjustedImageLeft = docImageRect.left - docContainerRect.left - containerPadding;
+        const adjustedImageTop = docImageRect.top - docContainerRect.top - containerPadding;
         
-        const scaleX = docImage.naturalWidth / docImageRect.width;
-        const scaleY = docImage.naturalHeight / docImageRect.height;
+        const imageAspectRatio = docImage.naturalWidth / docImage.naturalHeight;
+        const containerAspectRatio = docContainerRect.width / docContainerRect.height;
+        
+        let displayedWidth, displayedHeight;
+        if (imageAspectRatio > containerAspectRatio) {
+            displayedWidth = docContainerRect.width;
+            displayedHeight = displayedWidth / imageAspectRatio;
+        } else {
+            displayedHeight = docContainerRect.height;
+            displayedWidth = displayedHeight * imageAspectRatio;
+        }
+        
+        const offsetX = (docContainerRect.width - displayedWidth) / 2;
+        const offsetY = (docContainerRect.height - displayedHeight) / 2;
+        
+        const scaleX = docImage.naturalWidth / displayedWidth;
+        const scaleY = docImage.naturalHeight / displayedHeight;
         
         const elements = document.querySelectorAll('.draggable-resizable');
         const drawElementPromises = Array.from(elements).map(el => {
             return new Promise(resolve => {
                 const rect = el.getBoundingClientRect();
                 
-                const elementLeft = rect.left - docImageRect.left;
-                const elementTop = rect.top - docImageRect.top;
+                let elementLeft = rect.left - docContainerRect.left;
+                let elementTop = rect.top - docContainerRect.top;
+                
+                elementLeft -= containerPadding + offsetX;
+                elementTop -= containerPadding + offsetY;
                 
                 const canvasX = Math.round(elementLeft * scaleX);
                 const canvasY = Math.round(elementTop * scaleY);
                 const canvasWidth = Math.round(rect.width * scaleX);
                 const canvasHeight = Math.round(rect.height * scaleY);
+                
+                console.log(`PDF Element ${el.dataset.type}:`, {
+                    elementLeft, elementTop, canvasX, canvasY, canvasWidth, canvasHeight,
+                    scaleX, scaleY, displayedWidth, displayedHeight, offsetX, offsetY,
+                    docContainerRect, rect
+                });
                 
                 const img = el.querySelector('img');
                 if (img && img.src) {
