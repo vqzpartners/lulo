@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex,nofollow">
-    <title>Aplicación de Firma - Lulo Panamá</title>
+    <title>Aplicación de Firma</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,7 +14,7 @@
             color: #333;
         }
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -24,14 +24,10 @@
             align-items: center;
             margin-bottom: 20px;
         }
-        .logo-placeholder {
-            width: 150px;
+        .logo {
             height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f0f0f0;
-            border-radius: 5px;
+            width: auto;
+            object-fit: contain;
         }
         .date {
             font-weight: bold;
@@ -43,21 +39,65 @@
             border-radius: 5px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin: 20px 0;
-            min-height: 500px;
-        }
-        .pdf-container {
-            width: 100%;
             height: 700px;
-            border: none;
+            overflow: hidden;
         }
-        .signature-pad {
-            border: 1px dashed #ccc;
-            margin-top: 20px;
+        .document-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
             background-color: white;
-            cursor: crosshair;
+            overflow: hidden;
+        }
+        .document-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .draggable {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px dashed #999;
+            padding: 5px;
+            cursor: move;
+            z-index: 10;
+        }
+        .signature-area {
+            width: 250px;
+            height: 100px;
+        }
+        .name-area {
+            width: 250px;
+            height: 30px;
+        }
+        .cedula-area {
+            width: 150px;
+            height: 30px;
+        }
+        .signature-canvas {
+            width: 100%;
+            height: 100%;
+            background-color: white;
+        }
+        .input-field {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            text-align: center;
         }
         .controls {
             margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .input-controls {
+            margin-bottom: 20px;
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
@@ -89,7 +129,7 @@
         }
         
         @media (max-width: 600px) {
-            .controls {
+            .controls, .input-controls {
                 flex-direction: column;
             }
             button {
@@ -101,6 +141,7 @@
             display: flex;
             margin-bottom: 10px;
             border-bottom: 1px solid #ddd;
+            overflow-x: auto;
         }
         .tab {
             padding: 10px 15px;
@@ -110,6 +151,7 @@
             border-bottom: none;
             border-radius: 5px 5px 0 0;
             margin-right: 5px;
+            white-space: nowrap;
         }
         .tab.active {
             background-color: white;
@@ -136,6 +178,16 @@
             height: 40px;
             animation: spin 2s linear infinite;
         }
+        .field-label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .add-fields-btn {
+            background-color: #2196F3;
+        }
+        .add-fields-btn:hover {
+            background-color: #0b7dda;
+        }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -145,59 +197,88 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="img/single-lulo-logo.svg" alt="VQZ & Partners Logo" class="logo">
+            <img src="img/single-lulo-logo.svg" alt="Logo" class="logo">
             <div class="date" id="current-date"></div>
         </div>
 
         <div id="tab-container" class="tab-container"></div>
+        
+        <div class="input-controls">
+            <div>
+                <span class="field-label">Firma:</span>
+                <button id="clear-signature-btn" class="clear-btn">Borrar Firma</button>
+            </div>
+            <div>
+                <span class="field-label">Nombre:</span>
+                <input type="text" id="name-input" placeholder="Ingrese su nombre completo">
+            </div>
+            <div>
+                <span class="field-label">Cédula:</span>
+                <input type="text" id="cedula-input" placeholder="Ingrese su cédula">
+            </div>
+            <button id="add-fields-btn" class="add-fields-btn">Agregar campos al documento</button>
+        </div>
         
         <div class="document-container">
             <div id="loading" class="loading">
                 <div class="loading-spinner"></div>
             </div>
             
-            <iframe id="pdf-viewer" class="pdf-container"></iframe>
-            
-            <canvas id="signature-pad" class="signature-pad" width="760" height="200"></canvas>
+            <div id="document-content" class="document-content">
+                <img id="document-image" class="document-image" alt="Documento">
+                
+                <!-- Draggable elements will be added here -->
+            </div>
         </div>
         
         <div class="controls">
-            <button id="clear-btn" class="clear-btn">Borrar Firma</button>
             <button id="download-btn">Descargar Documento Firmado</button>
             <button id="share-btn">Compartir</button>
         </div>
         
         <div class="footer">
-            <p>© 2025 Lulo Panamá. No recolectamos ningún dato personal durante este proceso.</p>
+            <p>© 2025. No recolectamos ningún dato personal durante este proceso.</p>
+        </div>
+    </div>
+
+    <!-- Signature modal -->
+    <div id="signature-modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center;">
+        <div style="background-color: white; padding: 20px; border-radius: 5px; width: 80%; max-width: 500px;">
+            <h3>Dibuje su firma</h3>
+            <canvas id="signature-pad" width="460" height="200" style="border: 1px solid #ccc; width: 100%; height: 200px;"></canvas>
+            <div style="margin-top: 15px; display: flex; justify-content: space-between;">
+                <button id="clear-modal-btn" class="clear-btn">Borrar</button>
+                <button id="save-signature-btn">Guardar Firma</button>
+            </div>
         </div>
     </div>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Set current date
+            // Set current date in Panama format
             const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
             const currentDate = new Date().toLocaleDateString('es-PA', dateOptions);
             document.getElementById('current-date').textContent = 'Panamá, ' + currentDate;
             
-            // Get documents from URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const documents = [];
-            
-            // Document mapping
+            // Document mapping (JPGs instead of PDFs)
             const docMapping = {
                 'bac': {
-                    path: 'apc/apc-b-2025.pdf',
+                    path: 'apc/apc-bac-actual.jpg',
                     name: 'BAC'
                 },
                 'global': {
-                    path: 'apc/apc-gb-2025.pdf',
+                    path: 'apc/apc-global-actual.jpg',
                     name: 'Global Bank'
                 },
                 'multi': {
-                    path: 'apc/apc-mb-2025.pdf',
+                    path: 'apc/apc-multi-actual.jpg',
                     name: 'Multibank'
                 }
             };
+            
+            // Get documents from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const documents = [];
             
             // Extract documents from URL parameters
             for (const [key, value] of urlParams.entries()) {
@@ -243,6 +324,9 @@
                     // Load the document
                     activeDocument = {path: this.dataset.path, name: this.textContent};
                     loadDocument(this.dataset.path);
+                    
+                    // Remove existing field elements when changing documents
+                    document.querySelectorAll('.draggable').forEach(el => el.remove());
                 });
                 
                 tabContainer.appendChild(tab);
@@ -253,77 +337,80 @@
                 loadDocument(activeDocument.path);
             }
             
-            // Load document in iframe
+            // Load document image
             function loadDocument(path) {
                 const loading = document.getElementById('loading');
                 loading.style.display = 'flex';
                 
-                const pdfViewer = document.getElementById('pdf-viewer');
-                pdfViewer.src = path;
+                const documentImage = document.getElementById('document-image');
+                documentImage.src = path;
                 
-                pdfViewer.onload = function() {
+                documentImage.onload = function() {
                     loading.style.display = 'none';
                 };
             }
             
-            // Signature pad functionality
-            const canvas = document.getElementById('signature-pad');
-            const context = canvas.getContext('2d');
+            // Signature pad setup
+            const signatureCanvas = document.getElementById('signature-pad');
+            const signatureContext = signatureCanvas.getContext('2d');
             let isDrawing = false;
             
-            context.lineWidth = 2;
-            context.strokeStyle = '#000000';
+            signatureContext.lineWidth = 2;
+            signatureContext.strokeStyle = '#000000';
             
-            // Handle drawing events
-            canvas.addEventListener('mousedown', startDrawing);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseup', stopDrawing);
-            canvas.addEventListener('mouseout', stopDrawing);
+            // Signature modal
+            const signatureModal = document.getElementById('signature-modal');
+            
+            // Handle drawing events for signature
+            signatureCanvas.addEventListener('mousedown', startDrawing);
+            signatureCanvas.addEventListener('mousemove', draw);
+            signatureCanvas.addEventListener('mouseup', stopDrawing);
+            signatureCanvas.addEventListener('mouseout', stopDrawing);
             
             // Touch events for mobile
-            canvas.addEventListener('touchstart', function(e) {
+            signatureCanvas.addEventListener('touchstart', function(e) {
                 e.preventDefault();
                 const touch = e.touches[0];
                 const mouseEvent = new MouseEvent('mousedown', {
                     clientX: touch.clientX,
                     clientY: touch.clientY
                 });
-                canvas.dispatchEvent(mouseEvent);
+                signatureCanvas.dispatchEvent(mouseEvent);
             });
             
-            canvas.addEventListener('touchmove', function(e) {
+            signatureCanvas.addEventListener('touchmove', function(e) {
                 e.preventDefault();
                 const touch = e.touches[0];
                 const mouseEvent = new MouseEvent('mousemove', {
                     clientX: touch.clientX,
                     clientY: touch.clientY
                 });
-                canvas.dispatchEvent(mouseEvent);
+                signatureCanvas.dispatchEvent(mouseEvent);
             });
             
-            canvas.addEventListener('touchend', function(e) {
+            signatureCanvas.addEventListener('touchend', function(e) {
                 e.preventDefault();
                 const mouseEvent = new MouseEvent('mouseup');
-                canvas.dispatchEvent(mouseEvent);
+                signatureCanvas.dispatchEvent(mouseEvent);
             });
             
             function startDrawing(e) {
                 isDrawing = true;
-                context.beginPath();
-                context.moveTo(
-                    e.clientX - canvas.getBoundingClientRect().left,
-                    e.clientY - canvas.getBoundingClientRect().top
+                signatureContext.beginPath();
+                signatureContext.moveTo(
+                    e.clientX - signatureCanvas.getBoundingClientRect().left,
+                    e.clientY - signatureCanvas.getBoundingClientRect().top
                 );
             }
             
             function draw(e) {
                 if (!isDrawing) return;
                 
-                context.lineTo(
-                    e.clientX - canvas.getBoundingClientRect().left,
-                    e.clientY - canvas.getBoundingClientRect().top
+                signatureContext.lineTo(
+                    e.clientX - signatureCanvas.getBoundingClientRect().left,
+                    e.clientY - signatureCanvas.getBoundingClientRect().top
                 );
-                context.stroke();
+                signatureContext.stroke();
             }
             
             function stopDrawing() {
@@ -331,9 +418,196 @@
             }
             
             // Clear signature button
-            document.getElementById('clear-btn').addEventListener('click', function() {
-                context.clearRect(0, 0, canvas.width, canvas.height);
+            document.getElementById('clear-signature-btn').addEventListener('click', function() {
+                showSignatureModal();
             });
+            
+            document.getElementById('clear-modal-btn').addEventListener('click', function() {
+                signatureContext.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+            });
+            
+            // Save signature from modal
+            document.getElementById('save-signature-btn').addEventListener('click', function() {
+                const signatureImage = signatureCanvas.toDataURL('image/png');
+                
+                // Check if signature exists and update it, or create new one
+                const existingSignature = document.querySelector('.signature-area img');
+                if (existingSignature) {
+                    existingSignature.src = signatureImage;
+                } else {
+                    createDraggableSignature(signatureImage);
+                }
+                
+                // Hide modal
+                signatureModal.style.display = 'none';
+            });
+            
+            function showSignatureModal() {
+                signatureModal.style.display = 'flex';
+                signatureContext.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+            }
+            
+            // Create draggable elements
+            document.getElementById('add-fields-btn').addEventListener('click', function() {
+                // First show signature modal to get signature
+                showSignatureModal();
+                
+                // Get values for name and cédula
+                const nameValue = document.getElementById('name-input').value;
+                const cedulaValue = document.getElementById('cedula-input').value;
+                
+                // Create draggable name field if not exists
+                if (!document.querySelector('.name-area') && nameValue) {
+                    createDraggableName(nameValue);
+                }
+                
+                // Create draggable cedula field if not exists
+                if (!document.querySelector('.cedula-area') && cedulaValue) {
+                    createDraggableCedula(cedulaValue);
+                }
+            });
+            
+            function createDraggableSignature(signatureImage) {
+                const docContent = document.getElementById('document-content');
+                
+                // Create signature area
+                const signatureArea = document.createElement('div');
+                signatureArea.className = 'draggable signature-area';
+                signatureArea.style.left = '50px';
+                signatureArea.style.top = '500px';
+                
+                // Create signature image
+                const img = document.createElement('img');
+                img.src = signatureImage;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                
+                signatureArea.appendChild(img);
+                docContent.appendChild(signatureArea);
+                
+                makeDraggable(signatureArea);
+            }
+            
+            function createDraggableName(name) {
+                const docContent = document.getElementById('document-content');
+                
+                // Check if already exists
+                if (document.querySelector('.name-area')) {
+                    document.querySelector('.name-area input').value = name;
+                    return;
+                }
+                
+                // Create name area
+                const nameArea = document.createElement('div');
+                nameArea.className = 'draggable name-area';
+                nameArea.style.left = '50px';
+                nameArea.style.top = '610px';
+                
+                // Create input field
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-field';
+                input.value = name;
+                input.style.fontWeight = 'bold';
+                
+                nameArea.appendChild(input);
+                docContent.appendChild(nameArea);
+                
+                makeDraggable(nameArea);
+            }
+            
+            function createDraggableCedula(cedula) {
+                const docContent = document.getElementById('document-content');
+                
+                // Check if already exists
+                if (document.querySelector('.cedula-area')) {
+                    document.querySelector('.cedula-area input').value = cedula;
+                    return;
+                }
+                
+                // Create cedula area
+                const cedulaArea = document.createElement('div');
+                cedulaArea.className = 'draggable cedula-area';
+                cedulaArea.style.left = '50px';
+                cedulaArea.style.top = '650px';
+                
+                // Create input field
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'input-field';
+                input.value = cedula;
+                
+                cedulaArea.appendChild(input);
+                docContent.appendChild(cedulaArea);
+                
+                makeDraggable(cedulaArea);
+            }
+            
+            // Make elements draggable
+            function makeDraggable(element) {
+                let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+                
+                element.onmousedown = dragMouseDown;
+                element.ontouchstart = dragTouchStart;
+                
+                function dragMouseDown(e) {
+                    e = e || window.event;
+                    e.preventDefault();
+                    // Get the mouse cursor position at startup
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    document.onmouseup = closeDragElement;
+                    // Call a function whenever the cursor moves
+                    document.onmousemove = elementDrag;
+                }
+                
+                function dragTouchStart(e) {
+                    e = e || window.event;
+                    e.preventDefault();
+                    // Get the touch position at startup
+                    const touch = e.touches[0];
+                    pos3 = touch.clientX;
+                    pos4 = touch.clientY;
+                    document.ontouchend = closeDragElement;
+                    // Call a function whenever the finger moves
+                    document.ontouchmove = elementTouchDrag;
+                }
+                
+                function elementDrag(e) {
+                    e = e || window.event;
+                    e.preventDefault();
+                    // Calculate the new cursor position
+                    pos1 = pos3 - e.clientX;
+                    pos2 = pos4 - e.clientY;
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    // Set the element's new position
+                    element.style.top = (element.offsetTop - pos2) + "px";
+                    element.style.left = (element.offsetLeft - pos1) + "px";
+                }
+                
+                function elementTouchDrag(e) {
+                    e = e || window.event;
+                    e.preventDefault();
+                    // Calculate the new touch position
+                    const touch = e.touches[0];
+                    pos1 = pos3 - touch.clientX;
+                    pos2 = pos4 - touch.clientY;
+                    pos3 = touch.clientX;
+                    pos4 = touch.clientY;
+                    // Set the element's new position
+                    element.style.top = (element.offsetTop - pos2) + "px";
+                    element.style.left = (element.offsetLeft - pos1) + "px";
+                }
+                
+                function closeDragElement() {
+                    // Stop moving when mouse/touch is released
+                    document.onmouseup = null;
+                    document.onmousemove = null;
+                    document.ontouchend = null;
+                    document.ontouchmove = null;
+                }
+            }
             
             // Download button
             document.getElementById('download-btn').addEventListener('click', function() {
@@ -343,36 +617,66 @@
                 loadingElement.style.display = 'flex';
                 
                 setTimeout(() => {
-                    // Create a new canvas to merge PDF and signature
-                    const mergeCanvas = document.createElement('canvas');
-                    mergeCanvas.width = 800;
-                    mergeCanvas.height = 1000;
-                    const mergeContext = mergeCanvas.getContext('2d');
+                    // Create a canvas to generate the final document
+                    const finalCanvas = document.createElement('canvas');
+                    const docImage = document.getElementById('document-image');
                     
-                    // Draw a white background
-                    mergeContext.fillStyle = 'white';
-                    mergeContext.fillRect(0, 0, mergeCanvas.width, mergeCanvas.height);
+                    // Set canvas size to match the image
+                    finalCanvas.width = docImage.naturalWidth;
+                    finalCanvas.height = docImage.naturalHeight;
                     
-                    // Add date
-                    mergeContext.font = 'bold 14px Arial';
-                    mergeContext.fillStyle = 'black';
-                    mergeContext.textAlign = 'right';
-                    mergeContext.fillText('Panamá, ' + currentDate, 750, 30);
+                    const finalContext = finalCanvas.getContext('2d');
                     
-                    // Add signature
-                    mergeContext.drawImage(canvas, 20, 700);
+                    // Draw the document image
+                    finalContext.drawImage(docImage, 0, 0, finalCanvas.width, finalCanvas.height);
                     
-                    // Add "Documento firmado digitalmente" text
-                    mergeContext.font = '12px Arial';
-                    mergeContext.textAlign = 'left';
-                    mergeContext.fillText('Documento firmado digitalmente a través de Lulo Panamá', 20, 950);
+                    // Draw the date in top right corner
+                    finalContext.font = 'bold 16px Arial';
+                    finalContext.fillStyle = 'black';
+                    finalContext.textAlign = 'right';
+                    finalContext.fillText('Panamá, ' + currentDate, finalCanvas.width - 30, 30);
+                    
+                    // Draw all draggable elements in their positions
+                    document.querySelectorAll('.draggable').forEach(el => {
+                        const rect = el.getBoundingClientRect();
+                        const docRect = document.getElementById('document-content').getBoundingClientRect();
+                        
+                        // Calculate position percentage
+                        const percentX = (rect.left - docRect.left) / docRect.width;
+                        const percentY = (rect.top - docRect.top) / docRect.height;
+                        
+                        // Position on the final canvas
+                        const canvasX = percentX * finalCanvas.width;
+                        const canvasY = percentY * finalCanvas.height;
+                        
+                        if (el.classList.contains('signature-area')) {
+                            // Draw signature
+                            const signatureImg = el.querySelector('img');
+                            if (signatureImg && signatureImg.src) {
+                                const tempImg = new Image();
+                                tempImg.src = signatureImg.src;
+                                finalContext.drawImage(tempImg, canvasX, canvasY, 
+                                                      (rect.width / docRect.width) * finalCanvas.width, 
+                                                      (rect.height / docRect.height) * finalCanvas.height);
+                            }
+                        } else if (el.classList.contains('name-area') || el.classList.contains('cedula-area')) {
+                            // Draw text fields
+                            const input = el.querySelector('input');
+                            if (input && input.value) {
+                                finalContext.font = el.classList.contains('name-area') ? 'bold 18px Arial' : '16px Arial';
+                                finalContext.fillStyle = 'black';
+                                finalContext.textAlign = 'left';
+                                finalContext.fillText(input.value, canvasX + 5, canvasY + 20);
+                            }
+                        }
+                    });
                     
                     // Convert to image and download
-                    const image = mergeCanvas.toDataURL('image/png');
+                    const image = finalCanvas.toDataURL('image/jpeg', 0.95);
                     
                     const downloadLink = document.createElement('a');
                     downloadLink.href = image;
-                    downloadLink.download = `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.png`;
+                    downloadLink.download = `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.jpg`;
                     document.body.appendChild(downloadLink);
                     downloadLink.click();
                     document.body.removeChild(downloadLink);
@@ -389,47 +693,82 @@
                 loadingElement.style.display = 'flex';
                 
                 setTimeout(() => {
-                    // Similar to download but use Web Share API if available
-                    const mergeCanvas = document.createElement('canvas');
-                    mergeCanvas.width = 800;
-                    mergeCanvas.height = 1000;
-                    const mergeContext = mergeCanvas.getContext('2d');
+                    // Create a canvas to generate the final document (same as download)
+                    const finalCanvas = document.createElement('canvas');
+                    const docImage = document.getElementById('document-image');
                     
-                    mergeContext.fillStyle = 'white';
-                    mergeContext.fillRect(0, 0, mergeCanvas.width, mergeCanvas.height);
+                    finalCanvas.width = docImage.naturalWidth;
+                    finalCanvas.height = docImage.naturalHeight;
                     
-                    mergeContext.font = 'bold 14px Arial';
-                    mergeContext.fillStyle = 'black';
-                    mergeContext.textAlign = 'right';
-                    mergeContext.fillText('Panamá, ' + currentDate, 750, 30);
+                    const finalContext = finalCanvas.getContext('2d');
                     
-                    mergeContext.drawImage(canvas, 20, 700);
+                    // Draw the document image
+                    finalContext.drawImage(docImage, 0, 0, finalCanvas.width, finalCanvas.height);
                     
-                    mergeContext.font = '12px Arial';
-                    mergeContext.textAlign = 'left';
-                    mergeContext.fillText('Documento firmado digitalmente a través de Lulo Panamá', 20, 950);
+                    // Draw the date in top right corner
+                    finalContext.font = 'bold 16px Arial';
+                    finalContext.fillStyle = 'black';
+                    finalContext.textAlign = 'right';
+                    finalContext.fillText('Panamá, ' + currentDate, finalCanvas.width - 30, 30);
                     
-                    const image = mergeCanvas.toDataURL('image/png');
+                    // Draw all draggable elements in their positions
+                    document.querySelectorAll('.draggable').forEach(el => {
+                        const rect = el.getBoundingClientRect();
+                        const docRect = document.getElementById('document-content').getBoundingClientRect();
+                        
+                        // Calculate position percentage
+                        const percentX = (rect.left - docRect.left) / docRect.width;
+                        const percentY = (rect.top - docRect.top) / docRect.height;
+                        
+                        // Position on the final canvas
+                        const canvasX = percentX * finalCanvas.width;
+                        const canvasY = percentY * finalCanvas.height;
+                        
+                        if (el.classList.contains('signature-area')) {
+                            // Draw signature
+                            const signatureImg = el.querySelector('img');
+                            if (signatureImg && signatureImg.src) {
+                                const tempImg = new Image();
+                                tempImg.src = signatureImg.src;
+                                finalContext.drawImage(tempImg, canvasX, canvasY, 
+                                                      (rect.width / docRect.width) * finalCanvas.width, 
+                                                      (rect.height / docRect.height) * finalCanvas.height);
+                            }
+                        } else if (el.classList.contains('name-area') || el.classList.contains('cedula-area')) {
+                            // Draw text fields
+                            const input = el.querySelector('input');
+                            if (input && input.value) {
+                                finalContext.font = el.classList.contains('name-area') ? 'bold 18px Arial' : '16px Arial';
+                                finalContext.fillStyle = 'black';
+                                finalContext.textAlign = 'left';
+                                finalContext.fillText(input.value, canvasX + 5, canvasY + 20);
+                            }
+                        }
+                    });
+                    
+                    // Convert to image
+                    const image = finalCanvas.toDataURL('image/jpeg', 0.95);
                     
                     // Try to use Web Share API (mobile)
                     if (navigator.share) {
                         // Convert base64 to blob
-                        const fetchResponse = fetch(image);
-                        fetchResponse.then(res => res.blob()).then(blob => {
-                            const file = new File([blob], `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.png`, { type: 'image/png' });
-                            
-                            navigator.share({
-                                title: 'Documento Firmado',
-                                files: [file]
-                            }).catch(error => {
-                                alert('Error al compartir: ' + error);
+                        fetch(image)
+                            .then(res => res.blob())
+                            .then(blob => {
+                                const file = new File([blob], `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.jpg`, { type: 'image/jpeg' });
+                                
+                                navigator.share({
+                                    title: 'Documento Firmado',
+                                    files: [file]
+                                }).catch(error => {
+                                    alert('Error al compartir: ' + error);
+                                });
                             });
-                        });
                     } else {
                         // Fall back to download if Web Share API is not available
                         const downloadLink = document.createElement('a');
                         downloadLink.href = image;
-                        downloadLink.download = `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.png`;
+                        downloadLink.download = `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.jpg`;
                         document.body.appendChild(downloadLink);
                         downloadLink.click();
                         document.body.removeChild(downloadLink);
