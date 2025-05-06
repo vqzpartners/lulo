@@ -401,6 +401,10 @@ document.addEventListener('DOMContentLoaded', function() {
         loadDocument(activeDocument.path);
     }
     
+    // Store original document dimensions for accurate positioning
+    let originalDocWidth = 0;
+    let originalDocHeight = 0;
+    
     // Load document image
     function loadDocument(path) {
         const loading = document.getElementById('loading');
@@ -411,6 +415,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         documentImage.onload = function() {
             loading.style.display = 'none';
+            // Store original dimensions
+            originalDocWidth = documentImage.naturalWidth;
+            originalDocHeight = documentImage.naturalHeight;
         };
     }
     
@@ -611,6 +618,20 @@ document.addEventListener('DOMContentLoaded', function() {
         let resizing = false;
         let startWidth, startHeight, startX, startY;
         
+        // Store original aspect ratio
+        let originalAspectRatio;
+        
+        // Initialize aspect ratio
+        function initAspectRatio() {
+            const style = window.getComputedStyle(element);
+            const width = parseFloat(style.width);
+            const height = parseFloat(style.height);
+            originalAspectRatio = width / height;
+        }
+        
+        // Call once on creation
+        initAspectRatio();
+        
         // Dragging functionality
         element.onmousedown = dragMouseDown;
         element.ontouchstart = dragTouchStart;
@@ -688,6 +709,11 @@ document.addEventListener('DOMContentLoaded', function() {
             startWidth = parseInt(document.defaultView.getComputedStyle(element).width, 10);
             startHeight = parseInt(document.defaultView.getComputedStyle(element).height, 10);
             
+            // Initialize aspect ratio if not already set
+            if (!originalAspectRatio) {
+                originalAspectRatio = startWidth / startHeight;
+            }
+            
             document.onmouseup = closeResizeElement;
             document.onmousemove = elementResize;
         }
@@ -704,6 +730,11 @@ document.addEventListener('DOMContentLoaded', function() {
             startWidth = parseInt(document.defaultView.getComputedStyle(element).width, 10);
             startHeight = parseInt(document.defaultView.getComputedStyle(element).height, 10);
             
+            // Initialize aspect ratio if not already set
+            if (!originalAspectRatio) {
+                originalAspectRatio = startWidth / startHeight;
+            }
+            
             document.ontouchend = closeResizeElement;
             document.ontouchmove = elementTouchResize;
         }
@@ -712,16 +743,15 @@ document.addEventListener('DOMContentLoaded', function() {
             e = e || window.event;
             e.preventDefault();
             
-            // Calculate new width and height
-            const width = startWidth + e.clientX - startX;
-            const height = startHeight + e.clientY - startY;
+            // Calculate new width based on mouse movement
+            const width = Math.max(50, startWidth + e.clientX - startX);
             
-            // Apply minimum size constraints
-            if (width > 50) {
+            // Calculate height to maintain aspect ratio
+            const height = width / originalAspectRatio;
+            
+            // Apply if height meets minimum requirement
+            if (height >= 20) {
                 element.style.width = width + 'px';
-            }
-            
-            if (height > 20) {
                 element.style.height = height + 'px';
             }
         }
@@ -732,16 +762,15 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const touch = e.touches[0];
             
-            // Calculate new width and height
-            const width = startWidth + touch.clientX - startX;
-            const height = startHeight + touch.clientY - startY;
+            // Calculate new width based on touch movement
+            const width = Math.max(50, startWidth + touch.clientX - startX);
             
-            // Apply minimum size constraints
-            if (width > 50) {
+            // Calculate height to maintain aspect ratio
+            const height = width / originalAspectRatio;
+            
+            // Apply if height meets minimum requirement
+            if (height >= 20) {
                 element.style.width = width + 'px';
-            }
-            
-            if (height > 20) {
                 element.style.height = height + 'px';
             }
         }
@@ -776,7 +805,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const finalCanvas = document.createElement('canvas');
             const docImage = document.getElementById('document-image');
             
-            // Set canvas size to match the image
+            // Set canvas size to match the image's natural dimensions
             finalCanvas.width = docImage.naturalWidth;
             finalCanvas.height = docImage.naturalHeight;
             
@@ -785,24 +814,27 @@ document.addEventListener('DOMContentLoaded', function() {
             // Draw the document image
             finalContext.drawImage(docImage, 0, 0, finalCanvas.width, finalCanvas.height);
             
+            // Get document container dimensions
+            const docContainer = document.getElementById('document-content');
+            const docRect = docContainer.getBoundingClientRect();
+            
             // Draw all draggable elements in their positions
             document.querySelectorAll('.draggable-resizable').forEach(el => {
                 const rect = el.getBoundingClientRect();
-                const docRect = document.getElementById('document-content').getBoundingClientRect();
                 
-                // Calculate position percentage
-                const percentX = (rect.left - docRect.left) / docRect.width;
-                const percentY = (rect.top - docRect.top) / docRect.height;
+                // Calculate position relative to document container in pixels
+                const elementLeft = rect.left - docRect.left;
+                const elementTop = rect.top - docRect.top;
                 
-                // Calculate size percentage
-                const percentWidth = rect.width / docRect.width;
-                const percentHeight = rect.height / docRect.height;
+                // Calculate scaling factors from screen display to original image size
+                const scaleX = docImage.naturalWidth / docRect.width;
+                const scaleY = docImage.naturalHeight / docRect.height;
                 
-                // Position and size on the final canvas
-                const canvasX = percentX * finalCanvas.width;
-                const canvasY = percentY * finalCanvas.height;
-                const canvasWidth = percentWidth * finalCanvas.width;
-                const canvasHeight = percentHeight * finalCanvas.height;
+                // Calculate position and size on the final canvas
+                const canvasX = elementLeft * scaleX;
+                const canvasY = elementTop * scaleY;
+                const canvasWidth = rect.width * scaleX;
+                const canvasHeight = rect.height * scaleY;
                 
                 // Draw the element
                 const img = el.querySelector('img');
@@ -839,7 +871,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const finalCanvas = document.createElement('canvas');
             const docImage = document.getElementById('document-image');
             
-            // Set canvas size to match the image
+            // Set canvas size to match the image's natural dimensions
             finalCanvas.width = docImage.naturalWidth;
             finalCanvas.height = docImage.naturalHeight;
             
@@ -848,24 +880,27 @@ document.addEventListener('DOMContentLoaded', function() {
             // Draw the document image
             finalContext.drawImage(docImage, 0, 0, finalCanvas.width, finalCanvas.height);
             
+            // Get document container dimensions
+            const docContainer = document.getElementById('document-content');
+            const docRect = docContainer.getBoundingClientRect();
+            
             // Draw all draggable elements in their positions
             document.querySelectorAll('.draggable-resizable').forEach(el => {
                 const rect = el.getBoundingClientRect();
-                const docRect = document.getElementById('document-content').getBoundingClientRect();
                 
-                // Calculate position percentage
-                const percentX = (rect.left - docRect.left) / docRect.width;
-                const percentY = (rect.top - docRect.top) / docRect.height;
+                // Calculate position relative to document container in pixels
+                const elementLeft = rect.left - docRect.left;
+                const elementTop = rect.top - docRect.top;
                 
-                // Calculate size percentage
-                const percentWidth = rect.width / docRect.width;
-                const percentHeight = rect.height / docRect.height;
+                // Calculate scaling factors from screen display to original image size
+                const scaleX = docImage.naturalWidth / docRect.width;
+                const scaleY = docImage.naturalHeight / docRect.height;
                 
-                // Position and size on the final canvas
-                const canvasX = percentX * finalCanvas.width;
-                const canvasY = percentY * finalCanvas.height;
-                const canvasWidth = percentWidth * finalCanvas.width;
-                const canvasHeight = percentHeight * finalCanvas.height;
+                // Calculate position and size on the final canvas
+                const canvasX = elementLeft * scaleX;
+                const canvasY = elementTop * scaleY;
+                const canvasWidth = rect.width * scaleX;
+                const canvasHeight = rect.height * scaleY;
                 
                 // Draw the element
                 const img = el.querySelector('img');
