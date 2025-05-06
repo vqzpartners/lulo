@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex,nofollow">
+    <link rel="icon" href="img/favicon.png" type="image/jpeg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <title>Aplicación de Firma</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            height: 60px;
+            width: auto;
+            object-fit: contain;
+        }
+        .date {
+            font-weight: bold;
+        }
+        .document-container {
+            position: relative;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            height: 700px;
+            overflow: hidden;
+        }
+        .document-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            overflow: hidden;
+        }
+        .document-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .draggable-resizable {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px dashed #999;
+            padding: 5px;
+            cursor: move;
+            z-index: 10;
+        }
+        .resize-handle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #2196F3;
+            border-radius: 50%;
+            right: -6px;
+            bottom: -6px;
+            cursor: se-resize;
+            z-index: 20;
+        }
+        .signature-area {
+            width: 250px;
+            height: 100px;
+        }
+        .text-area {
+            width: 250px;
+            height: 60px;
+        }
+        .draw-canvas {
+            width: 100%;
+            height: 100%;
+            background-color: white;
+        }
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .action-buttons {
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .clear-btn {
+            background-color: #f44336;
+        }
+        .clear-btn:hover {
+            background-color: #d32f2f;
+        }
+        .field-btn {
+            background-color: #2196F3;
+        }
+        .field-btn:hover {
+            background-color: #0b7dda;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+        }
+        
+        @media (max-width: 600px) {
+            .controls, .action-buttons {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+            }
+        }
+        
+        .tab-container {
+            display: flex;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            white-space: nowrap;
+        }
+        .tab.active {
+            background-color: white;
+            border-bottom: 1px solid white;
+            margin-bottom: -1px;
+        }
+        .loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .loading-spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 500px;
+        }
+        .modal-title {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .modal-canvas {
+            border: 1px solid #ccc;
+            width: 100%;
+            height: 200px;
+            touch-action: none; /* Prevent default touch behaviors */
+        }
+        .modal-buttons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="img/favicon.png" alt="Logo" class="logo">
+            <div class="date" id="current-date"></div>
+        </div>
+
+        <div id="tab-container" class="tab-container"></div>
+        
+        <div class="action-buttons">
+            <button id="add-name-btn" class="field-btn">Dibujar Nombre</button>
+            <button id="add-cedula-btn" class="field-btn">Dibujar Cédula</button>
+            <button id="add-signature-btn" class="field-btn">Dibujar Firma</button>
+            <button id="add-date-btn" class="field-btn">Dibujar Fecha</button>
+        </div>
+        
+        <div class="document-container">
+            <div id="loading" class="loading">
+                <div class="loading-spinner"></div>
+            </div>
+            
+            <div id="document-content" class="document-content">
+                <img id="document-image" class="document-image" alt="Documento">
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="download-btn">Descargar Documento Firmado</button>
+            <button id="share-btn">Compartir</button>
+            <button id="pdf-btn">Descargar como PDF</button>
+        </div>
+        
+        <div class="footer">
+            <p>Todos los derechos reservados, Lulo Panamá.</p>
+        </div>
+    </div>
+
+    <div id="drawing-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="modal-title">Dibuje su firma</h3>
+            <canvas id="drawing-pad" class="modal-canvas" width="460" height="200"></canvas>
+            <div class="modal-buttons">
+                <button id="clear-drawing-btn" class="clear-btn">Borrar</button>
+                <button id="save-drawing-btn">Guardar</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set current date in Panama format
+    const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    const currentDate = new Date().toLocaleDateString('es-PA', dateOptions);
+    document.getElementById('current-date').textContent = 'Panamá, ' + currentDate;
+    
+    // Document mapping
+    const docMapping = {
+        'bac': { path: 'apc/apc-bac-during.jpg', name: 'BAC' },
+        'global': { path: 'apc/apc-global-actual.jpg', name: 'Global Bank' },
+        'multi': { path: 'apc/apc-multi-actual.jpg', name: 'Multibank' }
+    };
+    
+    // Get documents from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const documents = [];
+    
+    for (const [key, value] of urlParams.entries()) {
+        if (key === 'e') {
+            const docCodes = value.split(',');
+            docCodes.forEach(code => {
+                if (docMapping[code]) documents.push(docMapping[code]);
+            });
+        } else if (docMapping[key]) {
+            documents.push(docMapping[key]);
+        }
+    }
+    
+    if (documents.length === 0) {
+        Object.values(docMapping).forEach(doc => documents.push(doc));
+    }
+    
+    const tabContainer = document.getElementById('tab-container');
+    let activeDocument = null;
+    const documentElements = {};
+    
+    // Create tabs
+    documents.forEach((doc, index) => {
+        const tab = document.createElement('div');
+        tab.classList.add('tab');
+        if (index === 0) {
+            tab.classList.add('active');
+            activeDocument = doc;
+        }
+        tab.textContent = doc.name;
+        tab.dataset.path = doc.path;
+        documentElements[doc.path] = [];
+        
+        tab.addEventListener('click', onTabClick);
+        tabContainer.appendChild(tab);
+    });
+    
+    if (activeDocument) {
+        loadDocument(activeDocument.path);
+    }
+    
+    let originalDocWidth = 0;
+    let originalDocHeight = 0;
+    
+    function loadDocument(path) {
+        const loading = document.getElementById('loading');
+        loading.style.display = 'flex';
+        
+        const documentImage = document.getElementById('document-image');
+        documentImage.src = path;
+        
+        documentImage.onload = function() {
+            loading.style.display = 'none';
+            originalDocWidth = documentImage.naturalWidth;
+            originalDocHeight = documentImage.naturalHeight;
+        };
+    }
+    
+    // Drawing modal setup
+    const drawingModal = document.getElementById('drawing-modal');
+    const drawingCanvas = document.getElementById('drawing-pad');
+    const drawingContext = drawingCanvas.getContext('2d');
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+    let currentDrawingType = '';
+    
+    drawingContext.lineWidth = 2;
+    drawingContext.lineJoin = 'round';
+    drawingContext.lineCap = 'round';
+    drawingContext.strokeStyle = '#000000';
+    
+    // Improved drawing events
+    function getCanvasCoordinates(event) {
+        const rect = drawingCanvas.getBoundingClientRect();
+        const scaleX = drawingCanvas.width / rect.width;
+        const scaleY = drawingCanvas.height / rect.height;
+        
+        if (event.type.startsWith('touch')) {
+            const touch = event.touches[0];
+            return {
+                x: (touch.clientX - rect.left) * scaleX,
+                y: (touch.clientY - rect.top) * scaleY
+            };
+        } else {
+            return {
+                x: (event.clientX - rect.left) * scaleX,
+                y: (event.clientY - rect.top) * scaleY
+            };
+        }
+    }
+    
+    drawingCanvas.addEventListener('mousedown', startDrawing);
+    drawingCanvas.addEventListener('mousemove', draw);
+    drawingCanvas.addEventListener('mouseup', stopDrawing);
+    drawingCanvas.addEventListener('mouseout', stopDrawing);
+    
+    drawingCanvas.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        const coords = getCanvasCoordinates(e);
+        isDrawing = true;
+        lastX = coords.x;
+        lastY = coords.y;
+    });
+    
+    drawingCanvas.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+        if (!isDrawing) return;
+        const coords = getCanvasCoordinates(e);
+        drawLine(coords.x, coords.y);
+    });
+    
+    drawingCanvas.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        isDrawing = false;
+    });
+    
+    function startDrawing(e) {
+        const coords = getCanvasCoordinates(e);
+        isDrawing = true;
+        lastX = coords.x;
+        lastY = coords.y;
+    }
+    
+    function draw(e) {
+        if (!isDrawing) return;
+        const coords = getCanvasCoordinates(e);
+        drawLine(coords.x, coords.y);
+    }
+    
+    function drawLine(x, y) {
+        drawingContext.beginPath();
+        drawingContext.moveTo(lastX, lastY);
+        drawingContext.lineTo(x, y);
+        drawingContext.stroke();
+        lastX = x;
+        lastY = y;
+    }
+    
+    function stopDrawing() {
+        isDrawing = false;
+    }
+    
+    document.getElementById('clear-drawing-btn').addEventListener('click', function() {
+        drawingContext.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+    });
+    
+    document.getElementById('save-drawing-btn').addEventListener('click', function() {
+        const drawingImage = drawingCanvas.toDataURL('image/png');
+        const existingElement = document.querySelector(`.draggable-resizable[data-type="${currentDrawingType}"]`);
+        
+        let left = '50px';
+        let top = '400px';
+        let width = currentDrawingType === 'signature' ? '250px' : '200px';
+        let height = currentDrawingType === 'signature' ? '100px' : (currentDrawingType === 'date' ? '30px' : '60px');
+        
+        if (existingElement) {
+            const img = existingElement.querySelector('img');
+            if (img) img.src = drawingImage;
+            left = existingElement.style.left;
+            top = existingElement.style.top;
+            width = existingElement.style.width;
+            height = existingElement.style.height;
+        } else {
+            if (currentDrawingType === 'name') top = '450px';
+            else if (currentDrawingType === 'cedula') top = '500px';
+            else if (currentDrawingType === 'date') top = '550px';
+            createDraggableElement(currentDrawingType, drawingImage, left, top, width, height);
+        }
+        
+        if (currentDrawingType) {
+            const elementData = {
+                type: currentDrawingType,
+                content: drawingImage,
+                left: left,
+                top: top,
+                width: width,
+                height: height,
+                computedLeft: parseFloat(left),
+                computedTop: parseFloat(top),
+                computedWidth: parseFloat(width),
+                computedHeight: parseFloat(height)
+            };
+            
+            if (activeDocument) {
+                if (!documentElements[activeDocument.path]) documentElements[activeDocument.path] = [];
+                documentElements[activeDocument.path] = documentElements[activeDocument.path].filter(el => el.type !== currentDrawingType);
+                documentElements[activeDocument.path].push(elementData);
+            }
+        }
+        
+        drawingModal.style.display = 'none';
+    });
+    
+    function showDrawingModal(type) {
+        currentDrawingType = type;
+        const modalTitle = document.getElementById('modal-title');
+        if (type === 'signature') modalTitle.textContent = 'Dibuje su firma';
+        else if (type === 'name') modalTitle.textContent = 'Dibuje su nombre';
+        else if (type === 'cedula') modalTitle.textContent = 'Dibuje su cédula';
+        else if (type === 'date') modalTitle.textContent = 'Dibuje la fecha';
+        
+        drawingContext.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+        if (type === 'date') {
+            drawingContext.font = '16px Arial';
+            drawingContext.fillStyle = 'black';
+            drawingContext.fillText('Panamá, ' + currentDate, 50, 50);
+        }
+        drawingModal.style.display = 'flex';
+    }
+    
+    document.getElementById('add-name-btn').addEventListener('click', function() { showDrawingModal('name'); });
+    document.getElementById('add-cedula-btn').addEventListener('click', function() { showDrawingModal('cedula'); });
+    document.getElementById('add-signature-btn').addEventListener('click', function() { showDrawingModal('signature'); });
+    document.getElementById('add-date-btn').addEventListener('click', function() { showDrawingModal('date'); });
+    
+    function createDraggableElement(type, content, left = '50px', top = '400px', width = null, height = null) {
+        const docContent = document.getElementById('document-content');
+        const elementArea = document.createElement('div');
+        elementArea.className = 'draggable-resizable';
+        elementArea.dataset.type = type;
+        elementArea.style.left = left;
+        elementArea.style.top = top;
+        
+        if (type === 'signature') {
+            elementArea.style.width = width || '250px';
+            elementArea.style.height = height || '100px';
+        } else if (type === 'date') {
+            elementArea.style.width = width || '200px';
+            elementArea.style.height = height || '30px';
+        } else {
+            elementArea.style.width = width || '200px';
+            elementArea.style.height = height || '60px';
+        }
+        
+        const img = document.createElement('img');
+        img.src = content;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        
+        const resizeHandle = document.createElement('div');
+        resizeHandle.className = 'resize-handle';
+        
+        elementArea.appendChild(img);
+        elementArea.appendChild(resizeHandle);
+        docContent.appendChild(elementArea);
+        
+        makeDraggableResizable(elementArea, resizeHandle);
+    }
+    
+    function makeDraggableResizable(element, resizeHandle) {
+        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        let resizing = false;
+        let startWidth, startHeight, startX, startY;
+        let originalAspectRatio;
+        
+        function initAspectRatio() {
+            const style = window.getComputedStyle(element);
+            const width = parseFloat(style.width);
+            const height = parseFloat(style.height);
+            originalAspectRatio = width / height;
+        }
+        
+        initAspectRatio();
+        
+        element.onmousedown = dragMouseDown;
+        element.ontouchstart = dragTouchStart;
+        resizeHandle.onmousedown = resizeMouseDown;
+        resizeHandle.ontouchstart = resizeTouchStart;
+        
+        function dragMouseDown(e) {
+            if (e.target === resizeHandle) return;
+            e.preventDefault();
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            document.onmouseup = closeDragElement;
+            document.onmousemove = elementDrag;
+        }
+        
+        function dragTouchStart(e) {
+            if (e.target === resizeHandle) return;
+            e.preventDefault();
+            const touch = e.touches[0];
+            pos3 = touch.clientX;
+            pos4 = touch.clientY;
+            document.ontouchend = closeDragElement;
+            document.ontouchmove = elementTouchDrag;
+        }
+        
+        function elementDrag(e) {
+            if (resizing) return;
+            e.preventDefault();
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            element.style.top = (element.offsetTop - pos2) + "px";
+            element.style.left = Goddamn (element.offsetLeft - pos1) + "px";
+            
+            if (activeDocument && element.dataset.type) {
+                const type = element.dataset.type;
+                if (documentElements[activeDocument.path]) {
+                    const index = documentElements[activeDocument.path].findIndex(el => el.type === type);
+                    if (index !== -1) {
+                        documentElements[activeDocument.path][index].left = element.style.left;
+                        documentElements[activeDocument.path][index].top = element.style.top;
+                    }
+                }
+            }
+        }
+        
+        function elementTouchDrag(e) {
+            if (resizing) return;
+            e.preventDefault();
+            const touch = e.touches[0];
+            pos1 = pos3 - touch.clientX;
+            pos2 = pos4 - touch.clientY;
+            pos3 = touch.clientX;
+            pos4 = touch.clientY;
+            element.style.top = (element.offsetTop - pos2) + "px";
+            element.style.left = (element.offsetLeft - pos1) + "px";
+            
+            if (activeDocument && element.dataset.type) {
+                const type = element.dataset.type;
+                if (documentElements[activeDocument.path]) {
+                    const index = documentElements[activeDocument.path].findIndex(el => el.type === type);
+                    if (index !== -1) {
+                        documentElements[activeDocument.path][index].left = element.style.left;
+                        documentElements[activeDocument.path][index].top = element.style.top;
+                    }
+                }
+            }
+        }
+        
+        function resizeMouseDown(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            resizing = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            startWidth = parseInt(document.defaultView.getComputedStyle(element).width, 10);
+            startHeight = parseInt(document.defaultView.getComputedStyle(element).height, 10);
+            if (!originalAspectRatio) originalAspectRatio = startWidth / startHeight;
+            document.onmouseup = closeResizeElement;
+            document.onmousemove = elementResize;
+        }
+        
+        function resizeTouchStart(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            resizing = true;
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+            startWidth = parseInt(document.defaultView.getComputedStyle(element).width, 10);
+            startHeight = parseInt(document.defaultView.getComputedStyle(element).height, 10);
+            if (!originalAspectRatio) originalAspectRatio = startWidth / startHeight;
+            document.ontouchend = closeResizeElement;
+            document.ontouchmove = elementTouchResize;
+        }
+        
+        function elementResize(e) {
+            e.preventDefault();
+            const width = Math.max(50, startWidth + e.clientX - startX);
+            const height = width / originalAspectRatio;
+            if (height >= 20) {
+                element.style.width = width + 'px';
+                element.style.height = height + 'px';
+                if (activeDocument && element.dataset.type) {
+                    const type = element.dataset.type;
+                    if (documentElements[activeDocument.path]) {
+                        const index = documentElements[activeDocument.path].findIndex(el => el.type === type);
+                        if (index !== -1) {
+                            documentElements[activeDocument.path][index].width = element.style.width;
+                            documentElements[activeDocument.path][index].height = element.style.height;
+                        }
+                    }
+                }
+            }
+        }
+        
+        function elementTouchResize(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const width = Math.max(50, startWidth + touch.clientX - startX);
+            const height = width / originalAspectRatio;
+            if (height >= 20) {
+                element.style.width = width + 'px';
+                element.style.height = height + 'px';
+                if (activeDocument && element.dataset.type) {
+                    const type = element.dataset.type;
+                    if (documentElements[activeDocument.path]) {
+                        const index = documentElements[activeDocument.path].findIndex(el => el.type === type);
+                        if (index !== -1) {
+                            documentElements[activeDocument.path][index].width = element.style.width;
+                            documentElements[activeDocument.path][index].height = element.style.height;
+                        }
+                    }
+                }
+            }
+        }
+        
+        function closeDragElement() {
+            document.onmouseup = null;
+            document.onmousemove = null;
+            document.ontouchend = null;
+            document.ontouchmove = null;
+        }
+        
+        function closeResizeElement() {
+            document.onmouseup = null;
+            document.onmousemove = null;
+            document.ontouchend = null;
+            document.ontouchmove = null;
+            resizing = false;
+        }
+    }
+    
+    function storeCurrentElements() {
+        if (!activeDocument) return;
+        const currentElements = [];
+        document.querySelectorAll('.draggable-resizable').forEach(el => {
+            const style = window.getComputedStyle(el);
+            const elementData = {
+                type: el.dataset.type,
+                content: el.querySelector('img') ? el.querySelector('img').src : '',
+                left: style.left,
+                top: style.top,
+                width: style.width,
+                height: style.height,
+                computedLeft: parseFloat(style.left),
+                computedTop: parseFloat(style.top),
+                computedWidth: parseFloat(style.width),
+                computedHeight: parseFloat(style.height)
+            };
+            currentElements.push(elementData);
+        });
+        if (currentElements.length > 0) {
+            documentElements[activeDocument.path] = currentElements;
+        }
+    }
+    
+    function restoreElementsForDocument(docPath) {
+        document.querySelectorAll('.draggable-resizable').forEach(el => el.remove());
+        if (documentElements[doc途徑] && documentElements[docPath].length > 0) {
+            documentElements[docPath].forEach(el => {
+                if (['signature', 'name', 'cedula', 'date'].includes(el.type)) {
+                    createDraggableElement(
+                        el.type,
+                        el.content,
+                        el.left,
+                        el.top,
+                        el.width,
+                        el.height
+                    );
+                }
+            });
+        }
+    }
+    
+    function onTabClick() {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        storeCurrentElements();
+        activeDocument = { path: this.dataset.path, name: this.textContent };
+        loadDocument(this.dataset.path);
+        setTimeout(() => {
+            if (!documentElements[this.dataset.path] || documentElements[this.dataset.path].length === 0) {
+                for (const docPath in documentElements) {
+                    if (documentElements[docPath] && documentElements[docPath].length > 0) {
+                        documentElements[this.dataset.path] = JSON.parse(JSON.stringify(documentElements[docPath]));
+                        break;
+                    }
+                }
+            }
+            restoreElementsForDocument(this.dataset.path);
+        }, 200);
+    }
+    
+    document.getElementById('download-btn').addEventListener('click', function() {
+        if (!activeDocument) return;
+        const loadingElement = document.getElementById('loading');
+        loadingElement.style.display = 'flex';
+        setTimeout(() => exportDocument('download'), 500);
+    });
+    
+    document.getElementById('share-btn').addEventListener('click', function() {
+        if (!activeDocument) return;
+        const loadingElement = document.getElementById('loading');
+        loadingElement.style.display = 'flex';
+        setTimeout(() => exportDocument('share'), 500);
+    });
+    
+    function exportDocument(action) {
+        const finalCanvas = document.createElement('canvas');
+        const docImage = document.getElementById('document-image');
+        finalCanvas.width = docImage.naturalWidth;
+        finalCanvas.height = docImage.naturalHeight;
+        const finalContext = finalCanvas.getContext('2d');
+        finalContext.drawImage(docImage, 0, 0, finalCanvas.width, finalCanvas.height);
+        
+        const docContainer = document.getElementById('document-content');
+        const docRect = docContainer.getBoundingClientRect();
+        const scaleX = docImage.naturalWidth / docRect.width;
+        const scaleY = docImage.naturalHeight / docRect.height;
+        
+        const elements = document.querySelectorAll('.draggable-resizable');
+        const drawElementPromises = Array.from(elements).map(el => {
+            return new Promise(resolve => {
+                const rect = el.getBoundingClientRect();
+                const elementLeft = rect.left - docRect.left;
+                const elementTop = rect.top - docRect.top;
+                const canvasX = Math.round(elementLeft * scaleX);
+                const canvasY = Math.round(elementTop * scaleY);
+                const canvasWidth = Math.round(rect.width * scaleX);
+                const canvasHeight = Math.round(rect.height * scaleY);
+                
+                const img = el.querySelector('img');
+                if (img && img.src) {
+                    const tempImg = new Image();
+                    tempImg.crossOrigin = "anonymous";
+                    tempImg.src = img.src;
+                    tempImg.onload = () => {
+                        finalContext.drawImage(
+                            tempImg,
+                            0, 0, tempImg.width, tempImg.height,
+                            canvasX, canvasY, canvasWidth, canvasHeight
+                        );
+                        resolve();
+                    };
+                    tempImg.onerror = () => {
+                        console.error("Failed to load image:", img.src);
+                        resolve();
+                    };
+                } else {
+                    resolve();
+                }
+            });
+        });
+        
+        Promise.all(drawElementPromises).then(() => {
+            const loadingElement = document.getElementById('loading');
+            if (action === 'download') {
+                const image = finalCanvas.toDataURL('image/png', 1.0);
+                const downloadLink = document.createElement('a');
+                downloadLink.href = image;
+                downloadLink.download = `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.png`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                loadingElement.style.display = 'none';
+            } else if (action === 'share') {
+                finalCanvas.toBlob(function(blob) {
+                    if (navigator.share) {
+                        const file = new File([blob], `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.png`, { type: 'image/png' });
+                        navigator.share({
+                            title: 'Documento Firmado',
+                            text: 'Documento con firma digital',
+                            files: [file]
+                        })
+                        .then(() => console.log('Compartido con éxito'))
+                        .catch(error => console.log('Error al compartir:', error))
+                        .finally(() => loadingElement.style.display = 'none');
+                    } else {
+                        const image = finalCanvas.toDataURL('image/png', 1.0);
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = image;
+                        downloadLink.download = `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.png`;
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
+                        document.body.removeChild(downloadLink);
+                        loadingElement.style.display = 'none';
+                        alert('Compartir no está soportado en este navegador. Se ha descargado el documento en su lugar.');
+                    }
+                }, 'image/png', 1.0);
+            }
+        });
+    }
+    
+    function exportToPDF() {
+        if (!activeDocument) return;
+        const loadingElement = document.getElementById('loading');
+        loadingElement.style.display = 'flex';
+        
+        const finalCanvas = document.createElement('canvas');
+        const docImage = document.getElementById('document-image');
+        finalCanvas.width = docImage.naturalWidth;
+        finalCanvas.height = docImage.naturalHeight;
+        const finalContext = finalCanvas.getContext('2d');
+        finalContext.drawImage(docImage, 0, 0, finalCanvas.width, finalCanvas.height);
+        
+        const docContainer = document.getElementById('document-content');
+        const docRect = docContainer.getBoundingClientRect();
+        const scaleX = docImage.naturalWidth / docRect.width;
+        const scaleY = docImage.naturalHeight / docRect.height;
+        
+        const elements = document.querySelectorAll('.draggable-resizable');
+        const drawElementPromises = Array.from(elements).map(el => {
+            return new Promise(resolve => {
+                const rect = el.getBoundingClientRect();
+                const elementLeft = rect.left - docRect.left;
+                const elementTop = rect.top - docRect.top;
+                const canvasX = Math.round(elementLeft * scaleX);
+                const canvasY = Math.round(elementTop * scaleY);
+                const canvasWidth = Math.round(rect.width * scaleX);
+                const canvasHeight = Math.round(rect.height * scaleY);
+                
+                const img = el.querySelector('img');
+                if (img && img.src) {
+                    const tempImg = new Image();
+                    tempImg.crossOrigin = "anonymous";
+                    tempImg.src = img.src;
+                    tempImg.onload = () => {
+                        finalContext.drawImage(
+                            tempImg,
+                            0, 0, tempImg.width, tempImg.height,
+                            canvasX, canvasY, canvasWidth, canvasHeight
+                        );
+                        resolve();
+                    };
+                    tempImg.onerror = () => {
+                        console.error("Failed to load image:", img.src);
+                        resolve();
+                    };
+                } else {
+                    resolve();
+                }
+            });
+        });
+        
+        Promise.all(drawElementPromises).then(() => {
+            try {
+                const imgData = finalCanvas.toDataURL('image/png', 1.0);
+                const imgWidth = finalCanvas.width;
+                const imgHeight = finalCanvas.height;
+                const orientation = imgWidth > imgHeight ? 'l' : 'p';
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF(orientation, 'pt', [imgWidth, imgHeight]);
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                pdf.save(`documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.pdf`);
+            } catch (error) {
+                console.error('Error creating PDF:', error);
+                const image = finalCanvas.toDataURL('image/png', 1.0);
+                const downloadLink = document.createElement('a');
+                downloadLink.href = image;
+                downloadLink.download = `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.png`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                alert('Error al crear PDF. Se ha descargado como PNG en su lugar.');
+            }
+            loadingElement.style.display = 'none';
+        });
+    }
+    
+    function addPDFButton() {
+        const pdfButton = document.getElementById('pdf-btn');
+        pdfButton.addEventListener('click', exportToPDF);
+    }
+    
+    addPDFButton();
+    
+    window.addEventListener('click', function(e) {
+        if (e.target === drawingModal) {
+            drawingModal.style.display = 'none';
+        }
+    });
+    
+    window.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && drawingModal.style.display === 'flex') {
+            drawingModal.style.display = 'none';
+        }
+    });
+});
+    </script>
+</body>
+</html>
