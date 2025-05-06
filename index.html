@@ -354,14 +354,24 @@ document.addEventListener('DOMContentLoaded', function() {
             if (activeDocument) {
                 documentElements[activeDocument.path] = [];
                 document.querySelectorAll('.draggable-resizable').forEach(el => {
-                    // Store element properties
+                    // Store element properties with percentages for responsive positioning
+                    const docContent = document.getElementById('document-content');
+                    const docRect = docContent.getBoundingClientRect();
+                    const elRect = el.getBoundingClientRect();
+                    
+                    // Calculate percentage positions
+                    const leftPercent = ((elRect.left - docRect.left) / docRect.width) * 100;
+                    const topPercent = ((elRect.top - docRect.top) / docRect.height) * 100;
+                    const widthPercent = (elRect.width / docRect.width) * 100;
+                    const heightPercent = (elRect.height / docRect.height) * 100;
+                    
                     const elementData = {
                         type: el.dataset.type,
                         content: el.querySelector('img') ? el.querySelector('img').src : '',
-                        left: el.style.left,
-                        top: el.style.top,
-                        width: el.style.width,
-                        height: el.style.height
+                        leftPercent: leftPercent,
+                        topPercent: topPercent,
+                        widthPercent: widthPercent,
+                        heightPercent: heightPercent
                     };
                     documentElements[activeDocument.path].push(elementData);
                 });
@@ -379,14 +389,15 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 if (documentElements[this.dataset.path]) {
                     documentElements[this.dataset.path].forEach(el => {
-                        if (el.type === 'signature') {
-                            createDraggableElement('signature', el.content, el.left, el.top, el.width, el.height);
-                        } else if (el.type === 'name') {
-                            createDraggableElement('name', el.content, el.left, el.top, el.width, el.height);
-                        } else if (el.type === 'cedula') {
-                            createDraggableElement('cedula', el.content, el.left, el.top, el.width, el.height);
-                        } else if (el.type === 'date') {
-                            createDraggableElement('date', el.content, el.left, el.top, el.width, el.height);
+                        if (el.type === 'signature' || el.type === 'name' || el.type === 'cedula' || el.type === 'date') {
+                            createDraggableElement(
+                                el.type, 
+                                el.content, 
+                                `${el.leftPercent}%`, 
+                                `${el.topPercent}%`, 
+                                `${el.widthPercent}%`, 
+                                `${el.heightPercent}%`
+                            );
                         }
                     });
                 }
@@ -427,8 +438,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const drawingContext = drawingCanvas.getContext('2d');
     let isDrawing = false;
     let currentDrawingType = ''; // 'signature', 'name', 'cedula', or 'date'
+    let lastX, lastY;
     
-    drawingContext.lineWidth = 2;
+    // Enhanced drawing settings
+    drawingContext.lineWidth = 2.5;
+    drawingContext.lineCap = 'round';
+    drawingContext.lineJoin = 'round';
     drawingContext.strokeStyle = '#000000';
     
     // Handle drawing events
@@ -437,64 +452,200 @@ document.addEventListener('DOMContentLoaded', function() {
     drawingCanvas.addEventListener('mouseup', stopDrawing);
     drawingCanvas.addEventListener('mouseout', stopDrawing);
     
-    // Touch events for mobile
+    // Touch events for mobile with improved handling
     drawingCanvas.addEventListener('touchstart', function(e) {
         e.preventDefault();
         const touch = e.touches[0];
-        const mouseEvent = new MouseEvent('mousedown', {
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-        drawingCanvas.dispatchEvent(mouseEvent);
+        const rect = drawingCanvas.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        
+        isDrawing = true;
+        lastX = x;
+        lastY = y;
+        
+        drawingContext.beginPath();
+        drawingContext.moveTo(x, y);
+        
+        // Draw a small dot at the start point for better visibility
+        drawingContext.arc(x, y, 0.5, 0, Math.PI * 2);
+        drawingContext.fill();
     });
     
     drawingCanvas.addEventListener('touchmove', function(e) {
         e.preventDefault();
+        if (!isDrawing) return;
+        
         const touch = e.touches[0];
-        const mouseEvent = new MouseEvent('mousemove', {
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-        drawingCanvas.dispatchEvent(mouseEvent);
+        const rect = drawingCanvas.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        
+        // Calculate the distance moved
+        const dx = x - lastX;
+        const dy = y - lastY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // If the movement is too fast/large, interpolate points for smoother lines
+        if (distance > 3) {
+            const steps = Math.ceil(distance / 2);
+            for (let i = 1; i <= steps; i++) {
+                const px = lastX + (dx * i / steps);
+                const py = lastY + (dy * i / steps);
+                drawingContext.lineTo(px, py);
+                drawingContext.stroke();
+            }
+        } else {
+            drawingContext.lineTo(x, y);
+            drawingContext.stroke();
+        }
+        
+        lastX = x;
+        lastY = y;
     });
     
     drawingCanvas.addEventListener('touchend', function(e) {
         e.preventDefault();
-        const mouseEvent = new MouseEvent('mouseup');
-        drawingCanvas.dispatchEvent(mouseEvent);
+        isDrawing = false;
     });
     
     function startDrawing(e) {
         isDrawing = true;
+        const rect = drawingCanvas.getBoundingClientRect();
+        lastX = e.clientX - rect.left;
+        lastY = e.clientY - rect.top;
+        
         drawingContext.beginPath();
-        drawingContext.moveTo(
-            e.clientX - drawingCanvas.getBoundingClientRect().left,
-            e.clientY - drawingCanvas.getBoundingClientRect().top
-        );
+        drawingContext.moveTo(lastX, lastY);
+        
+        // Draw a small dot at the start point for better visibility
+        drawingContext.arc(lastX, lastY, 0.5, 0, Math.PI * 2);
+        drawingContext.fill();
     }
     
     function draw(e) {
         if (!isDrawing) return;
         
-        drawingContext.lineTo(
-            e.clientX - drawingCanvas.getBoundingClientRect().left,
-            e.clientY - drawingCanvas.getBoundingClientRect().top
-        );
-        drawingContext.stroke();
+        const rect = drawingCanvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Calculate the distance moved
+        const dx = x - lastX;
+        const dy = y - lastY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // If the movement is too fast/large, interpolate points for smoother lines
+        if (distance > 3) {
+            const steps = Math.ceil(distance / 2);
+            for (let i = 1; i <= steps; i++) {
+                const px = lastX + (dx * i / steps);
+                const py = lastY + (dy * i / steps);
+                drawingContext.lineTo(px, py);
+                drawingContext.stroke();
+            }
+        } else {
+            drawingContext.lineTo(x, y);
+            drawingContext.stroke();
+        }
+        
+        lastX = x;
+        lastY = y;
     }
     
     function stopDrawing() {
         isDrawing = false;
     }
     
+    // Add visual feedback to the drawing modal
+    function showDrawingGuideline() {
+        // First clear any previous guidelines
+        const existingGuide = document.getElementById('drawing-guide');
+        if (existingGuide) existingGuide.remove();
+        
+        // Create a semi-transparent overlay with instructions
+        const guide = document.createElement('div');
+        guide.id = 'drawing-guide';
+        guide.style.position = 'absolute';
+        guide.style.top = '0';
+        guide.style.left = '0';
+        guide.style.width = '100%';
+        guide.style.height = '100%';
+        guide.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+        guide.style.display = 'flex';
+        guide.style.flexDirection = 'column';
+        guide.style.justifyContent = 'center';
+        guide.style.alignItems = 'center';
+        guide.style.textAlign = 'center';
+        guide.style.padding = '20px';
+        guide.style.zIndex = '1000';
+        guide.style.fontWeight = 'bold';
+        
+        let guideText = '';
+        if (currentDrawingType === 'signature') {
+            guideText = 'Dibuje su firma aquí';
+        } else if (currentDrawingType === 'name') {
+            guideText = 'Escriba su nombre completo';
+        } else if (currentDrawingType === 'cedula') {
+            guideText = 'Escriba su número de cédula';
+        } else if (currentDrawingType === 'date') {
+            guideText = 'La fecha actual es: Panamá, ' + currentDate;
+        }
+        
+        guide.innerHTML = `
+            <p>${guideText}</p>
+            <p>Toque aquí para comenzar</p>
+        `;
+        
+        drawingModal.querySelector('.modal-content').appendChild(guide);
+        
+        // Remove the guide on click
+        guide.addEventListener('click', function() {
+            guide.remove();
+        });
+    }
+    
     // Clear drawing button
     document.getElementById('clear-drawing-btn').addEventListener('click', function() {
         drawingContext.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+        
+        // For date, pre-fill after clearing
+        if (currentDrawingType === 'date') {
+            setTimeout(() => {
+                drawingContext.font = '16px Arial';
+                drawingContext.fillStyle = 'black';
+                drawingContext.fillText('Panamá, ' + currentDate, 20, 50);
+            }, 100);
+        }
     });
     
     // Save drawing from modal
     document.getElementById('save-drawing-btn').addEventListener('click', function() {
+        // Check if canvas is empty
+        const imageData = drawingContext.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height).data;
+        let hasContent = false;
+        for (let i = 0; i < imageData.length; i += 4) {
+            if (imageData[i + 3] > 0) { // Check alpha channel
+                hasContent = true;
+                break;
+            }
+        }
+        
+        // If empty and it's a date, pre-fill with current date
+        if (!hasContent && currentDrawingType === 'date') {
+            drawingContext.font = '16px Arial';
+            drawingContext.fillStyle = 'black';
+            drawingContext.fillText('Panamá, ' + currentDate, 20, 50);
+        } else if (!hasContent) {
+            alert('Por favor dibuje algo antes de guardar.');
+            return;
+        }
+        
         const drawingImage = drawingCanvas.toDataURL('image/png');
+        
+        // Get document content dimensions for percentage calculations
+        const docContent = document.getElementById('document-content');
+        const docRect = docContent.getBoundingClientRect();
         
         // Check if this type of element already exists
         const existingElement = document.querySelector(`.draggable-resizable[data-type="${currentDrawingType}"]`);
@@ -506,27 +657,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 img.src = drawingImage;
             }
         } else {
-            // Create new element
-            let left = '50px';
-            let top = '400px';
+            // Create new element with percentage-based positions
+            let left, top, width, height;
             
-            // Position elements differently based on type
-            if (currentDrawingType === 'name') {
-                top = '450px';
+            // Position elements differently based on type using percentages
+            if (currentDrawingType === 'signature') {
+                left = '5%';
+                top = '60%';
+                width = '30%';
+                height = '15%';
+            } else if (currentDrawingType === 'name') {
+                left = '5%';
+                top = '10%';
+                width = '30%';
+                height = '8%';
             } else if (currentDrawingType === 'cedula') {
-                top = '500px';
+                left = '5%';
+                top = '20%';
+                width = '30%';
+                height = '8%';
             } else if (currentDrawingType === 'date') {
-                top = '550px';
+                left = '5%';
+                top = '30%';
+                width = '30%';
+                height = '6%';
             }
             
-            createDraggableElement(currentDrawingType, drawingImage, left, top);
+            createDraggableElement(currentDrawingType, drawingImage, left, top, width, height);
         }
         
         // Hide modal
         drawingModal.style.display = 'none';
     });
     
-    // Open modal with appropriate title
+    // Open modal with appropriate title and guidance
     function showDrawingModal(type) {
         currentDrawingType = type;
         
@@ -546,11 +710,18 @@ document.addEventListener('DOMContentLoaded', function() {
         drawingContext.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
         drawingModal.style.display = 'flex';
         
+        // Show drawing guidelines with instructions
+        showDrawingGuideline();
+        
         // If it's a date element, draw the current date as a starting point
         if (type === 'date') {
-            drawingContext.font = '16px Arial';
-            drawingContext.fillStyle = 'black';
-            drawingContext.fillText('Panamá, ' + currentDate, 50, 50);
+            setTimeout(() => {
+                if (document.getElementById('drawing-guide') === null) { // Only if guide is dismissed
+                    drawingContext.font = '16px Arial';
+                    drawingContext.fillStyle = 'black';
+                    drawingContext.fillText('Panamá, ' + currentDate, 20, 50);
+                }
+            }, 300);
         }
     }
     
@@ -572,7 +743,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Create draggable and resizable element
-    function createDraggableElement(type, content, left = '50px', top = '400px', width = null, height = null) {
+    function createDraggableElement(type, content, left = '5%', top = '40%', width = null, height = null) {
         const docContent = document.getElementById('document-content');
         
         // Create element container
@@ -582,16 +753,16 @@ document.addEventListener('DOMContentLoaded', function() {
         elementArea.style.left = left;
         elementArea.style.top = top;
         
-        // Set default size based on type
+        // Set default size based on type using percentages
         if (type === 'signature') {
-            elementArea.style.width = width || '250px';
-            elementArea.style.height = height || '100px';
+            elementArea.style.width = width || '30%';
+            elementArea.style.height = height || '15%';
         } else if (type === 'date') {
-            elementArea.style.width = width || '200px';
-            elementArea.style.height = height || '30px';
+            elementArea.style.width = width || '25%';
+            elementArea.style.height = height || '6%';
         } else {
-            elementArea.style.width = width || '200px';
-            elementArea.style.height = height || '60px';
+            elementArea.style.width = width || '25%';
+            elementArea.style.height = height || '8%';
         }
         
         // Create content image
@@ -651,6 +822,9 @@ document.addEventListener('DOMContentLoaded', function() {
             document.onmouseup = closeDragElement;
             // Call a function whenever the cursor moves
             document.onmousemove = elementDrag;
+            
+            // Highlight the active element
+            highlightActiveElement(element);
         }
         
         function dragTouchStart(e) {
@@ -665,6 +839,9 @@ document.addEventListener('DOMContentLoaded', function() {
             document.ontouchend = closeDragElement;
             // Call a function whenever the finger moves
             document.ontouchmove = elementTouchDrag;
+            
+            // Highlight the active element
+            highlightActiveElement(element);
         }
         
         function elementDrag(e) {
@@ -677,9 +854,26 @@ document.addEventListener('DOMContentLoaded', function() {
             pos2 = pos4 - e.clientY;
             pos3 = e.clientX;
             pos4 = e.clientY;
-            // Set the element's new position
-            element.style.top = (element.offsetTop - pos2) + "px";
-            element.style.left = (element.offsetLeft - pos1) + "px";
+            
+            // Get the document content container dimensions
+            const docContent = document.getElementById('document-content');
+            const docRect = docContent.getBoundingClientRect();
+            
+            // Calculate new position
+            let newTop = element.offsetTop - pos2;
+            let newLeft = element.offsetLeft - pos1;
+            
+            // Ensure the element stays within bounds
+            newTop = Math.max(0, Math.min(newTop, docRect.height - element.offsetHeight));
+            newLeft = Math.max(0, Math.min(newLeft, docRect.width - element.offsetWidth));
+            
+            // Convert to percentage for responsive positioning
+            const topPercent = (newTop / docRect.height) * 100;
+            const leftPercent = (newLeft / docRect.width) * 100;
+            
+            // Set the element's new position in percentages
+            element.style.top = topPercent + '%';
+            element.style.left = leftPercent + '%';
         }
         
         function elementTouchDrag(e) {
@@ -693,9 +887,26 @@ document.addEventListener('DOMContentLoaded', function() {
             pos2 = pos4 - touch.clientY;
             pos3 = touch.clientX;
             pos4 = touch.clientY;
-            // Set the element's new position
-            element.style.top = (element.offsetTop - pos2) + "px";
-            element.style.left = (element.offsetLeft - pos1) + "px";
+            
+            // Get the document content container dimensions
+            const docContent = document.getElementById('document-content');
+            const docRect = docContent.getBoundingClientRect();
+            
+            // Calculate new position
+            let newTop = element.offsetTop - pos2;
+            let newLeft = element.offsetLeft - pos1;
+            
+            // Ensure the element stays within bounds
+            newTop = Math.max(0, Math.min(newTop, docRect.height - element.offsetHeight));
+            newLeft = Math.max(0, Math.min(newLeft, docRect.width - element.offsetWidth));
+            
+            // Convert to percentage for responsive positioning
+            const topPercent = (newTop / docRect.height) * 100;
+            const leftPercent = (newLeft / docRect.width) * 100;
+            
+            // Set the element's new position in percentages
+            element.style.top = topPercent + '%';
+            element.style.left = leftPercent + '%';
         }
         
         function resizeMouseDown(e) {
@@ -716,6 +927,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             document.onmouseup = closeResizeElement;
             document.onmousemove = elementResize;
+            
+            // Highlight the active element
+            highlightActiveElement(element);
         }
         
         function resizeTouchStart(e) {
@@ -737,11 +951,18 @@ document.addEventListener('DOMContentLoaded', function() {
             
             document.ontouchend = closeResizeElement;
             document.ontouchmove = elementTouchResize;
+            
+            // Highlight the active element
+            highlightActiveElement(element);
         }
         
         function elementResize(e) {
             e = e || window.event;
             e.preventDefault();
+            
+            // Get the document content container dimensions
+            const docContent = document.getElementById('document-content');
+            const docRect = docContent.getBoundingClientRect();
             
             // Calculate new width based on mouse movement
             const width = Math.max(50, startWidth + e.clientX - startX);
@@ -749,10 +970,14 @@ document.addEventListener('DOMContentLoaded', function() {
             // Calculate height to maintain aspect ratio
             const height = width / originalAspectRatio;
             
-            // Apply if height meets minimum requirement
-            if (height >= 20) {
-                element.style.width = width + 'px';
-                element.style.height = height + 'px';
+            // Calculate width as percentage of container
+            const widthPercent = (width / docRect.width) * 100;
+            const heightPercent = (height / docRect.height) * 100;
+            
+            // Apply if height meets minimum requirement and doesn't exceed container
+            if (height >= 20 && widthPercent <= 98 && heightPercent <= 98) {
+                element.style.width = widthPercent + '%';
+                element.style.height = heightPercent + '%';
             }
         }
         
@@ -762,16 +987,24 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const touch = e.touches[0];
             
+            // Get the document content container dimensions
+            const docContent = document.getElementById('document-content');
+            const docRect = docContent.getBoundingClientRect();
+            
             // Calculate new width based on touch movement
             const width = Math.max(50, startWidth + touch.clientX - startX);
             
             // Calculate height to maintain aspect ratio
             const height = width / originalAspectRatio;
             
-            // Apply if height meets minimum requirement
-            if (height >= 20) {
-                element.style.width = width + 'px';
-                element.style.height = height + 'px';
+            // Calculate width as percentage of container
+            const widthPercent = (width / docRect.width) * 100;
+            const heightPercent = (height / docRect.height) * 100;
+            
+            // Apply if height meets minimum requirement and doesn't exceed container
+            if (height >= 20 && widthPercent <= 98 && heightPercent <= 98) {
+                element.style.width = widthPercent + '%';
+                element.style.height = heightPercent + '%';
             }
         }
         
@@ -781,6 +1014,12 @@ document.addEventListener('DOMContentLoaded', function() {
             document.onmousemove = null;
             document.ontouchend = null;
             document.ontouchmove = null;
+            
+            // Remove highlight from all elements
+            document.querySelectorAll('.draggable-resizable').forEach(el => {
+                el.style.boxShadow = 'none';
+                el.style.borderColor = '#999';
+            });
         }
         
         function closeResizeElement() {
@@ -790,6 +1029,25 @@ document.addEventListener('DOMContentLoaded', function() {
             document.ontouchend = null;
             document.ontouchmove = null;
             resizing = false;
+            
+            // Remove highlight from all elements
+            document.querySelectorAll('.draggable-resizable').forEach(el => {
+                el.style.boxShadow = 'none';
+                el.style.borderColor = '#999';
+            });
+        }
+        
+        // Function to highlight the active element
+        function highlightActiveElement(el) {
+            // Remove highlight from all elements
+            document.querySelectorAll('.draggable-resizable').forEach(element => {
+                element.style.boxShadow = 'none';
+                element.style.borderColor = '#999';
+            });
+            
+            // Add highlight to the active element
+            el.style.boxShadow = '0 0 8px rgba(33, 150, 243, 0.8)';
+            el.style.borderColor = '#2196F3';
         }
     }
     
@@ -820,144 +1078,229 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Draw all draggable elements in their positions
             document.querySelectorAll('.draggable-resizable').forEach(el => {
-                const rect = el.getBoundingClientRect();
+                // Get element's style and calculate its position and size relative to the container
+                const style = window.getComputedStyle(el);
                 
-                // Calculate position relative to document container in pixels
-                const elementLeft = rect.left - docRect.left;
-                const elementTop = rect.top - docRect.top;
-                
-                // Calculate scaling factors from screen display to original image size
-                const scaleX = docImage.naturalWidth / docRect.width;
-                const scaleY = docImage.naturalHeight / docRect.height;
-                
-                // Calculate position and size on the final canvas
-                const canvasX = elementLeft * scaleX;
-                const canvasY = elementTop * scaleY;
-                const canvasWidth = rect.width * scaleX;
-                const canvasHeight = rect.height * scaleY;
-                
-                // Draw the element
-                const img = el.querySelector('img');
-                if (img && img.src) {
-                    const tempImg = new Image();
-                    tempImg.src = img.src;
-                    finalContext.drawImage(tempImg, canvasX, canvasY, canvasWidth, canvasHeight);
-                }
-            });
-            
-            // Convert to image and download
-            const image = finalCanvas.toDataURL('image/jpeg', 0.95);
-            
-            const downloadLink = document.createElement('a');
-            downloadLink.href = image;
-            downloadLink.download = `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.jpg`;
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-            
-            loadingElement.style.display = 'none';
-        }, 500);
-    });
+                // Parse percentage values
+                const leftPercent = parseFloat(style.left) / 100;
+                const topPercent = parseFloat(style.top) / 100;
+                const widthPercent = parseFloat(style.width) / 100;
+                const heightPercent = parseFloat(style.height) / 100;
+
+// Calculate absolute positions and dimensions on the final canvas
+                const finalLeft = leftPercent * finalCanvas.width;
+                const finalTop = topPercent * finalCanvas.height;
+                const finalWidth = widthPercent * finalCanvas.width;
+                const finalHeight = heightPercent * finalCanvas.height;
+
+// Get the image from the element
+const img = el.querySelector('img');
+if (img) {
+    // Draw the element's image onto the final canvas
+    finalContext.drawImage(img, finalLeft, finalTop, finalWidth, finalHeight);
+}
+});
+
+// Create download link
+const downloadLink = document.createElement('a');
+downloadLink.download = `${activeDocument.name.replace(/\s+/g, '-')}-firmado.png`;
+
+// Use PNG format for better quality
+finalCanvas.toBlob(function(blob) {
+    const url = URL.createObjectURL(blob);
+    downloadLink.href = url;
     
-    // Share button for mobile
-    document.getElementById('share-btn').addEventListener('click', function() {
-        if (!activeDocument) return;
-        
-        const loadingElement = document.getElementById('loading');
-        loadingElement.style.display = 'flex';
-        
-        setTimeout(() => {
-            // Create a canvas to generate the final document (same as download)
-            const finalCanvas = document.createElement('canvas');
-            const docImage = document.getElementById('document-image');
-            
-            // Set canvas size to match the image's natural dimensions
-            finalCanvas.width = docImage.naturalWidth;
-            finalCanvas.height = docImage.naturalHeight;
-            
-            const finalContext = finalCanvas.getContext('2d');
-            
-            // Draw the document image
-            finalContext.drawImage(docImage, 0, 0, finalCanvas.width, finalCanvas.height);
-            
-            // Get document container dimensions
-            const docContainer = document.getElementById('document-content');
-            const docRect = docContainer.getBoundingClientRect();
-            
-            // Draw all draggable elements in their positions
-            document.querySelectorAll('.draggable-resizable').forEach(el => {
-                const rect = el.getBoundingClientRect();
-                
-                // Calculate position relative to document container in pixels
-                const elementLeft = rect.left - docRect.left;
-                const elementTop = rect.top - docRect.top;
-                
-                // Calculate scaling factors from screen display to original image size
-                const scaleX = docImage.naturalWidth / docRect.width;
-                const scaleY = docImage.naturalHeight / docRect.height;
-                
-                // Calculate position and size on the final canvas
-                const canvasX = elementLeft * scaleX;
-                const canvasY = elementTop * scaleY;
-                const canvasWidth = rect.width * scaleX;
-                const canvasHeight = rect.height * scaleY;
-                
-                // Draw the element
-                const img = el.querySelector('img');
-                if (img && img.src) {
-                    const tempImg = new Image();
-                    tempImg.src = img.src;
-                    finalContext.drawImage(tempImg, canvasX, canvasY, canvasWidth, canvasHeight);
-                }
-            });
-            
-            // Convert to image and prepare for sharing
-            finalCanvas.toBlob(function(blob) {
-                if (navigator.share) {
-                    const file = new File([blob], `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.jpg`, { type: 'image/jpeg' });
-                    
-                    navigator.share({
-                        title: 'Documento Firmado',
-                        text: 'Documento con firma digital',
-                        files: [file]
-                    })
-                    .then(() => console.log('Compartido con éxito'))
-                    .catch((error) => console.log('Error al compartir:', error))
-                    .finally(() => {
-                        loadingElement.style.display = 'none';
-                    });
-                } else {
-                    // Fallback for browsers that don't support Web Share API
-                    const image = finalCanvas.toDataURL('image/jpeg', 0.95);
-                    
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = image;
-                    downloadLink.download = `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.jpg`;
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click();
-                    document.body.removeChild(downloadLink);
-                    
-                    loadingElement.style.display = 'none';
-                    alert('Compartir no está soportado en este navegador. Se ha descargado el documento en su lugar.');
-                }
-            }, 'image/jpeg', 0.95);
-        }, 500);
-    });
+    // Trigger download
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
     
-    // Close the drawing modal when clicking outside of it
-    window.addEventListener('click', function(e) {
-        if (e.target === drawingModal) {
-            drawingModal.style.display = 'none';
+    // Release object URL
+    setTimeout(() => {
+        URL.revokeObjectURL(url);
+        loadingElement.style.display = 'none';
+    }, 100);
+}, 'image/png');
+}, 500); // Small delay to ensure loading indicator appears
+});
+
+// Close modal button event
+document.getElementById('close-modal-btn').addEventListener('click', function() {
+    drawingModal.style.display = 'none';
+});
+
+// Close modal when clicking outside of it
+window.addEventListener('click', function(e) {
+    if (e.target === drawingModal) {
+        drawingModal.style.display = 'none';
+    }
+});
+
+// Delete button for elements
+document.getElementById('delete-btn').addEventListener('click', function() {
+    // Find element with highlight
+    const activeElement = document.querySelector('.draggable-resizable[style*="box-shadow"]');
+    if (activeElement) {
+        activeElement.remove();
+    } else {
+        alert('Seleccione un elemento para eliminar');
+    }
+});
+
+// Adjust canvas size when window is resized
+function adjustCanvasSize() {
+    // Set canvas dimensions to match the displayed size
+    drawingCanvas.width = drawingCanvas.offsetWidth;
+    drawingCanvas.height = drawingCanvas.offsetHeight;
+    
+    // Maintain drawing settings
+    drawingContext.lineWidth = 2.5;
+    drawingContext.lineCap = 'round';
+    drawingContext.lineJoin = 'round';
+    drawingContext.strokeStyle = '#000000';
+}
+
+// Initialize canvas size and adjust on resize
+adjustCanvasSize();
+window.addEventListener('resize', adjustCanvasSize);
+
+// Add mobile-friendly tooltip instructions
+function addMobileTooltips() {
+    const tooltips = {
+        'add-signature-btn': 'Toque para agregar su firma',
+        'add-name-btn': 'Toque para agregar su nombre',
+        'add-cedula-btn': 'Toque para agregar su cédula',
+        'add-date-btn': 'Toque para agregar la fecha',
+        'delete-btn': 'Eliminar elemento seleccionado',
+        'download-btn': 'Descargar documento firmado'
+    };
+    
+    Object.keys(tooltips).forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            // Add tooltip element
+            const tooltip = document.createElement('span');
+            tooltip.className = 'tooltip';
+            tooltip.textContent = tooltips[id];
+            element.appendChild(tooltip);
+            
+            // Show tooltip on touch
+            element.addEventListener('touchstart', function() {
+                tooltip.style.visibility = 'visible';
+                tooltip.style.opacity = '1';
+                
+                // Hide after delay
+                setTimeout(() => {
+                    tooltip.style.visibility = 'hidden';
+                    tooltip.style.opacity = '0';
+                }, 2000);
+            });
         }
     });
+}
+
+// Add help button functionality
+document.getElementById('help-btn').addEventListener('click', function() {
+    // Create and show help overlay
+    const helpOverlay = document.createElement('div');
+    helpOverlay.className = 'help-overlay';
+    helpOverlay.innerHTML = `
+        <div class="help-content">
+            <h3>Ayuda rápida</h3>
+            <ul>
+                <li><strong>Agregar elementos:</strong> Use los botones superiores para agregar firma, nombre, cédula o fecha</li>
+                <li><strong>Mover elementos:</strong> Toque y arrastre para posicionar</li>
+                <li><strong>Cambiar tamaño:</strong> Arrastre la esquina inferior derecha</li>
+                <li><strong>Eliminar:</strong> Seleccione un elemento y presione el botón de eliminar</li>
+                <li><strong>Cambiar documentos:</strong> Use las pestañas superiores</li>
+            </ul>
+            <button id="close-help">Cerrar ayuda</button>
+        </div>
+    `;
     
-    // Add keyboard event for Escape key to close modal
-    window.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && drawingModal.style.display === 'flex') {
-            drawingModal.style.display = 'none';
+    document.body.appendChild(helpOverlay);
+    
+    // Add close functionality
+    document.getElementById('close-help').addEventListener('click', function() {
+        helpOverlay.remove();
+    });
+    
+    // Close on click outside
+    helpOverlay.addEventListener('click', function(e) {
+        if (e.target === helpOverlay) {
+            helpOverlay.remove();
         }
     });
 });
+
+// Enhanced touch feedback for better UX
+document.querySelectorAll('.button').forEach(button => {
+    button.addEventListener('touchstart', function() {
+        this.classList.add('button-active');
+    });
+    
+    button.addEventListener('touchend', function() {
+        this.classList.remove('button-active');
+        
+        // Provide haptic feedback if available
+        if (window.navigator && window.navigator.vibrate) {
+            window.navigator.vibrate(50);
+        }
+    });
+});
+
+// Add guidance indicators for new users
+function showInitialGuidance() {
+    // Check if this is first visit
+    if (!localStorage.getItem('hasVisitedBefore')) {
+        // Create guided tour overlay
+        const guidanceOverlay = document.createElement('div');
+        guidanceOverlay.className = 'guidance-overlay';
+        guidanceOverlay.innerHTML = `
+            <div class="guidance-content">
+                <h3>Bienvenido al firmador de documentos</h3>
+                <p>Le guiaremos en los pasos básicos:</p>
+                <ol>
+                    <li>Primero, dibuje su firma utilizando el botón "Firma"</li>
+                    <li>Posicione los elementos arrastrándolos sobre el documento</li>
+                    <li>Cuando termine, descargue su documento firmado</li>
+                </ol>
+                <button id="start-using">Comenzar a usar</button>
+            </div>
+        `;
+        
+        document.body.appendChild(guidanceOverlay);
+        
+        // Remove guidance and mark as visited
+        document.getElementById('start-using').addEventListener('click', function() {
+            guidanceOverlay.remove();
+            localStorage.setItem('hasVisitedBefore', 'true');
+            
+            // Highlight signature button as next step
+            const signatureBtn = document.getElementById('add-signature-btn');
+            signatureBtn.classList.add('highlight-button');
+            setTimeout(() => {
+                signatureBtn.classList.remove('highlight-button');
+            }, 3000);
+        });
+    }
+}
+
+// Mobile enhancements
+if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    // Add mobile specific enhancements
+    document.body.classList.add('mobile-device');
+    addMobileTooltips();
+    
+    // Improve touch targets
+    document.querySelectorAll('.button, .tab').forEach(el => {
+        el.classList.add('touch-friendly');
+    });
+}
+
+// Show initial guidance and initialize mobile features
+showInitialGuidance();
+});    
     </script>
 </body>
 </html>
