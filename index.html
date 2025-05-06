@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex,nofollow">
+    <link rel="icon" href="img/favicon.png" type="image/jpeg">
+
     <title>Aplicación de Firma</title>
     <style>
         body {
@@ -57,7 +59,7 @@
             height: 100%;
             object-fit: contain;
         }
-        .draggable {
+        .draggable-resizable {
             position: absolute;
             background-color: rgba(255, 255, 255, 0.8);
             border: 1px dashed #999;
@@ -65,30 +67,29 @@
             cursor: move;
             z-index: 10;
         }
+        .resize-handle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #2196F3;
+            border-radius: 50%;
+            right: -6px;
+            bottom: -6px;
+            cursor: se-resize;
+            z-index: 20;
+        }
         .signature-area {
             width: 250px;
             height: 100px;
         }
-        .name-area {
+        .text-area {
             width: 250px;
-            height: 30px;
+            height: 60px;
         }
-        .cedula-area {
-            width: 150px;
-            height: 30px;
-        }
-        .signature-canvas {
+        .draw-canvas {
             width: 100%;
             height: 100%;
             background-color: white;
-        }
-        .input-field {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: transparent;
-            font-size: 16px;
-            text-align: center;
         }
         .controls {
             margin-top: 20px;
@@ -96,7 +97,7 @@
             flex-wrap: wrap;
             gap: 10px;
         }
-        .input-controls {
+        .action-buttons {
             margin-bottom: 20px;
             display: flex;
             flex-wrap: wrap;
@@ -121,6 +122,12 @@
         .clear-btn:hover {
             background-color: #d32f2f;
         }
+        .field-btn {
+            background-color: #2196F3;
+        }
+        .field-btn:hover {
+            background-color: #0b7dda;
+        }
         .footer {
             margin-top: 30px;
             text-align: center;
@@ -129,7 +136,7 @@
         }
         
         @media (max-width: 600px) {
-            .controls, .input-controls {
+            .controls, .action-buttons {
                 flex-direction: column;
             }
             button {
@@ -178,16 +185,40 @@
             height: 40px;
             animation: spin 2s linear infinite;
         }
-        .field-label {
-            font-weight: bold;
-            margin-right: 10px;
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
         }
-        .add-fields-btn {
-            background-color: #2196F3;
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 500px;
         }
-        .add-fields-btn:hover {
-            background-color: #0b7dda;
+        .modal-title {
+            margin-top: 0;
+            margin-bottom: 15px;
         }
+        .modal-canvas {
+            border: 1px solid #ccc;
+            width: 100%;
+            height: 200px;
+        }
+        .modal-buttons {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -197,26 +228,17 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="img/single-lulo-logo.svg" alt="Logo" class="logo">
+            <img src="img/favicon.png" alt="Logo" class="logo">
             <div class="date" id="current-date"></div>
         </div>
 
         <div id="tab-container" class="tab-container"></div>
         
-        <div class="input-controls">
-            <div>
-                <span class="field-label">Firma:</span>
-                <button id="clear-signature-btn" class="clear-btn">Borrar Firma</button>
-            </div>
-            <div>
-                <span class="field-label">Nombre:</span>
-                <input type="text" id="name-input" placeholder="Ingrese su nombre completo">
-            </div>
-            <div>
-                <span class="field-label">Cédula:</span>
-                <input type="text" id="cedula-input" placeholder="Ingrese su cédula">
-            </div>
-            <button id="add-fields-btn" class="add-fields-btn">Agregar campos al documento</button>
+        <div class="action-buttons">
+            <button id="add-name-btn" class="field-btn">Dibujar Nombre</button>
+            <button id="add-cedula-btn" class="field-btn">Dibujar Cédula</button>
+            <button id="add-signature-btn" class="field-btn">Dibujar Firma</button>
+            <button id="add-date-btn" class="field-btn">Dibujar Fecha</button>
         </div>
         
         <div class="document-container">
@@ -237,441 +259,640 @@
         </div>
         
         <div class="footer">
-            <p>© 2025. No recolectamos ningún dato personal durante este proceso.</p>
+            <p>Todos los derechos reservados, Lulo Panamá.</p>
         </div>
     </div>
 
-    <!-- Signature modal -->
-    <div id="signature-modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center;">
-        <div style="background-color: white; padding: 20px; border-radius: 5px; width: 80%; max-width: 500px;">
-            <h3>Dibuje su firma</h3>
-            <canvas id="signature-pad" width="460" height="200" style="border: 1px solid #ccc; width: 100%; height: 200px;"></canvas>
-            <div style="margin-top: 15px; display: flex; justify-content: space-between;">
-                <button id="clear-modal-btn" class="clear-btn">Borrar</button>
-                <button id="save-signature-btn">Guardar Firma</button>
+    <!-- Drawing modal -->
+    <div id="drawing-modal" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="modal-title">Dibuje su firma</h3>
+            <canvas id="drawing-pad" class="modal-canvas" width="460" height="200"></canvas>
+            <div class="modal-buttons">
+                <button id="clear-drawing-btn" class="clear-btn">Borrar</button>
+                <button id="save-drawing-btn">Guardar</button>
             </div>
         </div>
     </div>
     
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Set current date in Panama format
-            const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-            const currentDate = new Date().toLocaleDateString('es-PA', dateOptions);
-            document.getElementById('current-date').textContent = 'Panamá, ' + currentDate;
-            
-            // Document mapping (JPGs instead of PDFs)
-            const docMapping = {
-                'bac': {
-                    path: 'apc/apc-bac-actual.jpg',
-                    name: 'BAC'
-                },
-                'global': {
-                    path: 'apc/apc-global-actual.jpg',
-                    name: 'Global Bank'
-                },
-                'multi': {
-                    path: 'apc/apc-multi-actual.jpg',
-                    name: 'Multibank'
+document.addEventListener('DOMContentLoaded', function() {
+    // Set current date in Panama format
+    const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    const currentDate = new Date().toLocaleDateString('es-PA', dateOptions);
+    document.getElementById('current-date').textContent = 'Panamá, ' + currentDate;
+    
+    // Document mapping (JPGs instead of PDFs)
+    const docMapping = {
+        'bac': {
+            path: 'apc/apc-bac-actual.jpg',
+            name: 'BAC'
+        },
+        'global': {
+            path: 'apc/apc-global-actual.jpg',
+            name: 'Global Bank'
+        },
+        'multi': {
+            path: 'apc/apc-multi-actual.jpg',
+            name: 'Multibank'
+        }
+    };
+    
+    // Get documents from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const documents = [];
+    
+    // Extract documents from URL parameters
+    for (const [key, value] of urlParams.entries()) {
+        if (key === 'e') {
+            // Handle comma-separated values in 'e' parameter
+            const docCodes = value.split(',');
+            docCodes.forEach(code => {
+                if (docMapping[code]) {
+                    documents.push(docMapping[code]);
                 }
-            };
-            
-            // Get documents from URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const documents = [];
-            
-            // Extract documents from URL parameters
-            for (const [key, value] of urlParams.entries()) {
-                if (key === 'e') {
-                    // Handle comma-separated values in 'e' parameter
-                    const docCodes = value.split(',');
-                    docCodes.forEach(code => {
-                        if (docMapping[code]) {
-                            documents.push(docMapping[code]);
-                        }
-                    });
-                } else if (docMapping[key]) {
-                    // Handle parameters like '?bac&global'
-                    documents.push(docMapping[key]);
-                }
-            }
-            
-            // If no documents specified, default to all
-            if (documents.length === 0) {
-                Object.values(docMapping).forEach(doc => documents.push(doc));
-            }
-            
-            // Create tabs for multiple documents
-            const tabContainer = document.getElementById('tab-container');
-            
-            let activeDocument = null;
-            
-            documents.forEach((doc, index) => {
-                const tab = document.createElement('div');
-                tab.classList.add('tab');
-                if (index === 0) {
-                    tab.classList.add('active');
-                    activeDocument = doc;
-                }
-                tab.textContent = doc.name;
-                tab.dataset.path = doc.path;
-                
-                tab.addEventListener('click', function() {
-                    // Deactivate all tabs
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    // Activate current tab
-                    this.classList.add('active');
-                    // Load the document
-                    activeDocument = {path: this.dataset.path, name: this.textContent};
-                    loadDocument(this.dataset.path);
-                    
-                    // Remove existing field elements when changing documents
-                    document.querySelectorAll('.draggable').forEach(el => el.remove());
-                });
-                
-                tabContainer.appendChild(tab);
             });
+        } else if (docMapping[key]) {
+            // Handle parameters like '?bac&global'
+            documents.push(docMapping[key]);
+        }
+    }
+    
+    // If no documents specified, default to all
+    if (documents.length === 0) {
+        Object.values(docMapping).forEach(doc => documents.push(doc));
+    }
+    
+    // Create tabs for multiple documents
+    const tabContainer = document.getElementById('tab-container');
+    
+    let activeDocument = null;
+    
+    // Store elements for each document
+    const documentElements = {};
+    
+    documents.forEach((doc, index) => {
+        const tab = document.createElement('div');
+        tab.classList.add('tab');
+        if (index === 0) {
+            tab.classList.add('active');
+            activeDocument = doc;
+        }
+        tab.textContent = doc.name;
+        tab.dataset.path = doc.path;
+        
+        // Initialize elements array for this document
+        documentElements[doc.path] = [];
+        
+        tab.addEventListener('click', function() {
+            // Deactivate all tabs
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            // Activate current tab
+            this.classList.add('active');
             
-            // Load the first document if available
+            // Store current elements for previous document
             if (activeDocument) {
-                loadDocument(activeDocument.path);
-            }
-            
-            // Load document image
-            function loadDocument(path) {
-                const loading = document.getElementById('loading');
-                loading.style.display = 'flex';
-                
-                const documentImage = document.getElementById('document-image');
-                documentImage.src = path;
-                
-                documentImage.onload = function() {
-                    loading.style.display = 'none';
-                };
-            }
-            
-            // Signature pad setup
-            const signatureCanvas = document.getElementById('signature-pad');
-            const signatureContext = signatureCanvas.getContext('2d');
-            let isDrawing = false;
-            
-            signatureContext.lineWidth = 2;
-            signatureContext.strokeStyle = '#000000';
-            
-            // Signature modal
-            const signatureModal = document.getElementById('signature-modal');
-            
-            // Handle drawing events for signature
-            signatureCanvas.addEventListener('mousedown', startDrawing);
-            signatureCanvas.addEventListener('mousemove', draw);
-            signatureCanvas.addEventListener('mouseup', stopDrawing);
-            signatureCanvas.addEventListener('mouseout', stopDrawing);
-            
-            // Touch events for mobile
-            signatureCanvas.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const mouseEvent = new MouseEvent('mousedown', {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
+                documentElements[activeDocument.path] = [];
+                document.querySelectorAll('.draggable-resizable').forEach(el => {
+                    // Store element properties
+                    const elementData = {
+                        type: el.dataset.type,
+                        content: el.querySelector('img') ? el.querySelector('img').src : '',
+                        left: el.style.left,
+                        top: el.style.top,
+                        width: el.style.width,
+                        height: el.style.height
+                    };
+                    documentElements[activeDocument.path].push(elementData);
                 });
-                signatureCanvas.dispatchEvent(mouseEvent);
-            });
-            
-            signatureCanvas.addEventListener('touchmove', function(e) {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const mouseEvent = new MouseEvent('mousemove', {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
-                });
-                signatureCanvas.dispatchEvent(mouseEvent);
-            });
-            
-            signatureCanvas.addEventListener('touchend', function(e) {
-                e.preventDefault();
-                const mouseEvent = new MouseEvent('mouseup');
-                signatureCanvas.dispatchEvent(mouseEvent);
-            });
-            
-            function startDrawing(e) {
-                isDrawing = true;
-                signatureContext.beginPath();
-                signatureContext.moveTo(
-                    e.clientX - signatureCanvas.getBoundingClientRect().left,
-                    e.clientY - signatureCanvas.getBoundingClientRect().top
-                );
             }
             
-            function draw(e) {
-                if (!isDrawing) return;
-                
-                signatureContext.lineTo(
-                    e.clientX - signatureCanvas.getBoundingClientRect().left,
-                    e.clientY - signatureCanvas.getBoundingClientRect().top
-                );
-                signatureContext.stroke();
-            }
+            // Update active document
+            activeDocument = {path: this.dataset.path, name: this.textContent};
+            // Load the document
+            loadDocument(this.dataset.path);
             
-            function stopDrawing() {
-                isDrawing = false;
-            }
+            // Remove existing elements
+            document.querySelectorAll('.draggable-resizable').forEach(el => el.remove());
             
-            // Clear signature button
-            document.getElementById('clear-signature-btn').addEventListener('click', function() {
-                showSignatureModal();
-            });
-            
-            document.getElementById('clear-modal-btn').addEventListener('click', function() {
-                signatureContext.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
-            });
-            
-            // Save signature from modal
-            document.getElementById('save-signature-btn').addEventListener('click', function() {
-                const signatureImage = signatureCanvas.toDataURL('image/png');
-                
-                // Check if signature exists and update it, or create new one
-                const existingSignature = document.querySelector('.signature-area img');
-                if (existingSignature) {
-                    existingSignature.src = signatureImage;
-                } else {
-                    createDraggableSignature(signatureImage);
-                }
-                
-                // Hide modal
-                signatureModal.style.display = 'none';
-            });
-            
-            function showSignatureModal() {
-                signatureModal.style.display = 'flex';
-                signatureContext.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
-            }
-            
-            // Create draggable elements
-            document.getElementById('add-fields-btn').addEventListener('click', function() {
-                // First show signature modal to get signature
-                showSignatureModal();
-                
-                // Get values for name and cédula
-                const nameValue = document.getElementById('name-input').value;
-                const cedulaValue = document.getElementById('cedula-input').value;
-                
-                // Create draggable name field if not exists
-                if (!document.querySelector('.name-area') && nameValue) {
-                    createDraggableName(nameValue);
-                }
-                
-                // Create draggable cedula field if not exists
-                if (!document.querySelector('.cedula-area') && cedulaValue) {
-                    createDraggableCedula(cedulaValue);
-                }
-            });
-            
-            function createDraggableSignature(signatureImage) {
-                const docContent = document.getElementById('document-content');
-                
-                // Create signature area
-                const signatureArea = document.createElement('div');
-                signatureArea.className = 'draggable signature-area';
-                signatureArea.style.left = '50px';
-                signatureArea.style.top = '500px';
-                
-                // Create signature image
-                const img = document.createElement('img');
-                img.src = signatureImage;
-                img.style.width = '100%';
-                img.style.height = '100%';
-                
-                signatureArea.appendChild(img);
-                docContent.appendChild(signatureArea);
-                
-                makeDraggable(signatureArea);
-            }
-            
-            function createDraggableName(name) {
-                const docContent = document.getElementById('document-content');
-                
-                // Check if already exists
-                if (document.querySelector('.name-area')) {
-                    document.querySelector('.name-area input').value = name;
-                    return;
-                }
-                
-                // Create name area
-                const nameArea = document.createElement('div');
-                nameArea.className = 'draggable name-area';
-                nameArea.style.left = '50px';
-                nameArea.style.top = '610px';
-                
-                // Create input field
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.className = 'input-field';
-                input.value = name;
-                input.style.fontWeight = 'bold';
-                
-                nameArea.appendChild(input);
-                docContent.appendChild(nameArea);
-                
-                makeDraggable(nameArea);
-            }
-            
-            function createDraggableCedula(cedula) {
-                const docContent = document.getElementById('document-content');
-                
-                // Check if already exists
-                if (document.querySelector('.cedula-area')) {
-                    document.querySelector('.cedula-area input').value = cedula;
-                    return;
-                }
-                
-                // Create cedula area
-                const cedulaArea = document.createElement('div');
-                cedulaArea.className = 'draggable cedula-area';
-                cedulaArea.style.left = '50px';
-                cedulaArea.style.top = '650px';
-                
-                // Create input field
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.className = 'input-field';
-                input.value = cedula;
-                
-                cedulaArea.appendChild(input);
-                docContent.appendChild(cedulaArea);
-                
-                makeDraggable(cedulaArea);
-            }
-            
-            // Make elements draggable
-            function makeDraggable(element) {
-                let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-                
-                element.onmousedown = dragMouseDown;
-                element.ontouchstart = dragTouchStart;
-                
-                function dragMouseDown(e) {
-                    e = e || window.event;
-                    e.preventDefault();
-                    // Get the mouse cursor position at startup
-                    pos3 = e.clientX;
-                    pos4 = e.clientY;
-                    document.onmouseup = closeDragElement;
-                    // Call a function whenever the cursor moves
-                    document.onmousemove = elementDrag;
-                }
-                
-                function dragTouchStart(e) {
-                    e = e || window.event;
-                    e.preventDefault();
-                    // Get the touch position at startup
-                    const touch = e.touches[0];
-                    pos3 = touch.clientX;
-                    pos4 = touch.clientY;
-                    document.ontouchend = closeDragElement;
-                    // Call a function whenever the finger moves
-                    document.ontouchmove = elementTouchDrag;
-                }
-                
-                function elementDrag(e) {
-                    e = e || window.event;
-                    e.preventDefault();
-                    // Calculate the new cursor position
-                    pos1 = pos3 - e.clientX;
-                    pos2 = pos4 - e.clientY;
-                    pos3 = e.clientX;
-                    pos4 = e.clientY;
-                    // Set the element's new position
-                    element.style.top = (element.offsetTop - pos2) + "px";
-                    element.style.left = (element.offsetLeft - pos1) + "px";
-                }
-                
-                function elementTouchDrag(e) {
-                    e = e || window.event;
-                    e.preventDefault();
-                    // Calculate the new touch position
-                    const touch = e.touches[0];
-                    pos1 = pos3 - touch.clientX;
-                    pos2 = pos4 - touch.clientY;
-                    pos3 = touch.clientX;
-                    pos4 = touch.clientY;
-                    // Set the element's new position
-                    element.style.top = (element.offsetTop - pos2) + "px";
-                    element.style.left = (element.offsetLeft - pos1) + "px";
-                }
-                
-                function closeDragElement() {
-                    // Stop moving when mouse/touch is released
-                    document.onmouseup = null;
-                    document.onmousemove = null;
-                    document.ontouchend = null;
-                    document.ontouchmove = null;
-                }
-            }
-            
-            // Download button
-            document.getElementById('download-btn').addEventListener('click', function() {
-                if (!activeDocument) return;
-                
-                const loadingElement = document.getElementById('loading');
-                loadingElement.style.display = 'flex';
-                
-                setTimeout(() => {
-                    // Create a canvas to generate the final document
-                    const finalCanvas = document.createElement('canvas');
-                    const docImage = document.getElementById('document-image');
-                    
-                    // Set canvas size to match the image
-                    finalCanvas.width = docImage.naturalWidth;
-                    finalCanvas.height = docImage.naturalHeight;
-                    
-                    const finalContext = finalCanvas.getContext('2d');
-                    
-                    // Draw the document image
-                    finalContext.drawImage(docImage, 0, 0, finalCanvas.width, finalCanvas.height);
-                    
-                    // Draw the date in top right corner
-                    finalContext.font = 'bold 16px Arial';
-                    finalContext.fillStyle = 'black';
-                    finalContext.textAlign = 'right';
-                    finalContext.fillText('Panamá, ' + currentDate, finalCanvas.width - 30, 30);
-                    
-                    // Draw all draggable elements in their positions
-                    document.querySelectorAll('.draggable').forEach(el => {
-                        const rect = el.getBoundingClientRect();
-                        const docRect = document.getElementById('document-content').getBoundingClientRect();
-                        
-                        // Calculate position percentage
-                        const percentX = (rect.left - docRect.left) / docRect.width;
-                        const percentY = (rect.top - docRect.top) / docRect.height;
-                        
-                        // Position on the final canvas
-                        const canvasX = percentX * finalCanvas.width;
-                        const canvasY = percentY * finalCanvas.height;
-                        
-                        if (el.classList.contains('signature-area')) {
-                            // Draw signature
-                            const signatureImg = el.querySelector('img');
-                            if (signatureImg && signatureImg.src) {
-                                const tempImg = new Image();
-                                tempImg.src = signatureImg.src;
-                                finalContext.drawImage(tempImg, canvasX, canvasY, 
-                                                      (rect.width / docRect.width) * finalCanvas.width, 
-                                                      (rect.height / docRect.height) * finalCanvas.height);
-                            }
-                        } else if (el.classList.contains('name-area') || el.classList.contains('cedula-area')) {
-                            // Draw text fields
-                            const input = el.querySelector('input');
-                            if (input && input.value) {
-                                finalContext.font = el.classList.contains('name-area') ? 'bold 18px Arial' : '16px Arial';
-                                finalContext.fillStyle = 'black';
-                                finalContext.textAlign = 'left';
-                                finalContext.fillText(input.value, canvasX + 5, canvasY + 20);
-                            }
+            // Restore elements for this document
+            setTimeout(() => {
+                if (documentElements[this.dataset.path]) {
+                    documentElements[this.dataset.path].forEach(el => {
+                        if (el.type === 'signature') {
+                            createDraggableElement('signature', el.content, el.left, el.top, el.width, el.height);
+                        } else if (el.type === 'name') {
+                            createDraggableElement('name', el.content, el.left, el.top, el.width, el.height);
+                        } else if (el.type === 'cedula') {
+                            createDraggableElement('cedula', el.content, el.left, el.top, el.width, el.height);
+                        } else if (el.type === 'date') {
+                            createDraggableElement('date', el.content, el.left, el.top, el.width, el.height);
                         }
                     });
+                }
+            }, 200); // Small delay to ensure document is loaded
+        });
+        
+        tabContainer.appendChild(tab);
+    });
+    
+    // Load the first document if available
+    if (activeDocument) {
+        loadDocument(activeDocument.path);
+    }
+    
+    // Load document image
+    function loadDocument(path) {
+        const loading = document.getElementById('loading');
+        loading.style.display = 'flex';
+        
+        const documentImage = document.getElementById('document-image');
+        documentImage.src = path;
+        
+        documentImage.onload = function() {
+            loading.style.display = 'none';
+        };
+    }
+    
+    // Drawing modal setup
+    const drawingModal = document.getElementById('drawing-modal');
+    const drawingCanvas = document.getElementById('drawing-pad');
+    const drawingContext = drawingCanvas.getContext('2d');
+    let isDrawing = false;
+    let currentDrawingType = ''; // 'signature', 'name', 'cedula', or 'date'
+    
+    drawingContext.lineWidth = 2;
+    drawingContext.strokeStyle = '#000000';
+    
+    // Handle drawing events
+    drawingCanvas.addEventListener('mousedown', startDrawing);
+    drawingCanvas.addEventListener('mousemove', draw);
+    drawingCanvas.addEventListener('mouseup', stopDrawing);
+    drawingCanvas.addEventListener('mouseout', stopDrawing);
+    
+    // Touch events for mobile
+    drawingCanvas.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousedown', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        drawingCanvas.dispatchEvent(mouseEvent);
+    });
+    
+    drawingCanvas.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousemove', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        drawingCanvas.dispatchEvent(mouseEvent);
+    });
+    
+    drawingCanvas.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        const mouseEvent = new MouseEvent('mouseup');
+        drawingCanvas.dispatchEvent(mouseEvent);
+    });
+    
+    function startDrawing(e) {
+        isDrawing = true;
+        drawingContext.beginPath();
+        drawingContext.moveTo(
+            e.clientX - drawingCanvas.getBoundingClientRect().left,
+            e.clientY - drawingCanvas.getBoundingClientRect().top
+        );
+    }
+    
+    function draw(e) {
+        if (!isDrawing) return;
+        
+        drawingContext.lineTo(
+            e.clientX - drawingCanvas.getBoundingClientRect().left,
+            e.clientY - drawingCanvas.getBoundingClientRect().top
+        );
+        drawingContext.stroke();
+    }
+    
+    function stopDrawing() {
+        isDrawing = false;
+    }
+    
+    // Clear drawing button
+    document.getElementById('clear-drawing-btn').addEventListener('click', function() {
+        drawingContext.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+    });
+    
+    // Save drawing from modal
+    document.getElementById('save-drawing-btn').addEventListener('click', function() {
+        const drawingImage = drawingCanvas.toDataURL('image/png');
+        
+        // Check if this type of element already exists
+        const existingElement = document.querySelector(`.draggable-resizable[data-type="${currentDrawingType}"]`);
+        
+        if (existingElement) {
+            // Update existing element
+            const img = existingElement.querySelector('img');
+            if (img) {
+                img.src = drawingImage;
+            }
+        } else {
+            // Create new element
+            let left = '50px';
+            let top = '400px';
+            
+            // Position elements differently based on type
+            if (currentDrawingType === 'name') {
+                top = '450px';
+            } else if (currentDrawingType === 'cedula') {
+                top = '500px';
+            } else if (currentDrawingType === 'date') {
+                top = '550px';
+            }
+            
+            createDraggableElement(currentDrawingType, drawingImage, left, top);
+        }
+        
+        // Hide modal
+        drawingModal.style.display = 'none';
+    });
+    
+    // Open modal with appropriate title
+    function showDrawingModal(type) {
+        currentDrawingType = type;
+        
+        // Set appropriate title
+        const modalTitle = document.getElementById('modal-title');
+        if (type === 'signature') {
+            modalTitle.textContent = 'Dibuje su firma';
+        } else if (type === 'name') {
+            modalTitle.textContent = 'Dibuje su nombre';
+        } else if (type === 'cedula') {
+            modalTitle.textContent = 'Dibuje su cédula';
+        } else if (type === 'date') {
+            modalTitle.textContent = 'Dibuje la fecha';
+        }
+        
+        // Clear canvas and show modal
+        drawingContext.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+        drawingModal.style.display = 'flex';
+        
+        // If it's a date element, draw the current date as a starting point
+        if (type === 'date') {
+            drawingContext.font = '16px Arial';
+            drawingContext.fillStyle = 'black';
+            drawingContext.fillText('Panamá, ' + currentDate, 50, 50);
+        }
+    }
+    
+    // Button event listeners for drawing elements
+    document.getElementById('add-name-btn').addEventListener('click', function() {
+        showDrawingModal('name');
+    });
+    
+    document.getElementById('add-cedula-btn').addEventListener('click', function() {
+        showDrawingModal('cedula');
+    });
+    
+    document.getElementById('add-signature-btn').addEventListener('click', function() {
+        showDrawingModal('signature');
+    });
+    
+    document.getElementById('add-date-btn').addEventListener('click', function() {
+        showDrawingModal('date');
+    });
+    
+    // Create draggable and resizable element
+    function createDraggableElement(type, content, left = '50px', top = '400px', width = null, height = null) {
+        const docContent = document.getElementById('document-content');
+        
+        // Create element container
+        const elementArea = document.createElement('div');
+        elementArea.className = 'draggable-resizable';
+        elementArea.dataset.type = type;
+        elementArea.style.left = left;
+        elementArea.style.top = top;
+        
+        // Set default size based on type
+        if (type === 'signature') {
+            elementArea.style.width = width || '250px';
+            elementArea.style.height = height || '100px';
+        } else if (type === 'date') {
+            elementArea.style.width = width || '200px';
+            elementArea.style.height = height || '30px';
+        } else {
+            elementArea.style.width = width || '200px';
+            elementArea.style.height = height || '60px';
+        }
+        
+        // Create content image
+        const img = document.createElement('img');
+        img.src = content;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        
+        // Add resize handle
+        const resizeHandle = document.createElement('div');
+        resizeHandle.className = 'resize-handle';
+        
+        elementArea.appendChild(img);
+        elementArea.appendChild(resizeHandle);
+        docContent.appendChild(elementArea);
+        
+        // Make draggable and resizable
+        makeDraggableResizable(elementArea, resizeHandle);
+    }
+    
+    // Make elements draggable and resizable
+    function makeDraggableResizable(element, resizeHandle) {
+        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        let resizing = false;
+        let startWidth, startHeight, startX, startY;
+        
+        // Dragging functionality
+        element.onmousedown = dragMouseDown;
+        element.ontouchstart = dragTouchStart;
+        
+        // Resizing functionality
+        resizeHandle.onmousedown = resizeMouseDown;
+        resizeHandle.ontouchstart = resizeTouchStart;
+        
+        function dragMouseDown(e) {
+            if (e.target === resizeHandle) return;
+            
+            e = e || window.event;
+            e.preventDefault();
+            // Get the mouse cursor position at startup
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            document.onmouseup = closeDragElement;
+            // Call a function whenever the cursor moves
+            document.onmousemove = elementDrag;
+        }
+        
+        function dragTouchStart(e) {
+            if (e.target === resizeHandle) return;
+            
+            e = e || window.event;
+            e.preventDefault();
+            // Get the touch position at startup
+            const touch = e.touches[0];
+            pos3 = touch.clientX;
+            pos4 = touch.clientY;
+            document.ontouchend = closeDragElement;
+            // Call a function whenever the finger moves
+            document.ontouchmove = elementTouchDrag;
+        }
+        
+        function elementDrag(e) {
+            if (resizing) return;
+            
+            e = e || window.event;
+            e.preventDefault();
+            // Calculate the new cursor position
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            // Set the element's new position
+            element.style.top = (element.offsetTop - pos2) + "px";
+            element.style.left = (element.offsetLeft - pos1) + "px";
+        }
+        
+        function elementTouchDrag(e) {
+            if (resizing) return;
+            
+            e = e || window.event;
+            e.preventDefault();
+            // Calculate the new touch position
+            const touch = e.touches[0];
+            pos1 = pos3 - touch.clientX;
+            pos2 = pos4 - touch.clientY;
+            pos3 = touch.clientX;
+            pos4 = touch.clientY;
+            // Set the element's new position
+            element.style.top = (element.offsetTop - pos2) + "px";
+            element.style.left = (element.offsetLeft - pos1) + "px";
+        }
+        
+        function resizeMouseDown(e) {
+            e = e || window.event;
+            e.preventDefault();
+            e.stopPropagation();
+            
+            resizing = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            startWidth = parseInt(document.defaultView.getComputedStyle(element).width, 10);
+            startHeight = parseInt(document.defaultView.getComputedStyle(element).height, 10);
+            
+            document.onmouseup = closeResizeElement;
+            document.onmousemove = elementResize;
+        }
+        
+        function resizeTouchStart(e) {
+            e = e || window.event;
+            e.preventDefault();
+            e.stopPropagation();
+            
+            resizing = true;
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+            startWidth = parseInt(document.defaultView.getComputedStyle(element).width, 10);
+            startHeight = parseInt(document.defaultView.getComputedStyle(element).height, 10);
+            
+            document.ontouchend = closeResizeElement;
+            document.ontouchmove = elementTouchResize;
+        }
+        
+        function elementResize(e) {
+            e = e || window.event;
+            e.preventDefault();
+            
+            // Calculate new width and height
+            const width = startWidth + e.clientX - startX;
+            const height = startHeight + e.clientY - startY;
+            
+            // Apply minimum size constraints
+            if (width > 50) {
+                element.style.width = width + 'px';
+            }
+            
+            if (height > 20) {
+                element.style.height = height + 'px';
+            }
+        }
+        
+        function elementTouchResize(e) {
+            e = e || window.event;
+            e.preventDefault();
+            
+            const touch = e.touches[0];
+            
+            // Calculate new width and height
+            const width = startWidth + touch.clientX - startX;
+            const height = startHeight + touch.clientY - startY;
+            
+            // Apply minimum size constraints
+            if (width > 50) {
+                element.style.width = width + 'px';
+            }
+            
+            if (height > 20) {
+                element.style.height = height + 'px';
+            }
+        }
+        
+        function closeDragElement() {
+            // Stop moving when mouse/touch is released
+            document.onmouseup = null;
+            document.onmousemove = null;
+            document.ontouchend = null;
+            document.ontouchmove = null;
+        }
+        
+        function closeResizeElement() {
+            // Stop resizing when mouse/touch is released
+            document.onmouseup = null;
+            document.onmousemove = null;
+            document.ontouchend = null;
+            document.ontouchmove = null;
+            resizing = false;
+        }
+    }
+    
+    // Download button
+    document.getElementById('download-btn').addEventListener('click', function() {
+        if (!activeDocument) return;
+        
+        const loadingElement = document.getElementById('loading');
+        loadingElement.style.display = 'flex';
+        
+        setTimeout(() => {
+            // Create a canvas to generate the final document
+            const finalCanvas = document.createElement('canvas');
+            const docImage = document.getElementById('document-image');
+            
+            // Set canvas size to match the image
+            finalCanvas.width = docImage.naturalWidth;
+            finalCanvas.height = docImage.naturalHeight;
+            
+            const finalContext = finalCanvas.getContext('2d');
+            
+            // Draw the document image
+            finalContext.drawImage(docImage, 0, 0, finalCanvas.width, finalCanvas.height);
+            
+            // Draw all draggable elements in their positions
+            document.querySelectorAll('.draggable-resizable').forEach(el => {
+                const rect = el.getBoundingClientRect();
+                const docRect = document.getElementById('document-content').getBoundingClientRect();
+                
+                // Calculate position percentage
+                const percentX = (rect.left - docRect.left) / docRect.width;
+                const percentY = (rect.top - docRect.top) / docRect.height;
+                
+                // Calculate size percentage
+                const percentWidth = rect.width / docRect.width;
+                const percentHeight = rect.height / docRect.height;
+                
+                // Position and size on the final canvas
+                const canvasX = percentX * finalCanvas.width;
+                const canvasY = percentY * finalCanvas.height;
+                const canvasWidth = percentWidth * finalCanvas.width;
+                const canvasHeight = percentHeight * finalCanvas.height;
+                
+                // Draw the element
+                const img = el.querySelector('img');
+                if (img && img.src) {
+                    const tempImg = new Image();
+                    tempImg.src = img.src;
+                    finalContext.drawImage(tempImg, canvasX, canvasY, canvasWidth, canvasHeight);
+                }
+            });
+            
+            // Convert to image and download
+            const image = finalCanvas.toDataURL('image/jpeg', 0.95);
+            
+            const downloadLink = document.createElement('a');
+            downloadLink.href = image;
+            downloadLink.download = `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.jpg`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            
+            loadingElement.style.display = 'none';
+        }, 500);
+    });
+    
+    // Share button for mobile
+    document.getElementById('share-btn').addEventListener('click', function() {
+        if (!activeDocument) return;
+        
+        const loadingElement = document.getElementById('loading');
+        loadingElement.style.display = 'flex';
+        
+        setTimeout(() => {
+            // Create a canvas to generate the final document (same as download)
+            const finalCanvas = document.createElement('canvas');
+            const docImage = document.getElementById('document-image');
+            
+            // Set canvas size to match the image
+            finalCanvas.width = docImage.naturalWidth;
+            finalCanvas.height = docImage.naturalHeight;
+            
+            const finalContext = finalCanvas.getContext('2d');
+            
+            // Draw the document image
+            finalContext.drawImage(docImage, 0, 0, finalCanvas.width, finalCanvas.height);
+            
+            // Draw all draggable elements in their positions
+            document.querySelectorAll('.draggable-resizable').forEach(el => {
+                const rect = el.getBoundingClientRect();
+                const docRect = document.getElementById('document-content').getBoundingClientRect();
+                
+                // Calculate position percentage
+                const percentX = (rect.left - docRect.left) / docRect.width;
+                const percentY = (rect.top - docRect.top) / docRect.height;
+                
+                // Calculate size percentage
+                const percentWidth = rect.width / docRect.width;
+                const percentHeight = rect.height / docRect.height;
+                
+                // Position and size on the final canvas
+                const canvasX = percentX * finalCanvas.width;
+                const canvasY = percentY * finalCanvas.height;
+                const canvasWidth = percentWidth * finalCanvas.width;
+                const canvasHeight = percentHeight * finalCanvas.height;
+                
+                // Draw the element
+                const img = el.querySelector('img');
+                if (img && img.src) {
+                    const tempImg = new Image();
+                    tempImg.src = img.src;
+                    finalContext.drawImage(tempImg, canvasX, canvasY, canvasWidth, canvasHeight);
+                }
+            });
+            
+            // Convert to image and prepare for sharing
+            finalCanvas.toBlob(function(blob) {
+                if (navigator.share) {
+                    const file = new File([blob], `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.jpg`, { type: 'image/jpeg' });
                     
-                    // Convert to image and download
+                    navigator.share({
+                        title: 'Documento Firmado',
+                        text: 'Documento con firma digital',
+                        files: [file]
+                    })
+                    .then(() => console.log('Compartido con éxito'))
+                    .catch((error) => console.log('Error al compartir:', error))
+                    .finally(() => {
+                        loadingElement.style.display = 'none';
+                    });
+                } else {
+                    // Fallback for browsers that don't support Web Share API
                     const image = finalCanvas.toDataURL('image/jpeg', 0.95);
                     
                     const downloadLink = document.createElement('a');
@@ -682,102 +903,26 @@
                     document.body.removeChild(downloadLink);
                     
                     loadingElement.style.display = 'none';
-                }, 500);
-            });
-            
-            // Share button for mobile
-            document.getElementById('share-btn').addEventListener('click', function() {
-                if (!activeDocument) return;
-                
-                const loadingElement = document.getElementById('loading');
-                loadingElement.style.display = 'flex';
-                
-                setTimeout(() => {
-                    // Create a canvas to generate the final document (same as download)
-                    const finalCanvas = document.createElement('canvas');
-                    const docImage = document.getElementById('document-image');
-                    
-                    finalCanvas.width = docImage.naturalWidth;
-                    finalCanvas.height = docImage.naturalHeight;
-                    
-                    const finalContext = finalCanvas.getContext('2d');
-                    
-                    // Draw the document image
-                    finalContext.drawImage(docImage, 0, 0, finalCanvas.width, finalCanvas.height);
-                    
-                    // Draw the date in top right corner
-                    finalContext.font = 'bold 16px Arial';
-                    finalContext.fillStyle = 'black';
-                    finalContext.textAlign = 'right';
-                    finalContext.fillText('Panamá, ' + currentDate, finalCanvas.width - 30, 30);
-                    
-                    // Draw all draggable elements in their positions
-                    document.querySelectorAll('.draggable').forEach(el => {
-                        const rect = el.getBoundingClientRect();
-                        const docRect = document.getElementById('document-content').getBoundingClientRect();
-                        
-                        // Calculate position percentage
-                        const percentX = (rect.left - docRect.left) / docRect.width;
-                        const percentY = (rect.top - docRect.top) / docRect.height;
-                        
-                        // Position on the final canvas
-                        const canvasX = percentX * finalCanvas.width;
-                        const canvasY = percentY * finalCanvas.height;
-                        
-                        if (el.classList.contains('signature-area')) {
-                            // Draw signature
-                            const signatureImg = el.querySelector('img');
-                            if (signatureImg && signatureImg.src) {
-                                const tempImg = new Image();
-                                tempImg.src = signatureImg.src;
-                                finalContext.drawImage(tempImg, canvasX, canvasY, 
-                                                      (rect.width / docRect.width) * finalCanvas.width, 
-                                                      (rect.height / docRect.height) * finalCanvas.height);
-                            }
-                        } else if (el.classList.contains('name-area') || el.classList.contains('cedula-area')) {
-                            // Draw text fields
-                            const input = el.querySelector('input');
-                            if (input && input.value) {
-                                finalContext.font = el.classList.contains('name-area') ? 'bold 18px Arial' : '16px Arial';
-                                finalContext.fillStyle = 'black';
-                                finalContext.textAlign = 'left';
-                                finalContext.fillText(input.value, canvasX + 5, canvasY + 20);
-                            }
-                        }
-                    });
-                    
-                    // Convert to image
-                    const image = finalCanvas.toDataURL('image/jpeg', 0.95);
-                    
-                    // Try to use Web Share API (mobile)
-                    if (navigator.share) {
-                        // Convert base64 to blob
-                        fetch(image)
-                            .then(res => res.blob())
-                            .then(blob => {
-                                const file = new File([blob], `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.jpg`, { type: 'image/jpeg' });
-                                
-                                navigator.share({
-                                    title: 'Documento Firmado',
-                                    files: [file]
-                                }).catch(error => {
-                                    alert('Error al compartir: ' + error);
-                                });
-                            });
-                    } else {
-                        // Fall back to download if Web Share API is not available
-                        const downloadLink = document.createElement('a');
-                        downloadLink.href = image;
-                        downloadLink.download = `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.jpg`;
-                        document.body.appendChild(downloadLink);
-                        downloadLink.click();
-                        document.body.removeChild(downloadLink);
-                    }
-                    
-                    loadingElement.style.display = 'none';
-                }, 500);
-            });
-        });
+                    alert('Compartir no está soportado en este navegador. Se ha descargado el documento en su lugar.');
+                }
+            }, 'image/jpeg', 0.95);
+        }, 500);
+    });
+    
+    // Close the drawing modal when clicking outside of it
+    window.addEventListener('click', function(e) {
+        if (e.target === drawingModal) {
+            drawingModal.style.display = 'none';
+        }
+    });
+    
+    // Add keyboard event for Escape key to close modal
+    window.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && drawingModal.style.display === 'flex') {
+            drawingModal.style.display = 'none';
+        }
+    });
+});
     </script>
 </body>
 </html>
