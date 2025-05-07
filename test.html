@@ -118,7 +118,7 @@
         .canvas-container {
             width: 100%;
             margin-bottom: 20px;
-            position: relative; /* For potential future absolute positioned elements over canvas */
+            position: relative; 
         }
 
         .selected-element-controls {
@@ -211,10 +211,10 @@
     </div>
 
     <script>
-        const documentPaths = [
-            "apc/apc-multi-actual.jpg",
-            "apc/apc-bac-actual.jpg",
-            "apc/apc-global-actual.jpg"
+        const documentConfigurations = [
+            { path: "apc/apc-multi-actual.jpg", shortName: "multi", displayName: "Multi" },
+            { path: "apc/apc-bac-actual.jpg", shortName: "bac", displayName: "BAC" },
+            { path: "apc/apc-global-actual.jpg", shortName: "global", displayName: "Global" }
         ];
 
         const appState = {
@@ -233,8 +233,8 @@
                 offsetX: 0,
                 offsetY: 0
             },
-            backgroundImage: null, // Holds the current new Image() object for the APC letter
-            canvasScaleFactor: 1, // For handling responsiveness if canvas is scaled
+            backgroundImage: null, 
+            canvasScaleFactor: 1, 
         };
 
         // DOM Elements
@@ -253,7 +253,6 @@
 
         const exportDocumentBtn = document.getElementById('exportDocumentBtn');
 
-        // Sizing controls
         const elementSizingControls = document.getElementById('elementSizingControls');
         const textElementControls = document.getElementById('textElementControls');
         const fontSizeInput = document.getElementById('fontSize');
@@ -266,11 +265,12 @@
         let lastSigY = 0;
 
         function initializeDefaultDocumentSettings() {
-            const defaultFontSize = 20; //px
+            const defaultFontSize = 20; 
             const defaultSigWidth = 150;
             const defaultSigHeight = 75;
             
-            documentPaths.forEach(docPath => {
+            documentConfigurations.forEach(docConfig => {
+                const docPath = docConfig.path;
                 if (!appState.documentSettings[docPath]) {
                     appState.documentSettings[docPath] = {
                         elements: [
@@ -285,19 +285,40 @@
         }
         
         function populateDocumentSelector() {
-            documentPaths.forEach(path => {
+            documentConfigurations.forEach(docConfig => {
                 const option = document.createElement('option');
-                option.value = path;
-                option.textContent = path.split('/').pop(); // Show filename
+                option.value = docConfig.path;
+                option.textContent = docConfig.displayName; // Use displayName
                 documentSelector.appendChild(option);
             });
         }
 
         function handleUrlParameters() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const docFromUrl = urlParams.get('document');
-            if (docFromUrl && documentPaths.includes(docFromUrl)) {
-                documentSelector.value = docFromUrl;
+            const params = new URLSearchParams(window.location.search);
+            let selectedDocPath = null;
+
+            // Check for 'e' parameter first
+            const eParamValue = params.get('e');
+            if (eParamValue) {
+                const foundDoc = documentConfigurations.find(doc => doc.shortName.toLowerCase() === eParamValue.toLowerCase());
+                if (foundDoc) {
+                    selectedDocPath = foundDoc.path;
+                }
+            }
+
+            // If not found via 'e', check for standalone bank short names as parameters
+            // This handles cases like ?global or ?bac&multi (it will pick the first one defined in documentConfigurations that matches a param)
+            if (!selectedDocPath) {
+                for (const docConfig of documentConfigurations) {
+                    if (params.has(docConfig.shortName.toLowerCase())) {
+                        selectedDocPath = docConfig.path;
+                        break; 
+                    }
+                }
+            }
+
+            if (selectedDocPath) {
+                documentSelector.value = selectedDocPath;
             }
         }
 
@@ -305,7 +326,6 @@
             appState.currentDocumentUrl = docUrl;
             appState.backgroundImage = new Image();
             appState.backgroundImage.onload = () => {
-                // Set canvas dimensions based on image aspect ratio
                 const canvasContainerWidth = mainCanvas.parentElement.clientWidth;
                 const imageAspectRatio = appState.backgroundImage.naturalWidth / appState.backgroundImage.naturalHeight;
                 
@@ -315,7 +335,7 @@
                 appState.canvasScaleFactor = mainCanvas.width / appState.backgroundImage.naturalWidth;
 
                 redrawMainCanvas();
-                updateSelectedElementControls(); // Update controls if an element was active
+                updateSelectedElementControls(); 
             };
             appState.backgroundImage.onerror = () => {
                 console.error("Error cargando imagen del documento:", docUrl);
@@ -323,7 +343,9 @@
                 mainCtx.fillStyle = "red";
                 mainCtx.font = "16px Arial";
                 mainCtx.textAlign = "center";
-                mainCtx.fillText("Error al cargar: " + docUrl.split('/').pop(), mainCanvas.width / 2, mainCanvas.height / 2);
+                const currentDocConfig = documentConfigurations.find(dc => dc.path === docUrl);
+                const docName = currentDocConfig ? currentDocConfig.displayName : docUrl.split('/').pop();
+                mainCtx.fillText("Error al cargar: " + docName, mainCanvas.width / 2, mainCanvas.height / 2);
 
             }
             appState.backgroundImage.src = docUrl;
@@ -347,8 +369,6 @@
             }
             
             mainCtx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
-
-            // Draw background document image
             mainCtx.drawImage(appState.backgroundImage, 0, 0, mainCanvas.width, mainCanvas.height);
 
             const currentDocSettings = appState.documentSettings[appState.currentDocumentUrl];
@@ -356,7 +376,7 @@
 
             currentDocSettings.elements.forEach(element => {
                 mainCtx.fillStyle = element.color || '#000000';
-                mainCtx.strokeStyle = var(--lulo-panama-primary); // For selection indicator
+                mainCtx.strokeStyle = 'var(--lulo-panama-primary)'; 
                 mainCtx.lineWidth = 1;
 
                 if (element.type === 'text') {
@@ -365,8 +385,7 @@
                     mainCtx.fillText(textContent, element.x, element.y);
                     if (appState.activeElementId === element.id && !isExporting) {
                         const textMetrics = mainCtx.measureText(textContent);
-                        // A bit of padding for the bounding box
-                        const actualHeight = element.fontSize * 1.2; // Approximate height
+                        const actualHeight = element.fontSize * 1.2; 
                         mainCtx.strokeRect(element.x - 2, element.y - actualHeight + (element.fontSize*0.2) , textMetrics.width + 4, actualHeight);
                     }
                 } else if (element.type === 'image' && element.id === 'signature') {
@@ -380,20 +399,13 @@
             });
         }
 
-        // Signature Pad Logic
         function getMousePos(canvas, evt) {
             const rect = canvas.getBoundingClientRect();
-            return {
-                x: evt.clientX - rect.left,
-                y: evt.clientY - rect.top
-            };
+            return { x: evt.clientX - rect.left, y: evt.clientY - rect.top };
         }
         function getTouchPos(canvas, evt) {
             const rect = canvas.getBoundingClientRect();
-            return {
-                x: evt.touches[0].clientX - rect.left,
-                y: evt.touches[0].clientY - rect.top
-            };
+            return { x: evt.touches[0].clientX - rect.left, y: evt.touches[0].clientY - rect.top };
         }
 
         function startDrawingSig(e) {
@@ -418,24 +430,16 @@
         }
 
         function stopDrawingSig() {
-            if (isDrawingSig) {
-                isDrawingSig = false;
-            }
+            if (isDrawingSig) isDrawingSig = false;
         }
         
         function clearSignature() {
             sigCtx.clearRect(0, 0, signaturePad.width, signaturePad.height);
-            appState.signatureImageCache = null; // Clear cached signature image as well
-            const sigElement = getElementById(appState.currentDocumentUrl, 'signature');
-            if (sigElement) {
-                 // Optionally reset signature size/position or keep as is
-            }
+            appState.signatureImageCache = null; 
             redrawMainCanvas();
         }
 
         function confirmSignature() {
-            // Create an image object from the signature pad content
-            // This ensures the signature is drawn as an image, not vector, on main canvas
             const tempImage = new Image();
             tempImage.onload = () => {
                 appState.signatureImageCache = tempImage;
@@ -444,8 +448,6 @@
             tempImage.src = signaturePad.toDataURL('image/png');
         }
 
-
-        // Main Canvas Interaction (Dragging and Selection)
         function getCanvasCoordinates(event) {
             const rect = mainCanvas.getBoundingClientRect();
             let x, y;
@@ -462,13 +464,13 @@
         function isPointInElement(pointX, pointY, element) {
             let x, y, width, height;
             if (element.type === 'text') {
-                // Approximate bounding box for text
-                mainCtx.font = `${element.fontSize}px Arial`; // Must set font to measure correctly
-                const textMetrics = mainCtx.measureText(appState.sharedInputs[element.id] || '');
+                mainCtx.font = `${element.fontSize}px Arial`; 
+                const textContent = appState.sharedInputs[element.id] || '';
+                const textMetrics = mainCtx.measureText(textContent);
                 x = element.x;
-                y = element.y - element.fontSize; // Text is drawn from baseline
-                width = textMetrics.width;
-                height = element.fontSize * 1.2; // A bit more than font size for click area
+                y = element.y - element.fontSize; 
+                width = textMetrics.width || 10; // Min width for empty string clickability
+                height = element.fontSize * 1.2; 
             } else if (element.type === 'image') {
                 x = element.x;
                 y = element.y;
@@ -485,7 +487,6 @@
             const currentDocSettings = appState.documentSettings[appState.currentDocumentUrl];
             if (!currentDocSettings) return;
 
-            // Iterate in reverse to select top-most element
             let selected = null;
             for (let i = currentDocSettings.elements.length - 1; i >= 0; i--) {
                 const element = currentDocSettings.elements[i];
@@ -528,7 +529,6 @@
 
         function handleCanvasMouseUp() {
             appState.dragState.isDragging = false;
-             // Don't clear activeElementId here, user might want to resize
         }
         
         function updateSelectedElementControls() {
@@ -566,31 +566,20 @@
             redrawMainCanvas();
         }
 
-        // Event Listeners
         documentSelector.addEventListener('change', (e) => {
-            appState.activeElementId = null; // Deselect when changing doc
+            appState.activeElementId = null; 
             updateSelectedElementControls();
             loadDocument(e.target.value);
         });
 
-        userNameInput.addEventListener('input', (e) => {
-            appState.sharedInputs.name = e.target.value;
-            redrawMainCanvas();
-        });
-        userCedulaInput.addEventListener('input', (e) => {
-            appState.sharedInputs.cedula = e.target.value;
-            redrawMainCanvas();
-        });
-        userDateInput.addEventListener('input', (e) => {
-            appState.sharedInputs.date = e.target.value;
-            redrawMainCanvas();
-        });
+        userNameInput.addEventListener('input', (e) => { appState.sharedInputs.name = e.target.value; redrawMainCanvas(); });
+        userCedulaInput.addEventListener('input', (e) => { appState.sharedInputs.cedula = e.target.value; redrawMainCanvas(); });
+        userDateInput.addEventListener('input', (e) => { appState.sharedInputs.date = e.target.value; redrawMainCanvas(); });
 
-        // Signature Pad Events
         signaturePad.addEventListener('mousedown', startDrawingSig);
         signaturePad.addEventListener('mousemove', drawSig);
         signaturePad.addEventListener('mouseup', stopDrawingSig);
-        signaturePad.addEventListener('mouseout', stopDrawingSig); // Stop if mouse leaves canvas
+        signaturePad.addEventListener('mouseout', stopDrawingSig);
         signaturePad.addEventListener('touchstart', startDrawingSig, { passive: false });
         signaturePad.addEventListener('touchmove', drawSig, { passive: false });
         signaturePad.addEventListener('touchend', stopDrawingSig);
@@ -598,16 +587,14 @@
         clearSignatureBtn.addEventListener('click', clearSignature);
         confirmSignatureBtn.addEventListener('click', confirmSignature);
 
-        // Main Canvas Events
         mainCanvas.addEventListener('mousedown', handleCanvasMouseDown);
         mainCanvas.addEventListener('mousemove', handleCanvasMouseMove);
         mainCanvas.addEventListener('mouseup', handleCanvasMouseUp);
-        mainCanvas.addEventListener('mouseleave', handleCanvasMouseUp); // If mouse leaves canvas while dragging
+        mainCanvas.addEventListener('mouseleave', handleCanvasMouseUp);
         mainCanvas.addEventListener('touchstart', handleCanvasMouseDown, { passive: false });
         mainCanvas.addEventListener('touchmove', handleCanvasMouseMove, { passive: false });
         mainCanvas.addEventListener('touchend', handleCanvasMouseUp);
 
-        // Size Control Events
         fontSizeInput.addEventListener('change', handleSizeInputChange);
         imageWidthInput.addEventListener('change', handleSizeInputChange);
         imageHeightInput.addEventListener('change', handleSizeInputChange);
@@ -617,68 +604,58 @@
                 alert("Por favor, seleccione y cargue un documento primero.");
                 return;
             }
-            // Temporarily deselect element for export
             const lastActiveElement = appState.activeElementId;
             appState.activeElementId = null;
-            redrawMainCanvas(true); // Redraw for export (no selection box)
+            redrawMainCanvas(true); 
 
-            const dataUrl = mainCanvas.toDataURL('image/jpeg', 0.9); // JPG format with 90% quality
+            const dataUrl = mainCanvas.toDataURL('image/jpeg', 0.9); 
             const link = document.createElement('a');
             link.href = dataUrl;
-            link.download = `APC_Firmado_${appState.currentDocumentUrl.split('/').pop().replace(/\.jpg$/i, '')}_${new Date().toISOString().slice(0,10)}.jpg`;
+            
+            const currentDocConfig = documentConfigurations.find(dc => dc.path === appState.currentDocumentUrl);
+            const shortNameForFile = currentDocConfig ? currentDocConfig.shortName : 'documento';
+            link.download = `APC_Firmado_${shortNameForFile}_${appState.sharedInputs.date.replace(/-/g,'')}.jpg`;
+            
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
 
-            // Restore selection if any
             appState.activeElementId = lastActiveElement;
-            redrawMainCanvas(); // Redraw with selection box if it was active
+            redrawMainCanvas(); 
         });
 
-        // Window resize listener to adjust canvas if needed
         window.addEventListener('resize', () => {
             if (appState.currentDocumentUrl && appState.backgroundImage && appState.backgroundImage.complete) {
-                 // Re-calculate canvas size based on new container width
                 const canvasContainerWidth = mainCanvas.parentElement.clientWidth;
                 const imageAspectRatio = appState.backgroundImage.naturalWidth / appState.backgroundImage.naturalHeight;
-                
-                const oldCanvasWidth = mainCanvas.width;
                 mainCanvas.width = Math.min(appState.backgroundImage.naturalWidth, canvasContainerWidth);
                 mainCanvas.height = mainCanvas.width / imageAspectRatio;
-
-                const scaleChange = mainCanvas.width / oldCanvasWidth;
-
-                // Optionally, try to scale element positions and sizes
-                // This is tricky and might not be perfect without storing relative positions
-                // For simplicity, this example will just redraw. User might need to readjust.
-                // If you want to scale, you'd iterate appState.documentSettings[appState.currentDocumentUrl].elements
-                // and multiply x, y, fontSize, width, height by scaleChange.
-
                 redrawMainCanvas();
             }
         });
 
-
         // Initialization
         initializeDefaultDocumentSettings();
         populateDocumentSelector();
-        handleUrlParameters(); // Check URL params for initial document
+        handleUrlParameters(); 
 
-        // Load initial values
         userNameInput.value = appState.sharedInputs.name;
         userCedulaInput.value = appState.sharedInputs.cedula;
         userDateInput.value = appState.sharedInputs.date;
         
-        // Load the initially selected (or first) document
-        if (documentSelector.value) {
+        if (documentSelector.value) { // Value might have been set by URL params
             loadDocument(documentSelector.value);
-        } else if (documentPaths.length > 0) {
-            documentSelector.value = documentPaths[0];
-            loadDocument(documentPaths[0]);
+        } else if (documentConfigurations.length > 0) { // Default to first if no selection yet
+            documentSelector.value = documentConfigurations[0].path;
+            loadDocument(documentConfigurations[0].path);
         } else {
             console.error("No hay documentos APC configurados.");
+            mainCtx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+            mainCtx.fillStyle = "red";
+            mainCtx.font = "16px Arial";
+            mainCtx.textAlign = "center";
+            mainCtx.fillText("No hay documentos APC configurados.", mainCanvas.width / 2, mainCanvas.height / 2);
         }
-
     </script>
 </body>
 </html>
