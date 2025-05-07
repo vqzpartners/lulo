@@ -16,22 +16,40 @@
             --selection-handle-stroke: #ffffff;
             --confirmed-pad-border: #28a745;
         }
-        html, body { overscroll-behavior-y: contain; }
+
+        /* Apply box-sizing universally and prevent html/body horizontal scroll */
+        html {
+            box-sizing: border-box;
+            overflow-x: hidden; /* Prevent horizontal scroll at the ROOT level */
+            -webkit-text-size-adjust: 100%; /* Prevent font scaling on orientation change */
+            -ms-text-size-adjust: 100%;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+
         body {
-            font-family: Arial, sans-serif; margin: 0; padding: 10px;
+            font-family: Arial, sans-serif; margin: 0;
+            /* Padding will be set below and in media queries */
             background-color: var(--lulo-panama-secondary); color: var(--text-color);
             display: flex; flex-direction: column; align-items: center;
             -webkit-tap-highlight-color: transparent;
+            width: 100%;
+            overflow-x: hidden; /* Prevent body itself from creating horizontal scroll */
+            min-height: 100vh;
         }
         .container {
             width: 100%; max-width: 1200px; background-color: white;
-            padding: 15px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            box-sizing: border-box;
+            /* Padding will be set below and in media queries */
+            border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            flex-shrink: 0;
         }
         h1 {
             color: var(--lulo-panama-primary); text-align: center;
             margin-top: 0;
             margin-bottom: 15px; font-size: 1.6em;
+            padding: 0 10px;
         }
         .initial-guidance {
             background-color: #e9f3f4; border-left: 5px solid var(--lulo-panama-primary);
@@ -40,60 +58,79 @@
         }
         .initial-guidance ul { padding-left: 20px; margin-top: 5px; margin-bottom: 5px;}
 
-        .main-layout-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        .document-display-area { grid-column: 1 / -1; }
+        .main-layout-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            width: 100%;
+        }
+        .document-display-area {
+            grid-column: 1 / -1;
+            min-width: 0;
+        }
 
         .input-areas-container {
-            min-width: 0; /* Allow shrinking in grid/flex context */
+            min-width: 0;
         }
 
         .input-areas-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 15px; margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* Default */
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 0;
         }
         .control-group {
-            padding: 15px; border: 1px solid var(--border-color);
+             /* padding will be set below and in media queries */
+            border: 1px solid var(--border-color);
             border-radius: 5px; background-color: #fdfdfd;
             display: flex;
             flex-direction: column;
-            box-sizing: border-box; /* ADDED for better width calculation */
-            min-width: 0; /* ADDED to allow shrinking in grid/flex */
-            overflow: hidden; /* ADDED to prevent internal content from visually breaking out if it's still too wide. Can be removed if underlying issue is fully fixed. */
+            min-width: 0;
+            overflow: hidden; /* Keep this to clip internal overflows if they somehow still happen */
         }
         .control-group h3 {
             margin-top: 0; color: var(--lulo-panama-primary);
             border-bottom: 1px solid var(--lulo-panama-primary);
             padding-bottom: 5px; font-size: 1.05em; margin-bottom: 10px;
-            word-break: break-word; /* ADDED for text wrapping */
-            overflow-wrap: break-word; /* ADDED for better text wrapping */
-            min-width: 0; /* ADDED to allow h3 to shrink */
+            word-break: break-word;
+            overflow-wrap: break-word;
+            min-width: 0;
+            /* padding left/right set below and in media queries */
         }
         label { display: block; margin-bottom: 5px; font-weight: bold; }
         input[type="number"] {
             width: 100%;
             padding: 10px; margin-bottom: 10px;
-            border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box;
+            border: 1px solid var(--border-color); border-radius: 4px;
         }
+        /* Base button styles (will be adjusted in media queries) */
         button {
             background-color: var(--lulo-panama-primary); color: white; padding: 10px 15px;
             border: none; border-radius: 4px; cursor: pointer; font-size:0.9em;
-            transition: background-color 0.3s ease; margin-right: 5px; margin-bottom: 5px;
+            transition: background-color 0.3s ease; margin: 5px;
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
-        }
-        .control-group button { /* Target buttons specifically inside control-group for wrapping */
-            max-width: 100%;
-            box-sizing: border-box;
-            white-space: normal; /* Allow text to wrap */
-            word-break: break-word; /* More aggressive break if needed */
+            display: block; /* Default to block */
+            width: calc(100% - 10px); /* Default to full width minus margins */
+            max-width: 300px; /* Cap width */
+            margin-left: auto; margin-right: auto; /* Center if max-width applies */
+            white-space: normal; /* Allow text wrapping */
+            word-break: break-word;
         }
         button:hover { background-color: #003338; }
 
-        .document-buttons { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom:10px;}
+        /* Specific style for document selection buttons */
+        .document-buttons { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom:10px; justify-content: center;}
         .document-buttons button {
             flex-grow: 1; min-width: 100px;
-            margin: 2px;
+            width: auto; /* Override block */
+            display: inline-flex; /* Allow side-by-side */
+            justify-content: center;
+            align-items: center;
+            margin: 2px; /* Specific margins for this group */
+            max-width: none; /* Remove max-width for these buttons */
         }
         .document-buttons button.active {
             background-color: #003338;
@@ -104,13 +141,13 @@
             margin: 0 auto 10px auto;
             width: 100%;
             max-width: 380px;
-            min-width: 0; /* ADDED to allow shrinking */
-            box-sizing: border-box; /* ADDED */
+            min-width: 0;
+            /* padding set below and in media queries */
         }
         .drawing-pad { /* The <canvas> */
             border: 1px dashed var(--border-color); border-radius: 4px; cursor: crosshair;
             width: 100%;
-            max-width: 100%; /* ADDED as an extra safeguard */
+            max-width: 100%;
             height: auto;
             display: block;
             touch-action: none;
@@ -125,7 +162,6 @@
             overflow: auto; border: 1px solid var(--border-color);
             background-color: var(--lulo-panama-secondary);
             padding: 5px;
-            box-sizing: border-box;
         }
         #mainDocumentCanvas {
             border-radius: 4px; display: block; margin: 0 auto;
@@ -138,45 +174,91 @@
         }
         .selected-element-controls label { margin-top: 8px; }
 
+        /* --- Base Paddings & Styles --- */
+        body { padding: 10px; }
+        .container { padding: 15px; }
+        .control-group { padding: 15px; }
+        .control-group h3 { padding-left: 10px; padding-right: 10px; }
+        .handwriting-pad-area, .signature-pad-area { padding: 0 10px; }
+
+
+        /* --- Media Queries --- */
+
+        /* Desktop Layout */
         @media (min-width: 992px) {
             .main-layout-grid {
                  grid-template-columns: minmax(320px, 400px) 1fr;
                  align-items: start;
             }
-            .input-areas-container {
-                grid-column: 1 / 2;
+            .input-areas-container { grid-column: 1 / 2; }
+            .input-areas-grid { grid-template-columns: 1fr; }
+            .document-display-area { grid-column: 2 / 3; }
+            .canvas-container { padding: 10px; }
+            /* Adjust button base style for desktop */
+            button {
+                display: inline-block; /* Allow side-by-side */
+                width: auto;
+                max-width: none; /* Remove max-width */
+                margin: 5px; margin-right: 5px; /* Reset margin */
+                margin-left: 0;
             }
-            .input-areas-grid {
-                grid-template-columns: 1fr;
-            }
-            .document-display-area {
-                grid-column: 2 / 3;
-            }
-            .canvas-container {
-                padding: 10px;
-            }
+            /* Ensure control group buttons follow general button style on desktop */
+             .control-group button { } /* Inherits general button style now */
         }
 
+        /* Tablet and Smaller Adjustments */
         @media (max-width: 768px) {
             body { padding: 5px; }
             .container { padding: 10px;}
+            .control-group { padding: 10px; }
+             .control-group h3 { padding-left: 5px; padding-right: 5px; }
+             .handwriting-pad-area, .signature-pad-area { padding: 0 5px; }
             h1 { font-size: 1.4em; }
             .control-group h3 { font-size: 1em; }
             .initial-guidance { font-size: 0.85em; }
-            button { padding: 8px 12px; font-size: 0.85em; }
+            button { padding: 8px 12px; font-size: 0.85em; } /* General button adjust */
         }
 
+        /* Mobile Specific Adjustments */
         @media (max-width: 480px) {
             h1 { font-size: 1.2em; }
-            button { padding: 8px 10px; }
             input[type="number"] { padding: 8px; }
             .initial-guidance ul { padding-left: 15px; }
-            .control-group { padding: 10px; }
+            /* Button width for Limpiar/Confirmar type buttons */
+            .control-group button {
+                width: calc(100% - 10px); /* Full width minus margins (5+5) */
+                margin-left: 5px;
+                margin-right: 5px;
+            }
         }
 
-        @media (max-width: 360px) {
-            h1 { font-size: 1.1em; }
-            .initial-guidance { font-size: 0.8em; }
+        /* NEW: Very Narrow Screen Adjustments */
+        @media (max-width: 359px) {
+            .input-areas-grid {
+                grid-template-columns: 1fr; /* Force single column, removes 260px min */
+                gap: 10px;
+            }
+            body { padding: 0 2px; } /* Minimal body padding */
+            .container { padding: 5px; } /* Minimal container padding */
+            .control-group { padding: 8px; } /* Minimal control group padding */
+            .control-group h3 {
+                padding-left: 5px; padding-right: 5px;
+                font-size: 0.9em; /* Slightly smaller heading */
+            }
+            .handwriting-pad-area, .signature-pad-area {
+                padding: 0 2px; /* Minimal pad area padding */
+            }
+             /* Further adjust general button style if needed */
+            button {
+                padding: 6px 8px;
+                font-size: 0.8em;
+                margin: 3px;
+                width: calc(100% - 6px);
+            }
+             .initial-guidance {
+                 font-size: 0.75em;
+                 padding: 8px 10px;
+             }
         }
     </style>
 </head>
@@ -263,6 +345,8 @@
     </div>
 
     <script>
+        // --- JavaScript code remains the same as the previous version ---
+        // (Includes the implemented fixes for setupDrawingCanvas, getPadCoordinates, etc.)
         const dpr = window.devicePixelRatio || 1;
         const RESIZE_HANDLE_LOGICAL_SIZE = 10;
         const RESIZE_HANDLE_CLICK_EXTENSION = 5;
@@ -336,7 +420,7 @@
             const logicalInitialHeight = parseInt(canvasEl.dataset.logicalHeight) || 100;
             let logicalAspectRatio = logicalInitialWidth / logicalInitialHeight;
             if (logicalInitialHeight === 0 || isNaN(logicalAspectRatio) || !isFinite(logicalAspectRatio)) {
-                logicalAspectRatio = 3; 
+                logicalAspectRatio = 3;
             }
 
             let renderedWidth = canvasEl.clientWidth;
@@ -780,24 +864,21 @@
 
             if (originalAspectRatio !== 0) {
                 let heightFromWidth = newWidth / originalAspectRatio;
-                let widthFromHeight = newHeight * originalAspectRatio;
-
-                if (elementWidthInput === document.activeElement || (elementHeightInput !== document.activeElement && newWidth !== activeElement.width) ) { // Width changed or is the primary driver
+                if (elementWidthInput === document.activeElement || (elementHeightInput !== document.activeElement && newWidth !== activeElement.width)) {
                     newHeight = Math.max(MIN_ELEMENT_DIM, heightFromWidth);
-                    newWidth = Math.max(MIN_ELEMENT_DIM, newHeight * originalAspectRatio); // Recalculate width from potentially adjusted height
-                } else { // Height changed or is the primary driver
+                    newWidth = Math.max(MIN_ELEMENT_DIM, newHeight * originalAspectRatio);
+                } else {
+                    let widthFromHeight = newHeight * originalAspectRatio;
                     newWidth = Math.max(MIN_ELEMENT_DIM, widthFromHeight);
-                    newHeight = Math.max(MIN_ELEMENT_DIM, newWidth / originalAspectRatio); // Recalculate height from potentially adjusted width
+                    newHeight = Math.max(MIN_ELEMENT_DIM, newWidth / originalAspectRatio);
                 }
             } else {
                 newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
                 newHeight = Math.max(MIN_ELEMENT_DIM, newHeight);
             }
-            
-            // Final clamping
+
             newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
             newHeight = Math.max(MIN_ELEMENT_DIM, newHeight);
-
 
             activeElement.width = Math.round(newWidth);
             activeElement.height = Math.round(newHeight);
