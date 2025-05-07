@@ -2,7 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"> <title>Firmador de Documentos APC - Lulo Panamá</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Firmador de Documentos APC - Lulo Panamá</title>
     <meta name="robots" content="nofollow">
     <style>
         :root {
@@ -10,10 +11,11 @@
             --lulo-panama-secondary: #f3f3f3;
             --text-color: #333;
             --border-color: #ccc;
-            --hover-bg-color: #e9f3f4;
-            /* --canvas-bg-color is removed as pads will be transparent */
+            --selection-border-color: #007bff; /* Brighter color for selection */
         }
-
+        html, body {
+            overscroll-behavior-y: contain; /* Prevents pull-to-refresh on some mobile browsers */
+        }
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -23,9 +25,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            overscroll-behavior-y: contain; /* Prevent pull-to-refresh issues on mobile */
         }
-
         .container {
             width: 100%;
             max-width: 1200px;
@@ -34,38 +34,32 @@
             border-radius: 8px;
             box-shadow: 0 0 15px rgba(0,0,0,0.1);
         }
-
         h1 {
             color: var(--lulo-panama-primary);
             text-align: center;
             margin-bottom: 20px;
             font-size: 1.8em; 
         }
-
         .main-layout-grid { 
             display: grid;
             grid-template-columns: 1fr; 
             gap: 20px;
         }
-
         .document-display-area { 
             grid-column: 1 / -1; 
         }
-        
         .input-areas-grid { 
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
             gap: 15px; 
             margin-bottom: 20px;
         }
-
         .control-group {
             padding: 15px;
             border: 1px solid var(--border-color);
             border-radius: 5px;
             background-color: #fdfdfd;
         }
-
         .control-group h3 {
             margin-top: 0;
             color: var(--lulo-panama-primary);
@@ -73,97 +67,47 @@
             padding-bottom: 5px;
             font-size: 1.1em; 
         }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="number"], select {
+            width: calc(100% - 22px); padding: 10px; margin-bottom: 10px;
+            border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box;
         }
-
-        input[type="number"],
-        select {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
         button {
-            background-color: var(--lulo-panama-primary);
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-right: 5px;
-            margin-bottom: 5px;
+            background-color: var(--lulo-panama-primary); color: white; padding: 10px 15px;
+            border: none; border-radius: 4px; cursor: pointer;
+            transition: background-color 0.3s ease; margin-right: 5px; margin-bottom: 5px;
         }
-        button:hover {
-            background-color: #003338;
-        }
-
+        button:hover { background-color: #003338; }
         .handwriting-pad-area, .signature-pad-area {
-            margin: 0 auto 10px auto; 
-            max-width: 380px; 
+            margin: 0 auto 10px auto; max-width: 380px; 
         }
-        
-        .handwriting-canvas, #signatureCanvas { 
-            border: 1px dashed var(--border-color); /* Dashed to indicate drawing area better */
-            border-radius: 4px;
-            cursor: crosshair;
-            width: 100%; 
-            height: auto; 
-            display: block; 
-            /* background-color is removed, will be transparent */
+        .handwriting-canvas, #signatureCanvas, #dateCanvas { 
+            border: 1px dashed var(--border-color); border-radius: 4px; cursor: crosshair;
+            width: 100%; height: auto; display: block; 
         }
-
         .canvas-container {
-            width: 100%;
-            margin-bottom: 20px;
-            position: relative; 
-            max-height: 80vh; 
-            overflow: auto; 
-            border: 1px solid var(--border-color); 
+            width: 100%; margin-bottom: 20px; position: relative; 
+            max-height: 75vh; /* Adjusted max-height */
+            overflow: auto; border: 1px solid var(--border-color); 
         }
-
         #mainDocumentCanvas {
-            border-radius: 4px;
-            display: block; 
-            margin: 0 auto; 
-            background-color: #e8e8e8; /* Light gray background for the document viewer area */
-            touch-action: none; 
+            border-radius: 4px; display: block; margin: 0 auto; 
+            background-color: #e8e8e8; touch-action: none; 
         }
-        
         .selected-element-controls {
-            padding: 10px;
-            border: 1px dashed var(--lulo-panama-primary);
-            margin-top: 10px;
-            border-radius: 4px;
+            padding: 10px; border: 1px dashed var(--lulo-panama-primary);
+            margin-top: 10px; border-radius: 4px;
         }
-        .selected-element-controls label {
-             margin-top: 8px;
-        }
+        .selected-element-controls label { margin-top: 8px; }
 
         @media (min-width: 992px) { 
-            .main-layout-grid {
-                grid-template-columns: 400px 1fr; 
-            }
-            .input-areas-grid {
-                grid-template-columns: 1fr; 
-            }
-            .document-display-area {
-                grid-column: 2 / 3; 
-            }
+            .main-layout-grid { grid-template-columns: 400px 1fr; }
+            .input-areas-grid { grid-template-columns: 1fr; }
+            .document-display-area { grid-column: 2 / 3; }
         }
-
         @media (max-width: 768px) {
-            body { padding: 10px; }
-            .container { padding: 10px;}
-            h1 { font-size: 1.5em; }
-            .control-group h3 { font-size: 1em; }
+            body { padding: 10px; } .container { padding: 10px;}
+            h1 { font-size: 1.5em; } .control-group h3 { font-size: 1em; }
         }
          @media (max-width: 480px) {
             h1 { font-size: 1.3em; }
@@ -175,7 +119,6 @@
 <body>
     <div class="container">
         <h1>Firmador de Documentos APC</h1>
-
         <div class="main-layout-grid">
             <div class="input-areas-container">
                 <div class="input-areas-grid">
@@ -184,36 +127,37 @@
                         <label for="documentSelector">Plantilla APC:</label>
                         <select id="documentSelector"></select>
                     </div>
-
                     <div class="control-group">
                         <h3>2. Nombre (Manuscrito)</h3>
                         <div class="handwriting-pad-area">
-                            <canvas class="handwriting-canvas" id="nameCanvas" data-logical-width="360" data-logical-height="120"></canvas>
+                            <canvas class="handwriting-canvas" id="nameCanvas" data-logical-width="360" data-logical-height="100"></canvas>
                         </div>
                         <button id="clearNameBtn">Limpiar Nombre</button>
                         <button id="confirmNameBtn">Confirmar Nombre</button>
                     </div>
-
                     <div class="control-group">
                         <h3>3. Cédula (Manuscrita)</h3>
                         <div class="handwriting-pad-area">
-                            <canvas class="handwriting-canvas" id="cedulaCanvas" data-logical-width="360" data-logical-height="120"></canvas>
+                            <canvas class="handwriting-canvas" id="cedulaCanvas" data-logical-width="360" data-logical-height="100"></canvas>
                         </div>
                         <button id="clearCedulaBtn">Limpiar Cédula</button>
                         <button id="confirmCedulaBtn">Confirmar Cédula</button>
                     </div>
-                    
-                    <div class="control-group">
-                        <h3>4. Firme y Escriba la Fecha Aquí</h3>
-                        <div class="signature-pad-area">
-                            <canvas id="signatureCanvas" data-logical-width="360" data-logical-height="150"></canvas>
+                     <div class="control-group"> <h3>4. Fecha (Manuscrita)</h3>
+                        <div class="handwriting-pad-area">
+                            <canvas class="handwriting-canvas" id="dateCanvas" data-logical-width="360" data-logical-height="80"></canvas>
                         </div>
-                        <button id="clearSignatureBtn">Limpiar Firma y Fecha</button>
-                        <button id="confirmSignatureBtn">Confirmar Firma y Fecha</button>
+                        <button id="clearDateBtn">Limpiar Fecha</button>
+                        <button id="confirmDateBtn">Confirmar Fecha</button>
                     </div>
-
+                    <div class="control-group">
+                        <h3>5. Firma</h3> <div class="signature-pad-area">
+                            <canvas id="signatureCanvas" data-logical-width="360" data-logical-height="120"></canvas> </div>
+                        <button id="clearSignatureBtn">Limpiar Firma</button>
+                        <button id="confirmSignatureBtn">Confirmar Firma</button>
+                    </div>
                      <div class="control-group" id="elementSizingControls" style="display:none;">
-                        <h3>5. Ajustar Elemento Seleccionado</h3>
+                        <h3>6. Ajustar Elemento</h3>
                         <p>Haga clic en un elemento sobre el documento para seleccionarlo y ajustar su tamaño aquí. En móvil, puede pellizcar para escalar.</p>
                         <div id="imageElementControls"> 
                             <label for="elementWidth">Ancho del Elemento (px):</label>
@@ -224,11 +168,10 @@
                     </div>
                 </div>
             </div>
-
             <div class="document-display-area">
                  <div class="control-group">
                     <h3>Visualice y Ajuste el Documento</h3>
-                    <p>Haga clic y arrastre los elementos sobre el documento para cambiar su posición. Use los controles de la sección 5 o pellizque en móvil para cambiar tamaños.</p>
+                    <p>Haga clic y arrastre los elementos. Use los controles (Sección 6) o pellizque en móvil para cambiar tamaños.</p>
                 </div>
                 <div class="canvas-container">
                     <canvas id="mainDocumentCanvas"></canvas>
@@ -242,7 +185,6 @@
 
     <script>
         const dpr = window.devicePixelRatio || 1;
-
         const documentConfigurations = [
             { path: "apc/apc-multi-actual.jpg", shortName: "multi", displayName: "Multi" },
             { path: "apc/apc-bac-actual.jpg", shortName: "bac", displayName: "BAC" },
@@ -251,27 +193,13 @@
 
         const appState = {
             currentDocumentUrl: null,
-            nameImageCache: null,
-            cedulaImageCache: null,
-            signatureImageCache: null, 
-            documentSettings: {}, 
-            activeElementId: null, 
-            dragState: {
-                isDragging: false,
-                elementId: null,
-                offsetX: 0,
-                offsetY: 0
-            },
-            pinchState: { // For pinch-to-scale
-                isPinching: false,
-                initialPinchDistance: 0,
-                initialElement: { width: 0, height: 0, x: 0, y: 0, centerX: 0, centerY: 0 },
-                elementId: null
-            },
+            nameImageCache: null, cedulaImageCache: null, dateImageCache: null, signatureImageCache: null, 
+            documentSettings: {}, activeElementId: null, 
+            dragState: { isDragging: false, elementId: null, offsetX: 0, offsetY: 0 },
+            pinchState: { isPinching: false, initialPinchDistance: 0, initialElement: {}, elementId: null },
             backgroundImage: null, 
         };
 
-        // --- DOM Element References ---
         const documentSelector = document.getElementById('documentSelector');
         const nameCanvas = document.getElementById('nameCanvas');
         const clearNameBtn = document.getElementById('clearNameBtn');
@@ -281,6 +209,10 @@
         const clearCedulaBtn = document.getElementById('clearCedulaBtn');
         const confirmCedulaBtn = document.getElementById('confirmCedulaBtn');
         let cedulaCtx; 
+        const dateCanvas = document.getElementById('dateCanvas'); // New Date Canvas elements
+        const clearDateBtn = document.getElementById('clearDateBtn');
+        const confirmDateBtn = document.getElementById('confirmDateBtn');
+        let dateCtx;
         const signaturePad = document.getElementById('signatureCanvas');
         const clearSignatureBtn = document.getElementById('clearSignatureBtn');
         const confirmSignatureBtn = document.getElementById('confirmSignatureBtn');
@@ -296,49 +228,48 @@
         let drawingStates = {
             name: {isDrawing: false, lastX:0, lastY:0},
             cedula: {isDrawing: false, lastX:0, lastY:0},
+            date: {isDrawing: false, lastX:0, lastY:0}, // New state for date pad
             signature: {isDrawing: false, lastX:0, lastY:0}
         };
 
-        // --- Canvas Setup and DPR Scaling ---
         function setupDrawingCanvas(canvasEl, stateKey) {
             const ctx = canvasEl.getContext('2d');
             const logicalWidth = parseInt(canvasEl.dataset.logicalWidth);
             const logicalHeight = parseInt(canvasEl.dataset.logicalHeight);
             
-            // Set display size via CSS, JS sets drawing buffer size
             canvasEl.style.width = logicalWidth + 'px';
             canvasEl.style.height = logicalHeight + 'px';
-
             canvasEl.width = logicalWidth * dpr;
             canvasEl.height = logicalHeight * dpr;
             
             ctx.scale(dpr, dpr);
             ctx.strokeStyle = '#000000';
             ctx.lineWidth = 2; 
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            
-            // Clear canvas to transparent
-            ctx.clearRect(0, 0, logicalWidth, logicalHeight);
+            ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            ctx.clearRect(0, 0, logicalWidth, logicalHeight); // Clear to transparent
 
-            canvasEl.addEventListener('mousedown', (e) => startDrawing(e, ctx, stateKey));
-            canvasEl.addEventListener('mousemove', (e) => draw(e, ctx, stateKey));
-            canvasEl.addEventListener('mouseup', () => stopDrawing(stateKey));
-            canvasEl.addEventListener('mouseleave', () => stopDrawing(stateKey));
-            canvasEl.addEventListener('touchstart', (e) => startDrawing(e, ctx, stateKey), { passive: false });
-            canvasEl.addEventListener('touchmove', (e) => draw(e, ctx, stateKey), { passive: false });
-            canvasEl.addEventListener('touchend', () => stopDrawing(stateKey));
+            // Remove previous listeners to avoid duplication on resize
+            const newCanvasEl = canvasEl.cloneNode(true); // Clone to remove listeners easily
+            canvasEl.parentNode.replaceChild(newCanvasEl, canvasEl);
             
-            return ctx;
+            newCanvasEl.addEventListener('mousedown', (e) => startDrawing(e, ctx, stateKey, newCanvasEl));
+            newCanvasEl.addEventListener('mousemove', (e) => draw(e, ctx, stateKey, newCanvasEl));
+            newCanvasEl.addEventListener('mouseup', () => stopDrawing(stateKey));
+            newCanvasEl.addEventListener('mouseleave', () => stopDrawing(stateKey));
+            newCanvasEl.addEventListener('touchstart', (e) => startDrawing(e, ctx, stateKey, newCanvasEl), { passive: false });
+            newCanvasEl.addEventListener('touchmove', (e) => draw(e, ctx, stateKey, newCanvasEl), { passive: false });
+            newCanvasEl.addEventListener('touchend', () => stopDrawing(stateKey));
+            
+            return {ctx, el: newCanvasEl}; // Return context and new element reference
         }
         
         function initializeDrawingPads() {
-            nameCtx = setupDrawingCanvas(nameCanvas, 'name');
-            cedulaCtx = setupDrawingCanvas(cedulaCanvas, 'cedula');
-            sigCtx = setupDrawingCanvas(signaturePad, 'signature');
+            let nameSetup = setupDrawingCanvas(nameCanvas, 'name'); nameCtx = nameSetup.ctx; window.nameCanvas = nameSetup.el;
+            let cedulaSetup = setupDrawingCanvas(cedulaCanvas, 'cedula'); cedulaCtx = cedulaSetup.ctx; window.cedulaCanvas = cedulaSetup.el;
+            let dateSetup = setupDrawingCanvas(dateCanvas, 'date'); dateCtx = dateSetup.ctx; window.dateCanvas = dateSetup.el;
+            let sigSetup = setupDrawingCanvas(signaturePad, 'signature'); sigCtx = sigSetup.ctx; window.signaturePad = sigSetup.el;
         }
-
-        // --- Drawing Logic for Handwriting Pads (Generic) ---
+        
         function getPadCoordinates(canvasEl, event) {
             const rect = canvasEl.getBoundingClientRect();
             let clientX, clientY;
@@ -347,19 +278,20 @@
             } else if (event.clientX !== undefined) {
                 clientX = event.clientX; clientY = event.clientY;
             } else { return null; }
-            // Scale click/touch coordinates to logical canvas size
             const logicalWidth = parseInt(canvasEl.dataset.logicalWidth);
             const logicalHeight = parseInt(canvasEl.dataset.logicalHeight);
+            // Check for 0 dimensions to avoid division by zero if element not visible
+            if (rect.width === 0 || rect.height === 0) return {x:0, y:0};
             return { 
                 x: (clientX - rect.left) * (logicalWidth / rect.width),
                 y: (clientY - rect.top) * (logicalHeight / rect.height)
             };
         }
 
-        function startDrawing(e, ctx, stateKey) {
+        function startDrawing(e, ctx, stateKey, canvasReference) { // Added canvasReference
             const padState = drawingStates[stateKey];
             padState.isDrawing = true;
-            const coords = getPadCoordinates(ctx.canvas, e);
+            const coords = getPadCoordinates(canvasReference, e); // Use canvasReference
             if (!coords) return;
             ctx.beginPath(); 
             ctx.moveTo(coords.x, coords.y);
@@ -367,10 +299,10 @@
             if(e.cancelable) e.preventDefault();
         }
 
-        function draw(e, ctx, stateKey) {
+        function draw(e, ctx, stateKey, canvasReference) { // Added canvasReference
             const padState = drawingStates[stateKey];
             if (!padState.isDrawing) return;
-            const coords = getPadCoordinates(ctx.canvas, e);
+            const coords = getPadCoordinates(canvasReference, e); // Use canvasReference
             if (!coords) return;
             ctx.lineTo(coords.x, coords.y); ctx.stroke(); 
             padState.lastX = coords.x; padState.lastY = coords.y;
@@ -381,10 +313,10 @@
             if (drawingStates[stateKey].isDrawing) drawingStates[stateKey].isDrawing = false;
         }
 
-        function clearDrawingPad(ctx, stateKey, imageCacheKey) {
+        function clearDrawingPad(ctx, imageCacheKey) { // stateKey removed as it's not used here
             const logicalWidth = parseInt(ctx.canvas.dataset.logicalWidth);
             const logicalHeight = parseInt(ctx.canvas.dataset.logicalHeight);
-            ctx.clearRect(0, 0, logicalWidth, logicalHeight); // Clear to transparent
+            ctx.clearRect(0, 0, logicalWidth, logicalHeight); 
             appState[imageCacheKey] = null; 
             redrawMainCanvas();
         }
@@ -395,15 +327,15 @@
                 appState[imageCacheKey] = tempImage;
                 redrawMainCanvas();
             }
-            tempImage.src = ctx.canvas.toDataURL('image/png'); // PNG preserves transparency
+            tempImage.src = ctx.canvas.toDataURL('image/png'); 
         }
 
-        // --- Main Application Logic ---
         function initializeDefaultDocumentSettings() {
-            const defaultElementWidth = 180; // Slightly larger default for handwritten items
-            const defaultElementHeight = 60; 
+            const defaultElementWidth = 180; 
+            const defaultElementHeight = 50; // Reduced height for text-like items
+            const defaultDateHeight = 40;
             const defaultSigWidth = 200; 
-            const defaultSigHeight = 100;
+            const defaultSigHeight = 80; // Reduced signature height slightly
             
             documentConfigurations.forEach(docConfig => {
                 const docPath = docConfig.path;
@@ -411,22 +343,17 @@
                     appState.documentSettings[docPath] = {
                         elements: [ 
                             { id: 'name', type: 'image', x: 50, y: 50, width: defaultElementWidth, height: defaultElementHeight },
-                            { id: 'cedula', type: 'image', x: 50, y: 120, width: defaultElementWidth, height: defaultElementHeight },
-                            { id: 'signature', type: 'image', x: 50, y: 190, width: defaultSigWidth, height: defaultSigHeight }
+                            { id: 'cedula', type: 'image', x: 50, y: 110, width: defaultElementWidth, height: defaultElementHeight },
+                            { id: 'date', type: 'image', x: 50, y: 170, width: defaultElementWidth, height: defaultDateHeight }, // Date element
+                            { id: 'signature', type: 'image', x: 50, y: 220, width: defaultSigWidth, height: defaultSigHeight } // Signature element
                         ]
                     };
                 }
             });
         }
         
-        function populateDocumentSelector() {
-            documentConfigurations.forEach(docConfig => {
-                const option = document.createElement('option');
-                option.value = docConfig.path; option.textContent = docConfig.displayName; 
-                documentSelector.appendChild(option);
-            });
-        }
-
+        populateDocumentSelector(); // Defined below setupEventListeners
+        
         function handleUrlParameters() {
             const params = new URLSearchParams(window.location.search);
             let selectedDocPath = null;
@@ -450,24 +377,31 @@
             appState.backgroundImage = new Image();
             appState.backgroundImage.onload = () => {
                 const canvasContainer = mainCanvas.parentElement;
-                let displayWidth = canvasContainer.clientWidth;
-                let displayHeight = (displayWidth / appState.backgroundImage.naturalWidth) * appState.backgroundImage.naturalHeight;
-
                 const containerStyle = getComputedStyle(canvasContainer);
-                // Ensure maxHeight is a valid number before using it
+                const imageAspectRatio = appState.backgroundImage.naturalWidth / appState.backgroundImage.naturalHeight;
+
+                let displayWidth, displayHeight;
+
+                // Attempt to fit by width first
+                displayWidth = canvasContainer.clientWidth;
+                displayHeight = displayWidth / imageAspectRatio;
+
                 let containerMaxHeight = parseFloat(containerStyle.maxHeight);
-                if (isNaN(containerMaxHeight) || containerMaxHeight <= 0) {
-                     // Fallback if maxHeight is not set or invalid (e.g. 'none' which parseFloat converts to NaN)
-                     // Use a sensible portion of viewport height as fallback for maxHeight
-                    containerMaxHeight = window.innerHeight * 0.8;
+                 if (isNaN(containerMaxHeight) || containerMaxHeight <= 0) {
+                    containerMaxHeight = window.innerHeight * 0.75; // Default if not set or invalid
                 }
 
-
+                // If fitting by width makes it too tall, fit by max height instead
                 if (displayHeight > containerMaxHeight) {
                     displayHeight = containerMaxHeight;
-                    displayWidth = (displayHeight / appState.backgroundImage.naturalHeight) * appState.backgroundImage.naturalWidth;
+                    displayWidth = displayHeight * imageAspectRatio;
                 }
+
+                // Ensure the calculated width (especially if derived from height) doesn't exceed container width
                 displayWidth = Math.min(displayWidth, canvasContainer.clientWidth);
+                // Recalculate height if width was capped (to maintain aspect ratio)
+                displayHeight = displayWidth / imageAspectRatio;
+
 
                 mainCanvas.style.width = displayWidth + 'px';
                 mainCanvas.style.height = displayHeight + 'px';
@@ -484,6 +418,12 @@
             };
             appState.backgroundImage.onerror = () => {
                 console.error("Error cargando imagen del documento:", docUrl);
+                if (!mainCanvas.width || !mainCanvas.height) { // Ensure canvas is minimally sized for error message
+                    mainCanvas.width = (window.innerWidth * 0.8) * dpr; 
+                    mainCanvas.height = (window.innerHeight * 0.5) * dpr;
+                    mainCanvas.style.width = (window.innerWidth * 0.8) + "px";
+                    mainCanvas.style.height = (window.innerHeight * 0.5) + "px";
+                }
                 mainCtx.resetTransform(); mainCtx.scale(dpr, dpr); 
                 mainCtx.clearRect(0, 0, mainCanvas.width/dpr, mainCanvas.height/dpr); 
                 mainCtx.fillStyle = "red"; mainCtx.font = "16px Arial"; mainCtx.textAlign = "center";
@@ -526,25 +466,26 @@
                 if (imageToDraw) {
                     mainCtx.drawImage(imageToDraw, element.x, element.y, element.width, element.height);
                     if (appState.activeElementId === element.id && !isExporting) {
-                        mainCtx.strokeStyle = 'var(--lulo-panama-primary)'; 
-                        mainCtx.lineWidth = 1.5 / dpr; 
-                        mainCtx.strokeRect(element.x - (1/dpr), element.y - (1/dpr), element.width + (2/dpr), element.height + (2/dpr)); 
+                        mainCtx.strokeStyle = 'var(--selection-border-color)'; 
+                        mainCtx.lineWidth = 2.5 / dpr; // Make selection border thicker
+                        mainCtx.setLineDash([6/dpr, 3/dpr]); // Dashed line for selection
+                        mainCtx.strokeRect(element.x - (1.5/dpr), element.y - (1.5/dpr), element.width + (3/dpr), element.height + (3/dpr)); 
+                        mainCtx.setLineDash([]); // Reset line dash
                     }
                 }
             });
         }
 
-        function calculateDistance(p1, p2) { // p1, p2 are {clientX, clientY}
+        function calculateDistance(p1, p2) { 
             return Math.sqrt(Math.pow(p2.clientX - p1.clientX, 2) + Math.pow(p2.clientY - p1.clientY, 2));
         }
 
         function getCanvasCoordinates(event) { 
             const rect = mainCanvas.getBoundingClientRect();
             let clientX, clientY;
-            // For pinch, event might be the raw touch event, not a single touch point
-            if (event.touches && event.touches.length > 0) { // Usually for single touch
+            if (event.touches && event.touches.length > 0) {
                 clientX = event.touches[0].clientX; clientY = event.touches[0].clientY;
-            } else if (event.clientX !== undefined) { // Mouse event
+            } else if (event.clientX !== undefined) {
                 clientX = event.clientX; clientY = event.clientY;
             } else { return null; }
             return { x: clientX - rect.left, y: clientY - rect.top };
@@ -557,9 +498,8 @@
 
         function handleCanvasTouchStart(event) {
             if (event.touches.length === 1) {
-                const coords = getCanvasCoordinates(event); // Uses event.touches[0]
+                const coords = getCanvasCoordinates(event); 
                 if (!coords) return;
-
                 const currentDocSettings = appState.documentSettings[appState.currentDocumentUrl];
                 if (!currentDocSettings) return;
                 let selected = null;
@@ -570,36 +510,31 @@
                 appState.activeElementId = selected ? selected.id : null;
                 if (selected) {
                     appState.dragState = { isDragging: true, elementId: selected.id, offsetX: coords.x - selected.x, offsetY: coords.y - selected.y };
-                    appState.pinchState.isPinching = false; // Ensure pinch is off
+                    appState.pinchState.isPinching = false; 
                 } else {
                     appState.dragState.isDragging = false;
                 }
-                
             } else if (event.touches.length === 2 && appState.activeElementId) {
                 const element = getElementById(appState.currentDocumentUrl, appState.activeElementId);
                 if (!element) return;
-                
                 appState.dragState.isDragging = false; 
                 appState.pinchState.isPinching = true;
                 appState.pinchState.elementId = appState.activeElementId;
-
                 appState.pinchState.initialPinchDistance = calculateDistance(event.touches[0], event.touches[1]);
                 appState.pinchState.initialElement = { 
                     width: element.width, height: element.height, 
-                    centerX: element.x + element.width / 2, 
-                    centerY: element.y + element.height / 2,
+                    centerX: element.x + element.width / 2, centerY: element.y + element.height / 2,
                 };
             }
-            updateSelectedElementControls(); // Update UI based on activeElementId
-            redrawMainCanvas(); // Redraw for selection box
+            updateSelectedElementControls(); 
+            redrawMainCanvas(); 
             if (event.cancelable) event.preventDefault();
         }
         
-        function handleCanvasMouseDown(event) { // For Mouse - simpler, no pinch
+        function handleCanvasMouseDown(event) { 
             const coords = getCanvasCoordinates(event);
             if (!coords) return;
             const { x, y } = coords;
-
             const currentDocSettings = appState.documentSettings[appState.currentDocumentUrl];
             if (!currentDocSettings) return;
             let selected = null;
@@ -613,36 +548,29 @@
             } else {
                 appState.dragState.isDragging = false;
             }
-            updateSelectedElementControls();
-            redrawMainCanvas();
+            updateSelectedElementControls(); redrawMainCanvas();
             if (event.cancelable) event.preventDefault();
         }
-
 
         function handleCanvasTouchMove(event) {
             if (appState.pinchState.isPinching && event.touches.length === 2 && appState.pinchState.elementId === appState.activeElementId) {
                 const element = getElementById(appState.currentDocumentUrl, appState.activeElementId);
                 if (!element) { appState.pinchState.isPinching = false; return; }
-
                 const currentPinchDistance = calculateDistance(event.touches[0], event.touches[1]);
-                if (appState.pinchState.initialPinchDistance === 0) return; 
+                if (appState.pinchState.initialPinchDistance < 1) return;  // Avoid division by zero or tiny initial distance
                 let scale = currentPinchDistance / appState.pinchState.initialPinchDistance;
                 scale = Math.max(0.05, scale); 
-
                 const newWidth = appState.pinchState.initialElement.width * scale;
                 const newHeight = appState.pinchState.initialElement.height * scale;
-
                 element.width = Math.max(20, newWidth); 
                 element.height = Math.max(20, newHeight);
                 element.x = appState.pinchState.initialElement.centerX - element.width / 2;
                 element.y = appState.pinchState.initialElement.centerY - element.height / 2;
-                
                 redrawMainCanvas();
                 elementWidthInput.value = Math.round(element.width);
                 elementHeightInput.value = Math.round(element.height);
-
             } else if (appState.dragState.isDragging && appState.dragState.elementId === appState.activeElementId && event.touches.length === 1) {
-                 const coords = getCanvasCoordinates(event); // Uses event.touches[0]
+                 const coords = getCanvasCoordinates(event); 
                 if (!coords) return;
                 const element = getElementById(appState.currentDocumentUrl, appState.dragState.elementId);
                 if (element) {
@@ -651,12 +579,12 @@
                     redrawMainCanvas();
                 }
             } else if (appState.pinchState.isPinching && event.touches.length !== 2) {
-                appState.pinchState.isPinching = false; // Pinch ended due to finger change
+                appState.pinchState.isPinching = false; 
             }
              if (event.cancelable) event.preventDefault();
         }
 
-        function handleCanvasMouseMove(event) { // For Mouse
+        function handleCanvasMouseMove(event) { 
             if (!appState.dragState.isDragging || !appState.dragState.elementId) return;
             const coords = getCanvasCoordinates(event);
             if (!coords) return;
@@ -669,17 +597,14 @@
             if (event.cancelable) event.preventDefault();
         }
 
-
         function handleCanvasInteractionEnd(event) { 
             if (appState.pinchState.isPinching && (!event.touches || event.touches.length < 2)) {
                 appState.pinchState.isPinching = false;
                 appState.pinchState.elementId = null;
             }
-            if (appState.dragState.isDragging && (!event.touches || event.touches.length === 0)) { // For mouseup or last touch up
+            if (appState.dragState.isDragging && (!event.touches || event.touches.length === 0)) { 
                 appState.dragState.isDragging = false;
             }
-            // For touchend, if there are still touches, we might not want to fully end interaction
-            // but the specific states (isPinching, isDragging) are key.
         }
         
         function updateSelectedElementControls() {
@@ -699,8 +624,6 @@
             if (!activeElement) return;
             activeElement.width = parseInt(elementWidthInput.value, 10) || 100; 
             activeElement.height = parseInt(elementHeightInput.value, 10) || 50;
-            // If scaling proportionally is desired, adjust one based on the other's change here.
-            // For now, independent width/height.
             redrawMainCanvas();
         }
         
@@ -709,11 +632,13 @@
                 appState.activeElementId = null; appState.dragState.isDragging = false; appState.pinchState.isPinching = false;
                 updateSelectedElementControls(); loadDocument(e.target.value);
             });
-            clearNameBtn.addEventListener('click', () => clearDrawingPad(nameCtx, 'name', 'nameImageCache'));
+            clearNameBtn.addEventListener('click', () => clearDrawingPad(nameCtx, 'nameImageCache'));
             confirmNameBtn.addEventListener('click', () => confirmDrawingPad(nameCtx, 'nameImageCache'));
-            clearCedulaBtn.addEventListener('click', () => clearDrawingPad(cedulaCtx, 'cedula', 'cedulaImageCache'));
+            clearCedulaBtn.addEventListener('click', () => clearDrawingPad(cedulaCtx, 'cedulaImageCache'));
             confirmCedulaBtn.addEventListener('click', () => confirmDrawingPad(cedulaCtx, 'cedulaImageCache'));
-            clearSignatureBtn.addEventListener('click', () => clearDrawingPad(sigCtx, 'signature', 'signatureImageCache'));
+            clearDateBtn.addEventListener('click', () => clearDrawingPad(dateCtx, 'dateImageCache')); // Date Listeners
+            confirmDateBtn.addEventListener('click', () => confirmDrawingPad(dateCtx, 'dateImageCache'));
+            clearSignatureBtn.addEventListener('click', () => clearDrawingPad(sigCtx, 'signatureImageCache'));
             confirmSignatureBtn.addEventListener('click', () => confirmDrawingPad(sigCtx, 'signatureImageCache'));
 
             mainCanvas.addEventListener('mousedown', handleCanvasMouseDown);
@@ -722,9 +647,9 @@
             mainCanvas.addEventListener('mouseleave', handleCanvasInteractionEnd); 
             mainCanvas.addEventListener('touchstart', handleCanvasTouchStart, { passive: false });
             mainCanvas.addEventListener('touchmove', handleCanvasTouchMove, { passive: false });
-            mainCanvas.addEventListener('touchend', handleCanvasInteractionEnd, { passive: false }); // Use common end logic
+            mainCanvas.addEventListener('touchend', handleCanvasInteractionEnd, { passive: false }); 
 
-            elementWidthInput.addEventListener('input', handleSizeInputChange); // 'input' for more real-time feel
+            elementWidthInput.addEventListener('input', handleSizeInputChange); 
             elementHeightInput.addEventListener('input', handleSizeInputChange);
 
             exportDocumentBtn.addEventListener('click', () => {
@@ -746,6 +671,8 @@
             });
 
             window.addEventListener('resize', () => {
+                // Only reinitialize pads if their actual display size changes significantly
+                // For simplicity now, always re-init. This means unconfirmed drawings on pads are lost on resize.
                 initializeDrawingPads(); 
                 if (appState.currentDocumentUrl && appState.backgroundImage && appState.backgroundImage.complete) {
                     loadDocument(appState.currentDocumentUrl); 
@@ -753,8 +680,16 @@
             });
         }
 
+        function populateDocumentSelector() { // Moved definition earlier, called in init
+            documentConfigurations.forEach(docConfig => {
+                const option = document.createElement('option');
+                option.value = docConfig.path; option.textContent = docConfig.displayName; 
+                documentSelector.appendChild(option);
+            });
+        }
+
         initializeDefaultDocumentSettings();
-        populateDocumentSelector();
+        populateDocumentSelector(); // Call after definition
         initializeDrawingPads(); 
         handleUrlParameters(); 
         setupEventListeners();
@@ -766,7 +701,7 @@
             loadDocument(documentConfigurations[0].path);
         } else {
             console.error("No hay documentos APC configurados.");
-             if(mainCanvas.width > 0 && mainCanvas.height > 0) {
+             if(mainCanvas.width > 0 && mainCanvas.height > 0) { // Check if canvas is sized for error message
                 mainCtx.resetTransform(); mainCtx.scale(dpr, dpr);
                 mainCtx.clearRect(0,0, mainCanvas.width/dpr, mainCanvas.height/dpr);
                 mainCtx.fillStyle = "red"; mainCtx.font = "16px Arial"; mainCtx.textAlign = "center";
