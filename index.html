@@ -2,1060 +2,991 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex,nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Firma de APCs - Lulo Panamá</title>
+    <meta name="robots" content="nofollow">
     <link rel="icon" href="img/favicon.png" type="image/jpeg">
-
-    <title>Aplicación de Firma</title>
     <style>
+        :root {
+            --lulo-panama-primary: #004951;
+            --lulo-panama-secondary: #f3f3f3;
+            --text-color: #333;
+            --border-color: #ccc;
+            --selection-border-color: #0069d9;
+            --selection-handle-color: #0056b3;
+            --selection-handle-stroke: #ffffff;
+            --confirmed-pad-border: #28a745;
+        }
+
+        /* Apply box-sizing universally and prevent html/body horizontal scroll */
+        html {
+            box-sizing: border-box;
+            overflow-x: hidden; /* Prevent horizontal scroll at the ROOT level */
+            -webkit-text-size-adjust: 100%; /* Prevent font scaling on orientation change */
+            -ms-text-size-adjust: 100%;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-            color: #333;
+            font-family: Arial, sans-serif; margin: 0;
+            /* Padding will be set below and in media queries */
+            background-color: var(--lulo-panama-secondary); color: var(--text-color);
+            display: flex; flex-direction: column; align-items: center;
+            -webkit-tap-highlight-color: transparent;
+            width: 100%;
+            overflow-x: hidden; /* Prevent body itself from creating horizontal scroll */
+            min-height: 100vh;
         }
         .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .logo {
-            height: 60px;
-            width: auto;
-            object-fit: contain;
-        }
-        .date {
-            font-weight: bold;
-        }
-        .document-container {
-            position: relative;
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin: 20px 0;
-            height: 700px;
+            width: 100%; max-width: 1200px; background-color: white;
+            /* Padding will be set below and in media queries */
+            border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1);
             overflow: hidden;
+            flex-shrink: 0;
         }
-        .document-content {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            background-color: white;
-            overflow: hidden;
-        }
-        .document-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        .draggable-resizable {
-            position: absolute;
-            background-color: rgba(255, 255, 255, 0.8);
-            border: 1px dashed #999;
-            padding: 5px;
-            cursor: move;
-            z-index: 10;
-        }
-        .resize-handle {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #2196F3;
-            border-radius: 50%;
-            right: -6px;
-            bottom: -6px;
-            cursor: se-resize;
-            z-index: 20;
-        }
-        .signature-area {
-            width: 250px;
-            height: 100px;
-        }
-        .text-area {
-            width: 250px;
-            height: 60px;
-        }
-        .draw-canvas {
-            width: 100%;
-            height: 100%;
-            background-color: white;
-        }
-        .controls {
-            margin-top: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .action-buttons {
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        button {
-            padding: 10px 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .clear-btn {
-            background-color: #f44336;
-        }
-        .clear-btn:hover {
-            background-color: #d32f2f;
-        }
-        .field-btn {
-            background-color: #2196F3;
-        }
-        .field-btn:hover {
-            background-color: #0b7dda;
-        }
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 12px;
-            color: #777;
-        }
-        
-        @media (max-width: 600px) {
-            .controls, .action-buttons {
-                flex-direction: column;
-            }
-            button {
-                width: 100%;
-            }
-        }
-        
-        .tab-container {
-            display: flex;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #ddd;
-            overflow-x: auto;
-        }
-        .tab {
-            padding: 10px 15px;
-            cursor: pointer;
-            background-color: #f0f0f0;
-            border: 1px solid #ddd;
-            border-bottom: none;
-            border-radius: 5px 5px 0 0;
-            margin-right: 5px;
-            white-space: nowrap;
-        }
-        .tab.active {
-            background-color: white;
-            border-bottom: 1px solid white;
-            margin-bottom: -1px;
-        }
-        .loading {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(255, 255, 255, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-        }
-        .loading-spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 2s linear infinite;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.4);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            width: 80%;
-            max-width: 500px;
-        }
-        .modal-title {
+        h1 {
+            color: var(--lulo-panama-primary); text-align: center;
             margin-top: 0;
-            margin-bottom: 15px;
+            margin-bottom: 15px; font-size: 1.6em;
+            padding: 0 10px;
         }
-        .modal-canvas {
-            border: 1px solid #ccc;
+        .initial-guidance {
+            background-color: #e9f3f4; border-left: 5px solid var(--lulo-panama-primary);
+            padding: 10px 15px; margin-bottom: 15px; font-size: 0.9em;
+            border-radius: 4px;
+        }
+        .initial-guidance ul { padding-left: 20px; margin-top: 5px; margin-bottom: 5px;}
+
+        .main-layout-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
             width: 100%;
-            height: 200px;
         }
-        .modal-buttons {
-            margin-top: 15px;
+        .document-display-area {
+            grid-column: 1 / -1;
+            min-width: 0;
+        }
+
+        .input-areas-container {
+            min-width: 0;
+        }
+
+        .input-areas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* Default */
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 0;
+        }
+        .control-group {
+             /* padding will be set below and in media queries */
+            border: 1px solid var(--border-color);
+            border-radius: 5px; background-color: #fdfdfd;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            min-width: 0;
+            overflow: hidden; /* Keep this to clip internal overflows if they somehow still happen */
         }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .control-group h3 {
+            margin-top: 0; color: var(--lulo-panama-primary);
+            border-bottom: 1px solid var(--lulo-panama-primary);
+            padding-bottom: 5px; font-size: 1.05em; margin-bottom: 10px;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            min-width: 0;
+            /* padding left/right set below and in media queries */
+        }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px; margin-bottom: 10px;
+            border: 1px solid var(--border-color); border-radius: 4px;
+        }
+        /* Base button styles (will be adjusted in media queries) */
+        button {
+            background-color: var(--lulo-panama-primary); color: white; padding: 10px 15px;
+            border: none; border-radius: 4px; cursor: pointer; font-size:0.9em;
+            transition: background-color 0.3s ease; margin: 5px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            display: block; /* Default to block */
+            width: calc(100% - 10px); /* Default to full width minus margins */
+            max-width: 300px; /* Cap width */
+            margin-left: auto; margin-right: auto; /* Center if max-width applies */
+            white-space: normal; /* Allow text wrapping */
+            word-break: break-word;
+        }
+        button:hover { background-color: #003338; }
+
+        /* Specific style for document selection buttons */
+        .document-buttons { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom:10px; justify-content: center;}
+        .document-buttons button {
+            flex-grow: 1; min-width: 100px;
+            width: auto; /* Override block */
+            display: inline-flex; /* Allow side-by-side */
+            justify-content: center;
+            align-items: center;
+            margin: 2px; /* Specific margins for this group */
+            max-width: none; /* Remove max-width for these buttons */
+        }
+        .document-buttons button.active {
+            background-color: #003338;
+            box-shadow: 0 0 0 2px var(--selection-border-color) inset;
+        }
+
+        .handwriting-pad-area, .signature-pad-area {
+            margin: 0 auto 10px auto;
+            width: 100%;
+            max-width: 380px;
+            min-width: 0;
+            /* padding set below and in media queries */
+        }
+        .drawing-pad { /* The <canvas> */
+            border: 1px dashed var(--border-color); border-radius: 4px; cursor: crosshair;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            touch-action: none;
+        }
+        .drawing-pad.confirmed {
+            border: 2px solid var(--confirmed-pad-border) !important;
+        }
+
+        .canvas-container {
+            width: 100%; margin-bottom: 20px; position: relative;
+            max-height: 75vh;
+            overflow: auto; border: 1px solid var(--border-color);
+            background-color: var(--lulo-panama-secondary);
+            padding: 5px;
+        }
+        #mainDocumentCanvas {
+            border-radius: 4px; display: block; margin: 0 auto;
+            touch-action: none;
+            background-color: #FFFFFF;
+        }
+        .selected-element-controls {
+            padding: 10px; border: 1px dashed var(--lulo-panama-primary);
+            margin-top: 10px; border-radius: 4px;
+        }
+        .selected-element-controls label { margin-top: 8px; }
+
+        /* --- Base Paddings & Styles --- */
+        body { padding: 10px; }
+        .container { padding: 15px; }
+        .control-group { padding: 15px; }
+        .control-group h3 { padding-left: 10px; padding-right: 10px; }
+        .handwriting-pad-area, .signature-pad-area { padding: 0 10px; }
+
+
+        /* --- Media Queries --- */
+
+        /* Desktop Layout */
+        @media (min-width: 992px) {
+            .main-layout-grid {
+                 grid-template-columns: minmax(320px, 400px) 1fr;
+                 align-items: start;
+            }
+            .input-areas-container { grid-column: 1 / 2; }
+            .input-areas-grid { grid-template-columns: 1fr; }
+            .document-display-area { grid-column: 2 / 3; }
+            .canvas-container { padding: 10px; }
+            /* Adjust button base style for desktop */
+            button {
+                display: inline-block; /* Allow side-by-side */
+                width: auto;
+                max-width: none; /* Remove max-width */
+                margin: 5px; margin-right: 5px; /* Reset margin */
+                margin-left: 0;
+            }
+            /* Ensure control group buttons follow general button style on desktop */
+             .control-group button { } /* Inherits general button style now */
+        }
+
+        /* Tablet and Smaller Adjustments */
+        @media (max-width: 768px) {
+            body { padding: 5px; }
+            .container { padding: 10px;}
+            .control-group { padding: 10px; }
+            .control-group h3 { padding-left: 5px; padding-right: 5px; }
+            .handwriting-pad-area, .signature-pad-area { padding: 0 5px; }
+            h1 { font-size: 1.4em; }
+            .control-group h3 { font-size: 1em; }
+            .initial-guidance { font-size: 0.85em; }
+            button { padding: 8px 12px; font-size: 0.85em; } /* General button adjust */
+
+            /* --- MODIFICATION TO HIDE ELEMENT SIZING CONTROLS ON MOBILE --- */
+            #elementSizingControls {
+                display: none !important; 
+            }
+            /* --- END MODIFICATION --- */
+        }
+
+        /* Mobile Specific Adjustments */
+        @media (max-width: 480px) {
+            h1 { font-size: 1.2em; }
+            input[type="number"] { padding: 8px; }
+            .initial-guidance ul { padding-left: 15px; }
+            /* Button width for Limpiar/Confirmar type buttons */
+            .control-group button {
+                width: calc(100% - 10px); /* Full width minus margins (5+5) */
+                margin-left: 5px;
+                margin-right: 5px;
+            }
+            /* If #elementSizingControls was not hidden by the (max-width: 768px) rule 
+               or if you need to be absolutely sure for this specific breakpoint,
+               you could repeat the rule here. However, the 768px rule should cascade.
+               #elementSizingControls {
+                   display: none !important; 
+               }
+            */
+        }
+
+        /* NEW: Very Narrow Screen Adjustments */
+        @media (max-width: 359px) {
+            .input-areas-grid {
+                grid-template-columns: 1fr; /* Force single column, removes 260px min */
+                gap: 10px;
+            }
+            body { padding: 0 2px; } /* Minimal body padding */
+            .container { padding: 5px; } /* Minimal container padding */
+            .control-group { padding: 8px; } /* Minimal control group padding */
+            .control-group h3 {
+                padding-left: 5px; padding-right: 5px;
+                font-size: 0.9em; /* Slightly smaller heading */
+            }
+            .handwriting-pad-area, .signature-pad-area {
+                padding: 0 2px; /* Minimal pad area padding */
+            }
+             /* Further adjust general button style if needed */
+            button {
+                padding: 6px 8px;
+                font-size: 0.8em;
+                margin: 3px;
+                width: calc(100% - 6px);
+            }
+             .initial-guidance {
+                 font-size: 0.75em;
+                 padding: 8px 10px;
+             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <img src="img/favicon.png" alt="Logo" class="logo">
-            <div class="date" id="current-date"></div>
+        <h1>Firmador de Documentos APC</h1>
+        <div class="initial-guidance">
+            <strong>Instrucciones Rápidas:</strong>
+            <ul>
+                <li>Seleccione un tipo de documento APC usando los botones.</li>
+                <li>Dibuje su Nombre, Cédula, Fecha y Firma en los recuadros correspondientes.</li>
+                <li>Presione "Confirmar" para cada campo manuscrito. El borde del recuadro se pondrá verde.</li>
+                <li>Arrastre los elementos confirmados sobre el documento APC para posicionarlos.</li>
+                <li>Para cambiar el tamaño de un elemento: selecciónelo y luego arrastre el punto azul en su esquina inferior derecha.</li>
+                <li>Cuando esté listo, presione "Exportar Documento Actual".</li>
+            </ul>
+            <small>Nota: Si redimensiona la ventana del navegador, los dibujos no confirmados en los recuadros podrían borrarse. Confirme sus dibujos frecuentemente.</small>
         </div>
 
-        <div id="tab-container" class="tab-container"></div>
-        
-        <div class="action-buttons">
-            <button id="add-name-btn" class="field-btn">Dibujar Nombre</button>
-            <button id="add-cedula-btn" class="field-btn">Dibujar Cédula</button>
-            <button id="add-signature-btn" class="field-btn">Dibujar Firma</button>
-            <button id="add-date-btn" class="field-btn">Dibujar Fecha</button>
-        </div>
-        
-        <div class="document-container">
-            <div id="loading" class="loading">
-                <div class="loading-spinner"></div>
+        <div class="main-layout-grid">
+            <div class="input-areas-container">
+                <div class="input-areas-grid">
+                    <div class="control-group">
+                        <h3>1. Seleccione Documento</h3>
+                        <div id="documentButtonContainer" class="document-buttons"></div>
+                    </div>
+                    <div class="control-group">
+                        <h3>2. Nombre (Manuscrito)</h3>
+                        <div class="handwriting-pad-area">
+                            <canvas class="drawing-pad" id="nameCanvasEl" data-logical-width="360" data-logical-height="100"></canvas>
+                        </div>
+                        <button id="clearNameBtn">Limpiar</button>
+                        <button id="confirmNameBtn">Confirmar</button>
+                    </div>
+                    <div class="control-group">
+                        <h3>3. Cédula (Manuscrita)</h3>
+                        <div class="handwriting-pad-area">
+                            <canvas class="drawing-pad" id="cedulaCanvasEl" data-logical-width="360" data-logical-height="100"></canvas>
+                        </div>
+                        <button id="clearCedulaBtn">Limpiar</button>
+                        <button id="confirmCedulaBtn">Confirmar</button>
+                    </div>
+                     <div class="control-group">
+                        <h3>4. Fecha (Manuscrita)</h3>
+                        <div class="handwriting-pad-area">
+                            <canvas class="drawing-pad" id="dateCanvasEl" data-logical-width="360" data-logical-height="80"></canvas>
+                        </div>
+                        <button id="clearDateBtn">Limpiar</button>
+                        <button id="confirmDateBtn">Confirmar</button>
+                    </div>
+                    <div class="control-group">
+                        <h3>5. Firma</h3>
+                        <div class="signature-pad-area">
+                            <canvas class="drawing-pad" id="signaturePadEl" data-logical-width="360" data-logical-height="120"></canvas>
+                        </div>
+                        <button id="clearSignatureBtn">Limpiar</button>
+                        <button id="confirmSignatureBtn">Confirmar</button>
+                    </div>
+                     <div class="control-group" id="elementSizingControls" style="display:none;">
+                        <h3>6. Ajustar Elemento</h3>
+                        <p>Arrastre el punto en la esquina del elemento seleccionado para cambiar su tamaño.</p>
+                        <div id="imageElementControls">
+                            <label for="elementWidth">Ancho del Elemento (px):</label>
+                            <input type="number" id="elementWidth" min="10" max="1000">
+                            <label for="elementHeight">Alto del Elemento (px):</label>
+                            <input type="number" id="elementHeight" min="10" max="1000">
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <div id="document-content" class="document-content">
-                <img id="document-image" class="document-image" alt="Documento">
-                
-                <!-- Draggable elements will be added here -->
+            <div class="document-display-area">
+                 <div class="control-group">
+                    <h3>Visualice y Ajuste el Documento</h3>
+                    <p>Arrastre los elementos para posicionarlos. Para cambiar tamaño, seleccione un elemento y arrastre el punto en su esquina.</p>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="mainDocumentCanvas"></canvas>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button id="exportDocumentBtn">Exportar Documento Actual (JPG)</button>
+                </div>
             </div>
-        </div>
-        
-        <div class="controls">
-            <button id="download-btn">Descargar Documento Firmado</button>
-            <button id="share-btn">Compartir</button>
-        </div>
-        
-        <div class="footer">
-            <p>Todos los derechos reservados, Lulo Panamá.</p>
         </div>
     </div>
 
-    <!-- Drawing modal -->
-    <div id="drawing-modal" class="modal">
-        <div class="modal-content">
-            <h3 class="modal-title" id="modal-title">Dibuje su firma</h3>
-            <canvas id="drawing-pad" class="modal-canvas" width="460" height="200"></canvas>
-            <div class="modal-buttons">
-                <button id="clear-drawing-btn" class="clear-btn">Borrar</button>
-                <button id="save-drawing-btn">Guardar</button>
-            </div>
-        </div>
-    </div>
-    
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Set current date in Panama format
-    const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    const currentDate = new Date().toLocaleDateString('es-PA', dateOptions);
-    document.getElementById('current-date').textContent = 'Panamá, ' + currentDate;
-    
-    // Document mapping (JPGs instead of PDFs)
-    const docMapping = {
-        'bac': {
-            path: 'apc/apc-bac-actual.jpg',
-            name: 'BAC'
-        },
-        'global': {
-            path: 'apc/apc-global-actual.jpg',
-            name: 'Global Bank'
-        },
-        'multi': {
-            path: 'apc/apc-multi-actual.jpg',
-            name: 'Multibank'
-        }
-    };
-    
-    // Get documents from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const documents = [];
-    
-    // Extract documents from URL parameters
-    for (const [key, value] of urlParams.entries()) {
-        if (key === 'e') {
-            // Handle comma-separated values in 'e' parameter
-            const docCodes = value.split(',');
-            docCodes.forEach(code => {
-                if (docMapping[code]) {
-                    documents.push(docMapping[code]);
-                }
-            });
-        } else if (docMapping[key]) {
-            // Handle parameters like '?bac&global'
-            documents.push(docMapping[key]);
-        }
-    }
-    
-    // If no documents specified, default to all
-    if (documents.length === 0) {
-        Object.values(docMapping).forEach(doc => documents.push(doc));
-    }
-    
-    // Create tabs for multiple documents
-    const tabContainer = document.getElementById('tab-container');
-    
-    let activeDocument = null;
-    
-    // Store elements for each document
-    const documentElements = {};
-    
-    documents.forEach((doc, index) => {
-        const tab = document.createElement('div');
-        tab.classList.add('tab');
-        if (index === 0) {
-            tab.classList.add('active');
-            activeDocument = doc;
-        }
-        tab.textContent = doc.name;
-        tab.dataset.path = doc.path;
-        
-        // Initialize elements array for this document
-        documentElements[doc.path] = [];
-        
-        tab.addEventListener('click', function() {
-            // Deactivate all tabs
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            // Activate current tab
-            this.classList.add('active');
-            
-            // Store current elements for previous document
-            if (activeDocument) {
-                const currentElements = [];
-                document.querySelectorAll('.draggable-resizable').forEach(el => {
-                    // Store element properties
-                    const elementData = {
-                        type: el.dataset.type,
-                        content: el.querySelector('img') ? el.querySelector('img').src : '',
-                        left: el.style.left,
-                        top: el.style.top,
-                        width: el.style.width,
-                        height: el.style.height
-                    };
-                    currentElements.push(elementData);
-                });
-                
-                // Only update if elements exist
-                if (currentElements.length > 0) {
-                    documentElements[activeDocument.path] = currentElements;
-                }
-            }
-            
-            // Update active document
-            activeDocument = {path: this.dataset.path, name: this.textContent};
-            // Load the document
-            loadDocument(this.dataset.path);
-            
-            // Remove existing elements
-            document.querySelectorAll('.draggable-resizable').forEach(el => el.remove());
-            
-            // Restore elements for this document
-            setTimeout(() => {
-                // If this document has no elements yet, copy from the first document with elements
-                if (!documentElements[this.dataset.path] || documentElements[this.dataset.path].length === 0) {
-                    // Find first document with elements
-                    for (const docPath in documentElements) {
-                        if (documentElements[docPath] && documentElements[docPath].length > 0) {
-                            // Copy elements from this document
-                            documentElements[this.dataset.path] = JSON.parse(JSON.stringify(documentElements[docPath]));
-                            break;
-                        }
-                    }
-                }
-            
-                // Render elements
-                if (documentElements[this.dataset.path] && documentElements[this.dataset.path].length > 0) {
-                    documentElements[this.dataset.path].forEach(el => {
-                        if (el.type === 'signature' || el.type === 'name' || el.type === 'cedula' || el.type === 'date') {
-                            createDraggableElement(el.type, el.content, el.left, el.top, el.width, el.height);
-                        }
-                    });
-                }
-            }, 200); // Small delay to ensure document is loaded
-        });
-        
-        tabContainer.appendChild(tab);
-    });
-    
-    // Load the first document if available
-    if (activeDocument) {
-        loadDocument(activeDocument.path);
-    }
-    
-    // Store original document dimensions for accurate positioning
-    let originalDocWidth = 0;
-    let originalDocHeight = 0;
-    
-    // Load document image
-    function loadDocument(path) {
-        const loading = document.getElementById('loading');
-        loading.style.display = 'flex';
-        
-        const documentImage = document.getElementById('document-image');
-        documentImage.src = path;
-        
-        documentImage.onload = function() {
-            loading.style.display = 'none';
-            // Store original dimensions
-            originalDocWidth = documentImage.naturalWidth;
-            originalDocHeight = documentImage.naturalHeight;
+        // --- JavaScript code remains the same as the previous version ---
+        // (Includes the implemented fixes for setupDrawingCanvas, getPadCoordinates, etc.)
+        const dpr = window.devicePixelRatio || 1;
+        const RESIZE_HANDLE_LOGICAL_SIZE = 10;
+        const RESIZE_HANDLE_CLICK_EXTENSION = 5;
+        const MIN_ELEMENT_DIM = 20;
+
+        const documentConfigurations = [
+            { path: "apc/apc-multi-actual.jpg", shortName: "multi", displayName: "Multi" },
+            { path: "apc/apc-bac-actual.jpg", shortName: "bac", displayName: "BAC" },
+            { path: "apc/apc-global-actual.jpg", shortName: "global", displayName: "Global" }
+        ];
+
+        const appState = {
+            currentDocumentUrl: null,
+            nameImageCache: null, cedulaImageCache: null, dateImageCache: null, signatureImageCache: null,
+            documentSettings: {}, activeElementId: null,
+            dragState: { isDragging: false, elementId: null, offsetX: 0, offsetY: 0 },
+            resizeState: {
+                isResizing: false, elementId: null,
+                startX: 0, startY: 0,
+                initialElement: { x:0, y:0, width: 0, height: 0, aspectRatio: 1 }
+            },
+            backgroundImage: null,
+            lastWindowWidth: window.innerWidth,
+            lastWindowHeight: window.innerHeight,
+            resizeTimeout: null
         };
-    }
-    
-    // Drawing modal setup
-    const drawingModal = document.getElementById('drawing-modal');
-    const drawingCanvas = document.getElementById('drawing-pad');
-    const drawingContext = drawingCanvas.getContext('2d');
-    let isDrawing = false;
-    let lastX = 0;
-    let lastY = 0;
-    let currentDrawingType = ''; // 'signature', 'name', 'cedula', or 'date'
-    
-    drawingContext.lineWidth = 2;
-    drawingContext.lineJoin = 'round';
-    drawingContext.lineCap = 'round';
-    drawingContext.strokeStyle = '#000000';
-    
-    // Handle drawing events
-    drawingCanvas.addEventListener('mousedown', startDrawing);
-    drawingCanvas.addEventListener('mousemove', draw);
-    drawingCanvas.addEventListener('mouseup', stopDrawing);
-    drawingCanvas.addEventListener('mouseout', stopDrawing);
-    
-    // Touch events for mobile
-    drawingCanvas.addEventListener('touchstart', function(e) {
-        e.preventDefault();
-        const touch = e.touches[0];
-        const rect = drawingCanvas.getBoundingClientRect();
-        const x = touch.clientX - rect.left;
-        const y = touch.clientY - rect.top;
-        
-        isDrawing = true;
-        lastX = x;
-        lastY = y;
-    });
-    
-    drawingCanvas.addEventListener('touchmove', function(e) {
-        e.preventDefault();
-        if (!isDrawing) return;
-        
-        const touch = e.touches[0];
-        const rect = drawingCanvas.getBoundingClientRect();
-        const x = touch.clientX - rect.left;
-        const y = touch.clientY - rect.top;
-        
-        drawingContext.beginPath();
-        drawingContext.moveTo(lastX, lastY);
-        drawingContext.lineTo(x, y);
-        drawingContext.stroke();
-        
-        lastX = x;
-        lastY = y;
-    });
-    
-    drawingCanvas.addEventListener('touchend', function(e) {
-        e.preventDefault();
-        isDrawing = false;
-    });
-    
-    function startDrawing(e) {
-        const rect = drawingCanvas.getBoundingClientRect();
-        lastX = e.clientX - rect.left;
-        lastY = e.clientY - rect.top;
-        isDrawing = true;
-    }
-    
-    function draw(e) {
-        if (!isDrawing) return;
-        
-        const rect = drawingCanvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        drawingContext.beginPath();
-        drawingContext.moveTo(lastX, lastY);
-        drawingContext.lineTo(x, y);
-        drawingContext.stroke();
-        
-        lastX = x;
-        lastY = y;
-    }
-    
-    function stopDrawing() {
-        isDrawing = false;
-    }
-    
-    // Clear drawing button
-    document.getElementById('clear-drawing-btn').addEventListener('click', function() {
-        drawingContext.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
-    });
-    
-    // Save drawing from modal
-    document.getElementById('save-drawing-btn').addEventListener('click', function() {
-        const drawingImage = drawingCanvas.toDataURL('image/png');
-        
-        // Check if this type of element already exists
-        const existingElement = document.querySelector(`.draggable-resizable[data-type="${currentDrawingType}"]`);
-        
-        if (existingElement) {
-            // Update existing element
-            const img = existingElement.querySelector('img');
-            if (img) {
-                img.src = drawingImage;
-            }
-        } else {
-            // Create new element
-            let left = '50px';
-            let top = '400px';
-            
-            // Position elements differently based on type
-            if (currentDrawingType === 'name') {
-                top = '450px';
-            } else if (currentDrawingType === 'cedula') {
-                top = '500px';
-            } else if (currentDrawingType === 'date') {
-                top = '550px';
-            }
-            
-            createDraggableElement(currentDrawingType, drawingImage, left, top);
+
+        const documentButtonContainer = document.getElementById('documentButtonContainer');
+        const nameCanvasEl = document.getElementById('nameCanvasEl');
+        const clearNameBtn = document.getElementById('clearNameBtn');
+        const confirmNameBtn = document.getElementById('confirmNameBtn');
+        let nameCtx;
+        const cedulaCanvasEl = document.getElementById('cedulaCanvasEl');
+        const clearCedulaBtn = document.getElementById('clearCedulaBtn');
+        const confirmCedulaBtn = document.getElementById('confirmCedulaBtn');
+        let cedulaCtx;
+        const dateCanvasEl = document.getElementById('dateCanvasEl');
+        const clearDateBtn = document.getElementById('clearDateBtn');
+        const confirmDateBtn = document.getElementById('confirmDateBtn');
+        let dateCtx;
+        const signaturePadEl = document.getElementById('signaturePadEl');
+        const clearSignatureBtn = document.getElementById('clearSignatureBtn');
+        const confirmSignatureBtn = document.getElementById('confirmSignatureBtn');
+        let sigCtx;
+        const mainCanvas = document.getElementById('mainDocumentCanvas');
+        let mainCtx = mainCanvas.getContext('2d');
+        const exportDocumentBtn = document.getElementById('exportDocumentBtn');
+        const elementSizingControls = document.getElementById('elementSizingControls');
+        const imageElementControls = document.getElementById('imageElementControls');
+        const elementWidthInput = document.getElementById('elementWidth');
+        const elementHeightInput = document.getElementById('elementHeight');
+
+        let drawingStates = {
+            name: {isDrawing: false, lastX:0, lastY:0, canvasElement: nameCanvasEl},
+            cedula: {isDrawing: false, lastX:0, lastY:0, canvasElement: cedulaCanvasEl},
+            date: {isDrawing: false, lastX:0, lastY:0, canvasElement: dateCanvasEl},
+            signature: {isDrawing: false, lastX:0, lastY:0, canvasElement: signaturePadEl}
+        };
+
+        function configureDrawingContext(ctx, currentLogicalWidth, currentLogicalHeight, clear = true) {
+            ctx.resetTransform();
+            ctx.scale(dpr, dpr);
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            if (clear) ctx.clearRect(0, 0, currentLogicalWidth, currentLogicalHeight);
         }
-        
-        // Update elements in all documents that don't have this element type
-        if (currentDrawingType) {
-            const elementData = {
-                type: currentDrawingType,
-                content: drawingImage,
-                left: existingElement ? existingElement.style.left : left,
-                top: existingElement ? existingElement.style.top : top,
-                width: existingElement ? existingElement.style.width : (currentDrawingType === 'signature' ? '250px' : '200px'),
-                height: existingElement ? existingElement.style.height : (currentDrawingType === 'signature' ? '100px' : (currentDrawingType === 'date' ? '30px' : '60px'))
+
+        function setupDrawingCanvas(canvasEl, stateKey) {
+            const logicalInitialWidth = parseInt(canvasEl.dataset.logicalWidth) || 300;
+            const logicalInitialHeight = parseInt(canvasEl.dataset.logicalHeight) || 100;
+            let logicalAspectRatio = logicalInitialWidth / logicalInitialHeight;
+            if (logicalInitialHeight === 0 || isNaN(logicalAspectRatio) || !isFinite(logicalAspectRatio)) {
+                logicalAspectRatio = 3;
+            }
+
+            let renderedWidth = canvasEl.clientWidth;
+            if (renderedWidth === 0 && canvasEl.parentElement) {
+                 renderedWidth = canvasEl.parentElement.clientWidth || logicalInitialWidth;
+            } else if (renderedWidth === 0) {
+                 renderedWidth = logicalInitialWidth;
+            }
+            if (renderedWidth === 0) renderedWidth = logicalInitialWidth;
+
+            let renderedHeight = renderedWidth / logicalAspectRatio;
+            if (isNaN(renderedHeight) || !isFinite(renderedHeight)) {
+                renderedHeight = renderedWidth / 3;
+            }
+
+            canvasEl.style.height = renderedHeight + 'px';
+
+            canvasEl.width = renderedWidth * dpr;
+            canvasEl.height = renderedHeight * dpr;
+
+            const ctx = canvasEl.getContext('2d');
+            configureDrawingContext(ctx, renderedWidth, renderedHeight);
+
+            if (!canvasEl.dataset.listenersAttached) {
+                const eventHandlerOptions = { passive: false };
+                canvasEl.addEventListener('mousedown', (e) => startDrawing(e, ctx, stateKey));
+                canvasEl.addEventListener('mousemove', (e) => draw(e, ctx, stateKey));
+                canvasEl.addEventListener('mouseup', () => stopDrawing(stateKey));
+                canvasEl.addEventListener('mouseleave', () => stopDrawing(stateKey));
+                canvasEl.addEventListener('touchstart', (e) => startDrawing(e, ctx, stateKey), eventHandlerOptions);
+                canvasEl.addEventListener('touchmove', (e) => draw(e, ctx, stateKey), eventHandlerOptions);
+                canvasEl.addEventListener('touchend', () => stopDrawing(stateKey));
+                canvasEl.dataset.listenersAttached = 'true';
+            }
+            drawingStates[stateKey].canvasElement = canvasEl;
+            return ctx;
+        }
+
+        function initializeDrawingPads() {
+            nameCtx = setupDrawingCanvas(nameCanvasEl, 'name');
+            cedulaCtx = setupDrawingCanvas(cedulaCanvasEl, 'cedula');
+            dateCtx = setupDrawingCanvas(dateCanvasEl, 'date');
+            sigCtx = setupDrawingCanvas(signaturePadEl, 'signature');
+        }
+
+        function getPadCoordinates(canvasEl, event) {
+            const rect = canvasEl.getBoundingClientRect();
+            let clientX, clientY;
+            if (event.touches && event.touches.length > 0) {
+                clientX = event.touches[0].clientX; clientY = event.touches[0].clientY;
+            } else if (event.clientX !== undefined) {
+                clientX = event.clientX; clientY = event.clientY;
+            } else { return null; }
+
+            if (rect.width === 0 || rect.height === 0) return {x:0, y:0};
+            return {
+                x: (clientX - rect.left) * (canvasEl.width / dpr / rect.width),
+                y: (clientY - rect.top) * (canvasEl.height / dpr / rect.height)
             };
-            
-            // Update current document's elements
-            if (activeDocument) {
-                if (!documentElements[activeDocument.path]) {
-                    documentElements[activeDocument.path] = [];
-                }
-                
-                // Remove existing element of this type
-                documentElements[activeDocument.path] = documentElements[activeDocument.path].filter(el => el.type !== currentDrawingType);
-                
-                // Add new element
-                documentElements[activeDocument.path].push(elementData);
+        }
+
+        function startDrawing(e, ctx, stateKey) {
+            const padState = drawingStates[stateKey];
+            padState.isDrawing = true;
+            const coords = getPadCoordinates(padState.canvasElement, e);
+            if (!coords) return;
+            ctx.beginPath(); ctx.moveTo(coords.x, coords.y);
+            padState.lastX = coords.x; padState.lastY = coords.y;
+            if(e.cancelable) e.preventDefault();
+        }
+
+        function draw(e, ctx, stateKey) {
+            const padState = drawingStates[stateKey];
+            if (!padState.isDrawing) return;
+            const coords = getPadCoordinates(padState.canvasElement, e);
+            if (!coords) return;
+            ctx.lineTo(coords.x, coords.y); ctx.stroke();
+            padState.lastX = coords.x; padState.lastY = coords.y;
+            if(e.cancelable) e.preventDefault();
+        }
+
+        function stopDrawing(stateKey) {
+            if (drawingStates[stateKey].isDrawing) drawingStates[stateKey].isDrawing = false;
+        }
+
+        function clearDrawingPad(ctx, imageCacheKey, canvasElement) {
+            const currentRenderedWidth = canvasElement.width / dpr;
+            const currentRenderedHeight = canvasElement.height / dpr;
+            configureDrawingContext(ctx, currentRenderedWidth, currentRenderedHeight, true);
+
+            appState[imageCacheKey] = null;
+            canvasElement.classList.remove('confirmed');
+            redrawMainCanvas();
+        }
+
+        function confirmDrawingPad(ctx, imageCacheKey, canvasElement) {
+            const tempImage = new Image();
+            tempImage.onload = () => {
+                appState[imageCacheKey] = tempImage;
+                canvasElement.classList.add('confirmed');
+                redrawMainCanvas();
             }
+            tempImage.src = ctx.canvas.toDataURL('image/png');
         }
-        
-        // Hide modal
-        drawingModal.style.display = 'none';
-    });
-    
-    // Open modal with appropriate title
-    function showDrawingModal(type) {
-        currentDrawingType = type;
-        
-        // Set appropriate title
-        const modalTitle = document.getElementById('modal-title');
-        if (type === 'signature') {
-            modalTitle.textContent = 'Dibuje su firma';
-        } else if (type === 'name') {
-            modalTitle.textContent = 'Dibuje su nombre';
-        } else if (type === 'cedula') {
-            modalTitle.textContent = 'Dibuje su cédula';
-        } else if (type === 'date') {
-            modalTitle.textContent = 'Dibuje la fecha';
+
+        function initializeDefaultDocumentSettings() {
+            const defaultElementWidth = 180; const defaultElementHeight = 45;
+            const defaultDateHeight = 35; const defaultSigWidth = 190; const defaultSigHeight = 70;
+            documentConfigurations.forEach(docConfig => {
+                const docPath = docConfig.path;
+                if (!appState.documentSettings[docPath]) {
+                    appState.documentSettings[docPath] = {
+                        elements: [
+                            { id: 'name', type: 'image', x: 50, y: 50, width: defaultElementWidth, height: defaultElementHeight },
+                            { id: 'cedula', type: 'image', x: 50, y: 105, width: defaultElementWidth, height: defaultElementHeight },
+                            { id: 'date', type: 'image', x: 50, y: 160, width: defaultElementWidth * 0.8, height: defaultDateHeight },
+                            { id: 'signature', type: 'image', x: 50, y: 205, width: defaultSigWidth, height: defaultSigHeight }
+                        ]};
+                }});
         }
-        
-        // Clear canvas and show modal
-        drawingContext.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
-        drawingModal.style.display = 'flex';
-        
-        // If it's a date element, draw the current date as a starting point
-        if (type === 'date') {
-            drawingContext.font = '16px Arial';
-            drawingContext.fillStyle = 'black';
-            drawingContext.fillText('Panamá, ' + currentDate, 50, 50);
+
+        function populateDocumentButtons() {
+            documentButtonContainer.innerHTML = '';
+            documentConfigurations.forEach(docConfig => {
+                const button = document.createElement('button');
+                button.textContent = docConfig.displayName;
+                button.dataset.docPath = docConfig.path;
+                button.addEventListener('click', () => {
+                    appState.activeElementId = null;
+                    updateSelectedElementControls();
+                    loadDocument(docConfig.path);
+                });
+                documentButtonContainer.appendChild(button);
+            });
         }
-    }
-    
-    // Button event listeners for drawing elements
-    document.getElementById('add-name-btn').addEventListener('click', function() {
-        showDrawingModal('name');
-    });
-    
-    document.getElementById('add-cedula-btn').addEventListener('click', function() {
-        showDrawingModal('cedula');
-    });
-    
-    document.getElementById('add-signature-btn').addEventListener('click', function() {
-        showDrawingModal('signature');
-    });
-    
-    document.getElementById('add-date-btn').addEventListener('click', function() {
-        showDrawingModal('date');
-    });
-    
-    // Create draggable and resizable element
-    function createDraggableElement(type, content, left = '50px', top = '400px', width = null, height = null) {
-        const docContent = document.getElementById('document-content');
-        
-        // Create element container
-        const elementArea = document.createElement('div');
-        elementArea.className = 'draggable-resizable';
-        elementArea.dataset.type = type;
-        elementArea.style.left = left;
-        elementArea.style.top = top;
-        
-        // Set default size based on type
-        if (type === 'signature') {
-            elementArea.style.width = width || '250px';
-            elementArea.style.height = height || '100px';
-        } else if (type === 'date') {
-            elementArea.style.width = width || '200px';
-            elementArea.style.height = height || '30px';
-        } else {
-            elementArea.style.width = width || '200px';
-            elementArea.style.height = height || '60px';
+
+        function setActiveDocumentButton(docPath) {
+            const buttons = documentButtonContainer.querySelectorAll('button');
+            buttons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.docPath === docPath);
+            });
         }
-        
-        // Create content image
-        const img = document.createElement('img');
-        img.src = content;
-        img.style.width = '100%';
-        img.style.height = '100%';
-        
-        // Add resize handle
-        const resizeHandle = document.createElement('div');
-        resizeHandle.className = 'resize-handle';
-        
-        elementArea.appendChild(img);
-        elementArea.appendChild(resizeHandle);
-        docContent.appendChild(elementArea);
-        
-        // Make draggable and resizable
-        makeDraggableResizable(elementArea, resizeHandle);
-    }
-    
-    // Make elements draggable and resizable
-    function makeDraggableResizable(element, resizeHandle) {
-        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-        let resizing = false;
-        let startWidth, startHeight, startX, startY;
-        
-        // Store original aspect ratio
-        let originalAspectRatio;
-        
-        // Initialize aspect ratio
-        function initAspectRatio() {
-            const style = window.getComputedStyle(element);
-            const width = parseFloat(style.width);
-            const height = parseFloat(style.height);
-            originalAspectRatio = width / height;
+
+        function handleUrlParameters() {
+            const params = new URLSearchParams(window.location.search);
+            let selectedDocPath = null; const eParamValue = params.get('e');
+            if (eParamValue) {
+                const foundDoc = documentConfigurations.find(doc => doc.shortName.toLowerCase() === eParamValue.toLowerCase());
+                if (foundDoc) selectedDocPath = foundDoc.path;
+            }
+            if (!selectedDocPath) {
+                for (const docConfig of documentConfigurations) {
+                    if (params.has(docConfig.shortName.toLowerCase())) {
+                        selectedDocPath = docConfig.path; break;
+                    }}}
+            return selectedDocPath;
         }
-        
-        // Call once on creation
-        initAspectRatio();
-        
-        // Dragging functionality
-        element.onmousedown = dragMouseDown;
-        element.ontouchstart = dragTouchStart;
-        
-        // Resizing functionality
-        resizeHandle.onmousedown = resizeMouseDown;
-        resizeHandle.ontouchstart = resizeTouchStart;
-        
-        function dragMouseDown(e) {
-            if (e.target === resizeHandle) return;
-            
-            e = e || window.event;
-            e.preventDefault();
-            // Get the mouse cursor position at startup
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            document.onmouseup = closeDragElement;
-            // Call a function whenever the cursor moves
-            document.onmousemove = elementDrag;
+
+        function loadDocument(docUrl) {
+            if (!docUrl) {
+                console.error("loadDocument called with invalid URL:", docUrl);
+                return;
+            }
+            appState.currentDocumentUrl = docUrl;
+            setActiveDocumentButton(docUrl);
+            appState.backgroundImage = new Image();
+            appState.backgroundImage.onload = () => {
+                const canvasContainer = mainCanvas.parentElement;
+                const containerStyle = getComputedStyle(canvasContainer);
+                const imageAspectRatio = appState.backgroundImage.naturalWidth / appState.backgroundImage.naturalHeight;
+
+                let targetWidth = canvasContainer.clientWidth;
+                let displayWidth = targetWidth;
+                let displayHeight = displayWidth / imageAspectRatio;
+
+                let containerMaxHeight = parseFloat(containerStyle.maxHeight);
+                 if (isNaN(containerMaxHeight) || containerMaxHeight <= 0) {
+                     containerMaxHeight = window.innerHeight * 0.75;
+                 }
+                if (displayHeight > containerMaxHeight) {
+                    displayHeight = containerMaxHeight;
+                    displayWidth = displayHeight * imageAspectRatio;
+                }
+                if (displayWidth > targetWidth) {
+                    displayWidth = targetWidth;
+                    displayHeight = displayWidth / imageAspectRatio;
+                }
+
+                mainCanvas.style.width = displayWidth + 'px';
+                mainCanvas.style.height = displayHeight + 'px';
+                mainCanvas.width = displayWidth * dpr;
+                mainCanvas.height = displayHeight * dpr;
+
+                configureDrawingContext(mainCtx, displayWidth, displayHeight, false);
+                mainCtx.imageSmoothingEnabled = true; mainCtx.imageSmoothingQuality = "high";
+                redrawMainCanvas();
+            };
+            appState.backgroundImage.onerror = () => {
+                console.error("Error cargando imagen:", docUrl);
+                 const logicalWidth = mainCanvas.style.width ? parseFloat(mainCanvas.style.width) : 300;
+                 const logicalHeight = mainCanvas.style.height ? parseFloat(mainCanvas.style.height) : 150;
+                 if (mainCanvas.width !== logicalWidth * dpr || mainCanvas.height !== logicalHeight * dpr) {
+                     mainCanvas.width = logicalWidth * dpr; mainCanvas.height = logicalHeight * dpr;
+                     mainCanvas.style.width = logicalWidth + 'px'; mainCanvas.style.height = logicalHeight + 'px';
+                 }
+                 configureDrawingContext(mainCtx, logicalWidth, logicalHeight);
+                 mainCtx.fillStyle = "red"; mainCtx.font = "bold 16px Arial"; mainCtx.textAlign = "center";
+                 const docName = documentConfigurations.find(dc => dc.path === docUrl)?.displayName || docUrl.split('/').pop();
+                 mainCtx.fillText("Error al cargar: " + docName, logicalWidth / 2, logicalHeight / 2);
+            }
+            appState.backgroundImage.src = docUrl;
         }
-        
-        function dragTouchStart(e) {
-            if (e.target === resizeHandle) return;
-            
-            e = e || window.event;
-            e.preventDefault();
-            // Get the touch position at startup
-            const touch = e.touches[0];
-            pos3 = touch.clientX;
-            pos4 = touch.clientY;
-            document.ontouchend = closeDragElement;
-            // Call a function whenever the finger moves
-            document.ontouchmove = elementTouchDrag;
+
+        function getElementById(docUrl, elementId) {
+            if (docUrl && appState.documentSettings[docUrl] && elementId) {
+                return appState.documentSettings[docUrl].elements.find(el => el.id === elementId);
+            } return null;
         }
-        
-        function elementDrag(e) {
-            if (resizing) return;
-            
-            e = e || window.event;
-            e.preventDefault();
-            // Calculate the new cursor position
-            pos1 = pos3 - e.clientX;
-            pos2 = pos4 - e.clientY;
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            // Set the element's new position
-            element.style.top = (element.offsetTop - pos2) + "px";
-            element.style.left = (element.offsetLeft - pos1) + "px";
-            
-            // Update the position in the document elements array
-            if (activeDocument && element.dataset.type) {
-                const type = element.dataset.type;
-                if (documentElements[activeDocument.path]) {
-                    const index = documentElements[activeDocument.path].findIndex(el => el.type === type);
-                    if (index !== -1) {
-                        documentElements[activeDocument.path][index].left = element.style.left;
-                        documentElements[activeDocument.path][index].top = element.style.top;
+
+        function getResizeHandleRect(element) {
+            const handleSize = RESIZE_HANDLE_LOGICAL_SIZE;
+            return {
+                x: element.x + element.width - handleSize / 2,
+                y: element.y + element.height - handleSize / 2,
+                width: handleSize, height: handleSize
+            };
+        }
+
+        function redrawMainCanvas(isExporting = false) {
+            if (!mainCtx || !mainCanvas.width || !mainCanvas.height ) { return; }
+            const logicalWidth = mainCanvas.width / dpr;
+            const logicalHeight = mainCanvas.height / dpr;
+
+            if (mainCtx.getTransform().a !== dpr || mainCtx.getTransform().d !== dpr ) {
+                 configureDrawingContext(mainCtx, logicalWidth, logicalHeight, false);
+            }
+
+            if (!appState.currentDocumentUrl || !appState.backgroundImage || !appState.backgroundImage.complete || appState.backgroundImage.naturalWidth === 0) {
+                if (logicalWidth > 0 && logicalHeight > 0) {
+                    mainCtx.clearRect(0, 0, logicalWidth, logicalHeight);
+                    mainCtx.fillStyle = "gray"; mainCtx.font = "16px Arial"; mainCtx.textAlign = "center";
+                    mainCtx.fillText("Cargando documento...", logicalWidth / 2, logicalHeight / 2);
+                } return;
+            }
+
+            mainCtx.clearRect(0, 0, logicalWidth, logicalHeight);
+            mainCtx.drawImage(appState.backgroundImage, 0, 0, logicalWidth, logicalHeight);
+
+            const currentDocSettings = appState.documentSettings[appState.currentDocumentUrl];
+            if (!currentDocSettings) return;
+
+            currentDocSettings.elements.forEach(element => {
+                const imageToDraw = appState[element.id + 'ImageCache'];
+                if (imageToDraw) {
+                    mainCtx.drawImage(imageToDraw, element.x, element.y, element.width, element.height);
+                    if (appState.activeElementId === element.id && !isExporting) {
+                        mainCtx.strokeStyle = 'var(--selection-border-color)';
+                        mainCtx.lineWidth = 1.5;
+                        mainCtx.setLineDash([]);
+                        mainCtx.strokeRect(element.x, element.y, element.width, element.height);
+
+                        const handle = getResizeHandleRect(element);
+                        mainCtx.fillStyle = 'var(--selection-handle-color)';
+                        mainCtx.fillRect(handle.x, handle.y, handle.width, handle.height);
+                        mainCtx.strokeStyle = 'var(--selection-handle-stroke)';
+                        mainCtx.lineWidth = 1;
+                        mainCtx.strokeRect(handle.x, handle.y, handle.width, handle.height);
                     }
-                }
-            }
-        }
-        
-        function elementTouchDrag(e) {
-            if (resizing) return;
-            
-            e = e || window.event;
-            e.preventDefault();
-            // Calculate the new touch position
-            const touch = e.touches[0];
-            pos1 = pos3 - touch.clientX;
-            pos2 = pos4 - touch.clientY;
-            pos3 = touch.clientX;
-            pos4 = touch.clientY;
-            // Set the element's new position
-            element.style.top = (element.offsetTop - pos2) + "px";
-            element.style.left = (element.offsetLeft - pos1) + "px";
-            
-            // Update the position in the document elements array
-            if (activeDocument && element.dataset.type) {
-                const type = element.dataset.type;
-                if (documentElements[activeDocument.path]) {
-                    const index = documentElements[activeDocument.path].findIndex(el => el.type === type);
-                    if (index !== -1) {
-                        documentElements[activeDocument.path][index].left = element.style.left;
-                        documentElements[activeDocument.path][index].top = element.style.top;
-                    }
-                }
-            }
-        }
-        
-        function resizeMouseDown(e) {
-            e = e || window.event;
-            e.preventDefault();
-            e.stopPropagation();
-            
-            resizing = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            startWidth = parseInt(document.defaultView.getComputedStyle(element).width, 10);
-            startHeight = parseInt(document.defaultView.getComputedStyle(element).height, 10);
-            
-            // Initialize aspect ratio if not already set
-            if (!originalAspectRatio) {
-                originalAspectRatio = startWidth / startHeight;
-            }
-            
-            document.onmouseup = closeResizeElement;
-            document.onmousemove = elementResize;
-        }
-        
-        function resizeTouchStart(e) {
-            e = e || window.event;
-            e.preventDefault();
-            e.stopPropagation();
-            
-            resizing = true;
-            const touch = e.touches[0];
-            startX = touch.clientX;
-            startY = touch.clientY;
-            startWidth = parseInt(document.defaultView.getComputedStyle(element).width, 10);
-            startHeight = parseInt(document.defaultView.getComputedStyle(element).height, 10);
-            
-            // Initialize aspect ratio if not already set
-            if (!originalAspectRatio) {
-                originalAspectRatio = startWidth / startHeight;
-            }
-            
-            document.ontouchend = closeResizeElement;
-            document.ontouchmove = elementTouchResize;
-        }
-        
-        function elementResize(e) {
-            e = e || window.event;
-            e.preventDefault();
-            
-            // Calculate new width based on mouse movement
-            const width = Math.max(50, startWidth + e.clientX - startX);
-            
-            // Calculate height to maintain aspect ratio
-            const height = width / originalAspectRatio;
-            
-            // Apply if height meets minimum requirement
-            if (height >= 20) {
-                element.style.width = width + 'px';
-                element.style.height = height + 'px';
-                
-                // Update the size in the document elements array
-                if (activeDocument && element.dataset.type) {
-                    const type = element.dataset.type;
-                    if (documentElements[activeDocument.path]) {
-                        const index = documentElements[activeDocument.path].findIndex(el => el.type === type);
-                        if (index !== -1) {
-                            documentElements[activeDocument.path][index].width = element.style.width;
-                            documentElements[activeDocument.path][index].height = element.style.height;
-                        }
-                    }
-                }
-            }
-        }
-        
-        function elementTouchResize(e) {
-            e = e || window.event;
-            e.preventDefault();
-            
-            const touch = e.touches[0];
-            
-            // Calculate new width based on touch movement
-            const width = Math.max(50, startWidth + touch.clientX - startX);
-            
-            // Calculate height to maintain aspect ratio
-            const height = width / originalAspectRatio;
-            
-            // Apply if height meets minimum requirement
-            if (height >= 20) {
-                element.style.width = width + 'px';
-                element.style.height = height + 'px';
-                
-                // Update the size in the document elements array
-                if (activeDocument && element.dataset.type) {
-                    const type = element.dataset.type;
-                    if (documentElements[activeDocument.path]) {
-                        const index = documentElements[activeDocument.path].findIndex(el => el.type === type);
-                        if (index !== -1) {
-                            documentElements[activeDocument.path][index].width = element.style.width;
-                            documentElements[activeDocument.path][index].height = element.style.height;
-                        }
-                    }
-                }
-            }
-        }
-        
-        function closeDragElement() {
-            // Stop moving when mouse/touch is released
-            document.onmouseup = null;
-            document.onmousemove = null;
-            document.ontouchend = null;
-            document.ontouchmove = null;
-        }
-        
-        function closeResizeElement() {
-            // Stop resizing when mouse/touch is released
-            document.onmouseup = null;
-            document.onmousemove = null;
-            document.ontouchend = null;
-            document.ontouchmove = null;
-            resizing = false;
-        }
-    }
-    
-    // Download button
-    document.getElementById('download-btn').addEventListener('click', function() {
-        if (!activeDocument) return;
-        
-        const loadingElement = document.getElementById('loading');
-        loadingElement.style.display = 'flex';
-        
-        setTimeout(() => {
-            exportDocument('download');
-        }, 500);
-    });
-    
-    // Share button for mobile
-    document.getElementById('share-btn').addEventListener('click', function() {
-        if (!activeDocument) return;
-        
-        const loadingElement = document.getElementById('loading');
-        loadingElement.style.display = 'flex';
-        
-        setTimeout(() => {
-            exportDocument('share');
-        }, 500);
-    });
-    
-    // Function to export document (either download or share)
-    function exportDocument(action) {
-        // Create a canvas to generate the final document
-        const finalCanvas = document.createElement('canvas');
-        const docImage = document.getElementById('document-image');
-        
-        // Set canvas size to match the image's natural dimensions
-        finalCanvas.width = docImage.naturalWidth;
-        finalCanvas.height = docImage.naturalHeight;
-        
-        const finalContext = finalCanvas.getContext('2d');
-        
-        // Draw the document image
-        finalContext.drawImage(docImage, 0, 0, finalCanvas.width, finalCanvas.height);
-        
-        // Get document container dimensions
-        const docContainer = document.getElementById('document-content');
-        const docRect = docContainer.getBoundingClientRect();
-        
-        // Calculate scale factors
-        const scaleX = docImage.naturalWidth / docRect.width;
-        const scaleY = docImage.naturalHeight / docRect.height;
-        
-        // Create a temporary offscreen canvas to render elements precisely
-        const offscreenCanvas = document.createElement('canvas');
-        offscreenCanvas.width = docImage.naturalWidth;
-        offscreenCanvas.height = docImage.naturalHeight;
-        const offscreenCtx = offscreenCanvas.getContext('2d');
-        
-        // Draw all draggable elements in their positions
-        const elements = document.querySelectorAll('.draggable-resizable');
-        const drawElementPromises = Array.from(elements).map(el => {
-            return new Promise(resolve => {
-                const rect = el.getBoundingClientRect();
-                
-                // Calculate position relative to document container
-                const elementLeft = rect.left - docRect.left;
-                const elementTop = rect.top - docRect.top;
-                
-                // Calculate position and size on the final canvas
-                const canvasX = Math.round(elementLeft * scaleX);
-                const canvasY = Math.round(elementTop * scaleY);
-                const canvasWidth = Math.round(rect.width * scaleX);
-                const canvasHeight = Math.round(rect.height * scaleY);
-                
-                // Draw the element
-                const img = el.querySelector('img');
-                if (img && img.src) {
-                    const tempImg = new Image();
-                    tempImg.crossOrigin = "anonymous";
-                    tempImg.src = img.src;
-                    tempImg.onload = () => {
-                        offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
-                        offscreenCtx.drawImage(tempImg, 0, 0, tempImg.width, tempImg.height);
-                        
-                        // Draw to final canvas
-                        finalContext.drawImage(
-                            tempImg,
-                            0, 0, tempImg.width, tempImg.height,
-                            canvasX, canvasY, canvasWidth, canvasHeight
-                        );
-                        resolve();
-                    };
-                    tempImg.onerror = () => {
-                        console.error("Failed to load image:", img.src);
-                        resolve();
-                    };
-                } else {
-                    resolve();
                 }
             });
-        });
-        
-        Promise.all(drawElementPromises).then(() => {
-            const loadingElement = document.getElementById('loading');
-            
-            if (action === 'download') {
-                // Convert to image and download
-                const image = finalCanvas.toDataURL('image/jpeg', 0.95);
-                
-                const downloadLink = document.createElement('a');
-                downloadLink.href = image;
-                downloadLink.download = `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.jpg`;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
-                
-                loadingElement.style.display = 'none';
-            } else if (action === 'share') {
-                // Convert to blob and share
-                finalCanvas.toBlob(function(blob) {
-                    if (navigator.share) {
-                        const file = new File([blob], `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.jpg`, { type: 'image/jpeg' });
-                        
-                        navigator.share({
-                            title: 'Documento Firmado',
-                            text: 'Documento con firma digital',
-                            files: [file]
-                        })
-                        .then(() => console.log('Compartido con éxito'))
-                        .catch((error) => console.log('Error al compartir:', error))
-                        .finally(() => {
-                            loadingElement.style.display = 'none';
-                        });
-                    } else {
-                        // Fallback for browsers that don't support Web Share API
-                        const image = finalCanvas.toDataURL('image/jpeg', 0.95);
-                        
-                        const downloadLink = document.createElement('a');
-                        downloadLink.href = image;
-                        downloadLink.download = `documento-firmado-${activeDocument.name.toLowerCase().replace(/\s/g, '-')}.jpg`;
-                        document.body.appendChild(downloadLink);
-                        downloadLink.click();
-                        document.body.removeChild(downloadLink);
-                        
-                        loadingElement.style.display = 'none';
-                        alert('Compartir no está soportado en este navegador. Se ha descargado el documento en su lugar.');
-                    }
-                }, 'image/jpeg', 0.95);
+        }
+
+        function getCanvasCoordinates(event) {
+            const rect = mainCanvas.getBoundingClientRect();
+            let clientX, clientY;
+            if (event.touches && event.touches.length > 0) {
+                clientX = event.touches[0].clientX; clientY = event.touches[0].clientY;
+            } else if (event.clientX !== undefined) {
+                clientX = event.clientX; clientY = event.clientY;
+            } else { return null; }
+            return { x: (clientX - rect.left), y: (clientY - rect.top) };
+        }
+
+        function isPointInElement(pointX, pointY, element) {
+            return pointX >= element.x && pointX <= element.x + element.width &&
+                   pointY >= element.y && pointY <= element.y + element.height;
+        }
+        function isPointInResizeHandle(pointX, pointY, element) {
+            if (!element) return false;
+            const handle = getResizeHandleRect(element);
+            const RHL = RESIZE_HANDLE_LOGICAL_SIZE;
+            const clickablePadding = RESIZE_HANDLE_CLICK_EXTENSION;
+            return pointX >= handle.x - clickablePadding && pointX <= handle.x + RHL + clickablePadding &&
+                   pointY >= handle.y - clickablePadding && pointY <= handle.y + RHL + clickablePadding;
+        }
+
+        function handleCanvasInteractionStart(event) {
+            if (event.cancelable) event.preventDefault();
+            const displayCoords = getCanvasCoordinates(event);
+            if (!displayCoords) return;
+
+            const mainCanvasRect = mainCanvas.getBoundingClientRect();
+            if (mainCanvasRect.width === 0 || mainCanvasRect.height === 0) return;
+
+            const logicalX = displayCoords.x * (mainCanvas.width / dpr / mainCanvasRect.width);
+            const logicalY = displayCoords.y * (mainCanvas.height / dpr / mainCanvasRect.height);
+
+            const currentDocSettings = appState.documentSettings[appState.currentDocumentUrl];
+            if (!currentDocSettings) return;
+
+            let newActiveElementId = null;
+            let clickedOnResizeHandle = false;
+
+            if (appState.activeElementId) {
+                const activeEl = getElementById(appState.currentDocumentUrl, appState.activeElementId);
+                if (activeEl && isPointInResizeHandle(logicalX, logicalY, activeEl)) {
+                    newActiveElementId = appState.activeElementId;
+                    clickedOnResizeHandle = true;
+                }
             }
-        });
-    }
-    
-    // Close the drawing modal when clicking outside of it
-    window.addEventListener('click', function(e) {
-        if (e.target === drawingModal) {
-            drawingModal.style.display = 'none';
+
+            if (!clickedOnResizeHandle) {
+                for (let i = currentDocSettings.elements.length - 1; i >= 0; i--) {
+                    const el = currentDocSettings.elements[i];
+                    if (isPointInElement(logicalX, logicalY, el)) {
+                        newActiveElementId = el.id; break;
+                    }}}
+
+            appState.activeElementId = newActiveElementId;
+
+            if (newActiveElementId) {
+                const element = getElementById(appState.currentDocumentUrl, newActiveElementId);
+                if (clickedOnResizeHandle) {
+                    appState.resizeState = {
+                        isResizing: true, elementId: newActiveElementId,
+                        startX: logicalX, startY: logicalY,
+                        initialElement: {
+                            x: element.x, y: element.y, width: element.width, height: element.height,
+                            aspectRatio: (element.height === 0 || element.width === 0) ? 1 : (element.width / element.height)
+                        }};
+                    appState.dragState.isDragging = false;
+                } else {
+                    appState.dragState = { isDragging: true, elementId: newActiveElementId, offsetX: logicalX - element.x, offsetY: logicalY - element.y };
+                    appState.resizeState.isResizing = false;
+                }} else {
+                appState.dragState.isDragging = false; appState.resizeState.isResizing = false;
+            }
+            updateSelectedElementControls(); redrawMainCanvas();
         }
-    });
-    
-    // Add keyboard event for Escape key to close modal
-    window.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && drawingModal.style.display === 'flex') {
-            drawingModal.style.display = 'none';
+
+        function handleCanvasInteractionMove(event) {
+            if (event.cancelable) event.preventDefault();
+            const displayCoords = getCanvasCoordinates(event);
+            if (!displayCoords) return;
+
+            const mainCanvasRect = mainCanvas.getBoundingClientRect();
+            if (mainCanvasRect.width === 0 || mainCanvasRect.height === 0) return;
+
+            const logicalX = displayCoords.x * (mainCanvas.width / dpr / mainCanvasRect.width);
+            const logicalY = displayCoords.y * (mainCanvas.height / dpr / mainCanvasRect.height);
+
+            if (appState.resizeState.isResizing && appState.resizeState.elementId === appState.activeElementId) {
+                const element = getElementById(appState.currentDocumentUrl, appState.activeElementId);
+                if (!element) {appState.resizeState.isResizing = false; return;}
+                const initial = appState.resizeState.initialElement;
+                const deltaX = logicalX - appState.resizeState.startX;
+
+                let newWidth = initial.width + deltaX;
+                newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
+                let newHeight = (initial.aspectRatio === 0) ? MIN_ELEMENT_DIM : (newWidth / initial.aspectRatio);
+
+                if (newHeight < MIN_ELEMENT_DIM) {
+                    newHeight = MIN_ELEMENT_DIM;
+                    if (initial.aspectRatio !== 0) newWidth = newHeight * initial.aspectRatio; else newWidth = MIN_ELEMENT_DIM;
+                }
+                newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
+                if (initial.aspectRatio !== 0) newHeight = newWidth / initial.aspectRatio; else newHeight = MIN_ELEMENT_DIM;
+                newHeight = Math.max(MIN_ELEMENT_DIM, newHeight);
+
+                element.width = newWidth;
+                element.height = newHeight;
+                redrawMainCanvas();
+                elementWidthInput.value = Math.round(element.width);
+                elementHeightInput.value = Math.round(element.height);
+
+            } else if (appState.dragState.isDragging && appState.dragState.elementId === appState.activeElementId) {
+                const element = getElementById(appState.currentDocumentUrl, appState.dragState.elementId);
+                if (element) {
+                    element.x = logicalX - appState.dragState.offsetX;
+                    element.y = logicalY - appState.dragState.offsetY;
+                    redrawMainCanvas();
+                }}}
+
+        function handleCanvasInteractionEnd(event) {
+            if (appState.resizeState.isResizing) {
+                appState.resizeState.isResizing = false;
+                if(appState.activeElementId) updateSelectedElementControls();
+            }
+            if (appState.dragState.isDragging) {
+                appState.dragState.isDragging = false;
+            }}
+
+        function updateSelectedElementControls() {
+            const activeElement = appState.activeElementId ? getElementById(appState.currentDocumentUrl, appState.activeElementId) : null;
+            // Check if the elementSizingControls should be visible based on CSS (for mobile)
+            // The CSS rule `display: none !important` will take precedence on mobile.
+            // This JS logic primarily controls visibility on desktop or if the CSS rule wasn't there.
+            if (activeElement && elementSizingControls.style.display !== 'none') { // Check current style, JS might hide it too
+                elementSizingControls.style.display = 'block';
+                imageElementControls.style.display = 'block';
+                elementWidthInput.value = Math.round(activeElement.width);
+                elementHeightInput.value = Math.round(activeElement.height);
+            } else {
+                 elementSizingControls.style.display = 'none';
+            }
         }
-    });
-}); 
+
+
+        function handleSizeInputChange() {
+            const activeElement = appState.activeElementId ? getElementById(appState.currentDocumentUrl, appState.activeElementId) : null;
+            if (!activeElement) return;
+
+            let newWidth = parseFloat(elementWidthInput.value) || activeElement.width;
+            let newHeight = parseFloat(elementHeightInput.value) || activeElement.height;
+
+            const originalAspectRatio = (activeElement.height === 0 || activeElement.width === 0) ? 1 : (activeElement.width / activeElement.height);
+
+            if (elementWidthInput === document.activeElement && newWidth !== activeElement.width) {
+                newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
+                if (originalAspectRatio !== 0) newHeight = newWidth / originalAspectRatio; else newHeight = MIN_ELEMENT_DIM;
+            } else if (elementHeightInput === document.activeElement && newHeight !== activeElement.height) {
+                newHeight = Math.max(MIN_ELEMENT_DIM, newHeight);
+                if (originalAspectRatio !== 0) newWidth = newHeight * originalAspectRatio; else newWidth = MIN_ELEMENT_DIM;
+            } else if (newWidth !== activeElement.width || newHeight !== activeElement.height) {
+                 newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
+                 if (originalAspectRatio !== 0) newHeight = newWidth / originalAspectRatio; else newHeight = MIN_ELEMENT_DIM;
+            } else {
+                elementWidthInput.value = Math.round(activeElement.width);
+                elementHeightInput.value = Math.round(activeElement.height);
+                return;
+            }
+
+            if (newHeight < MIN_ELEMENT_DIM) {
+                newHeight = MIN_ELEMENT_DIM;
+                if (originalAspectRatio !== 0) newWidth = newHeight * originalAspectRatio; else newWidth = MIN_ELEMENT_DIM;
+            }
+            newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
+
+            if (originalAspectRatio !== 0) {
+                let heightFromWidth = newWidth / originalAspectRatio;
+                if (elementWidthInput === document.activeElement || (elementHeightInput !== document.activeElement && newWidth !== activeElement.width)) {
+                    newHeight = Math.max(MIN_ELEMENT_DIM, heightFromWidth);
+                    newWidth = Math.max(MIN_ELEMENT_DIM, newHeight * originalAspectRatio);
+                } else {
+                    let widthFromHeight = newHeight * originalAspectRatio;
+                    newWidth = Math.max(MIN_ELEMENT_DIM, widthFromHeight);
+                    newHeight = Math.max(MIN_ELEMENT_DIM, newWidth / originalAspectRatio);
+                }
+            } else {
+                newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
+                newHeight = Math.max(MIN_ELEMENT_DIM, newHeight);
+            }
+
+            newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
+            newHeight = Math.max(MIN_ELEMENT_DIM, newHeight);
+
+            activeElement.width = Math.round(newWidth);
+            activeElement.height = Math.round(newHeight);
+            elementWidthInput.value = Math.round(activeElement.width);
+            elementHeightInput.value = Math.round(activeElement.height);
+            redrawMainCanvas();
+        }
+
+        const RESIZE_DEBOUNCE_MS = 250;
+
+        function handleAppResize() {
+            clearTimeout(appState.resizeTimeout);
+            appState.resizeTimeout = setTimeout(() => {
+                const newWindowWidth = window.innerWidth;
+                const newWindowHeight = window.innerHeight;
+                initializeDrawingPads();
+                if (appState.currentDocumentUrl) {
+                    loadDocument(appState.currentDocumentUrl);
+                }
+                appState.lastWindowWidth = newWindowWidth;
+                appState.lastWindowHeight = newWindowHeight;
+            }, RESIZE_DEBOUNCE_MS);
+        }
+
+        function setupEventListeners() {
+            clearNameBtn.addEventListener('click', () => clearDrawingPad(nameCtx, 'nameImageCache', nameCanvasEl));
+            confirmNameBtn.addEventListener('click', () => confirmDrawingPad(nameCtx, 'nameImageCache', nameCanvasEl));
+            clearCedulaBtn.addEventListener('click', () => clearDrawingPad(cedulaCtx, 'cedulaImageCache', cedulaCanvasEl));
+            confirmCedulaBtn.addEventListener('click', () => confirmDrawingPad(cedulaCtx, 'cedulaImageCache', cedulaCanvasEl));
+            clearDateBtn.addEventListener('click', () => clearDrawingPad(dateCtx, 'dateImageCache', dateCanvasEl));
+            confirmDateBtn.addEventListener('click', () => confirmDrawingPad(dateCtx, 'dateImageCache', dateCanvasEl));
+            clearSignatureBtn.addEventListener('click', () => clearDrawingPad(sigCtx, 'signatureImageCache', signaturePadEl));
+            confirmSignatureBtn.addEventListener('click', () => confirmDrawingPad(sigCtx, 'signatureImageCache', signaturePadEl));
+
+            mainCanvas.addEventListener('mousedown', handleCanvasInteractionStart);
+            mainCanvas.addEventListener('mousemove', handleCanvasInteractionMove);
+            mainCanvas.addEventListener('mouseup', handleCanvasInteractionEnd);
+            mainCanvas.addEventListener('mouseleave', handleCanvasInteractionEnd);
+            mainCanvas.addEventListener('touchstart', handleCanvasInteractionStart, { passive: false });
+            mainCanvas.addEventListener('touchmove', handleCanvasInteractionMove, { passive: false });
+            mainCanvas.addEventListener('touchend', handleCanvasInteractionEnd, { passive: false });
+
+            elementWidthInput.addEventListener('change', handleSizeInputChange);
+            elementHeightInput.addEventListener('change', handleSizeInputChange);
+            exportDocumentBtn.addEventListener('click', () => {
+                if (!appState.currentDocumentUrl || !appState.backgroundImage || !appState.backgroundImage.complete || appState.backgroundImage.naturalWidth === 0) {
+                    alert("Por favor, seleccione y cargue un documento primero, o espere a que cargue."); return;
+                }
+                const lastActiveElement = appState.activeElementId;
+                appState.activeElementId = null;
+                redrawMainCanvas(true);
+                const dataUrl = mainCanvas.toDataURL('image/jpeg', 0.92);
+                const link = document.createElement('a'); link.href = dataUrl;
+                const currentDocConfig = documentConfigurations.find(dc => dc.path === appState.currentDocumentUrl);
+                const shortNameForFile = currentDocConfig ? currentDocConfig.shortName : 'documento';
+                const dateForFile = new Date().toISOString().slice(0,10).replace(/-/g,'');
+                link.download = `APC_Firmado_${shortNameForFile}_${dateForFile}.jpg`;
+                document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                appState.activeElementId = lastActiveElement;
+                if(lastActiveElement) redrawMainCanvas();
+            });
+            window.addEventListener('resize', handleAppResize);
+        }
+
+        initializeDefaultDocumentSettings();
+        populateDocumentButtons();
+        initializeDrawingPads();
+        setupEventListeners();
+
+        let initialDocPathToLoad = handleUrlParameters();
+        if (!initialDocPathToLoad && documentConfigurations.length > 0) {
+            initialDocPathToLoad = documentConfigurations[0].path;
+        }
+
+        if (initialDocPathToLoad) {
+            loadDocument(initialDocPathToLoad);
+        } else {
+            console.error("No hay documentos APC configurados o no se pudo determinar doc inicial.");
+            if(!mainCanvas.width || mainCanvas.width === 0) {
+                 mainCanvas.style.width = "300px"; mainCanvas.style.height = "150px";
+                 mainCanvas.width = 300 * dpr; mainCanvas.height = 150 * dpr;
+            }
+             mainCtx = mainCanvas.getContext('2d');
+             configureDrawingContext(mainCtx, mainCanvas.width/dpr, mainCanvas.height/dpr);
+             mainCtx.fillStyle = "red"; mainCtx.font = "bold 16px Arial"; mainCtx.textAlign = "center";
+             mainCtx.fillText("No hay documentos.", mainCanvas.width/(2*dpr), mainCanvas.height/(2*dpr));
+        }
     </script>
 </body>
 </html>
