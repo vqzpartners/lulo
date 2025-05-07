@@ -11,9 +11,9 @@
             --lulo-panama-secondary: #f3f3f3;
             --text-color: #333;
             --border-color: #ccc;
-            --selection-border-color: #0069d9; /* Azul más intenso para selección */
-            --selection-handle-color: #0056b3; /* Azul aún más oscuro para el manejador */
-            --selection-handle-stroke: #ffffff; /* Borde blanco para el manejador */
+            --selection-border-color: #0069d9;
+            --selection-handle-color: #0056b3;
+            --selection-handle-stroke: #ffffff;
             --confirmed-pad-border: #28a745;
         }
         html, body { overscroll-behavior-y: contain; }
@@ -21,7 +21,7 @@
             font-family: Arial, sans-serif; margin: 0; padding: 10px;
             background-color: var(--lulo-panama-secondary); color: var(--text-color);
             display: flex; flex-direction: column; align-items: center;
-            -webkit-tap-highlight-color: transparent; /* Optional: remove tap highlight on mobile */
+            -webkit-tap-highlight-color: transparent;
         }
         .container {
             width: 100%; max-width: 1200px; background-color: white;
@@ -30,7 +30,7 @@
         }
         h1 {
             color: var(--lulo-panama-primary); text-align: center;
-            margin-top: 0; /* Added */
+            margin-top: 0;
             margin-bottom: 15px; font-size: 1.6em;
         }
         .initial-guidance {
@@ -41,47 +41,59 @@
         .initial-guidance ul { padding-left: 20px; margin-top: 5px; margin-bottom: 5px;}
 
         .main-layout-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        .document-display-area { grid-column: 1 / -1; } /* Stays in flow for single column */
+        .document-display-area { grid-column: 1 / -1; }
 
-        .input-areas-container { /* This is the first child of main-layout-grid on mobile, or the first column on desktop */
-             /* It will implicitly take the first grid cell or can be explicitly assigned */
+        .input-areas-container {
+            min-width: 0; /* Allow shrinking in grid/flex context */
         }
 
         .input-areas-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* Slightly smaller min for more flexibility */
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 15px; margin-bottom: 20px;
         }
         .control-group {
             padding: 15px; border: 1px solid var(--border-color);
             border-radius: 5px; background-color: #fdfdfd;
-            display: flex; /* Added for better internal alignment */
-            flex-direction: column; /* Added */
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box; /* ADDED for better width calculation */
+            min-width: 0; /* ADDED to allow shrinking in grid/flex */
+            overflow: hidden; /* ADDED to prevent internal content from visually breaking out if it's still too wide. Can be removed if underlying issue is fully fixed. */
         }
         .control-group h3 {
             margin-top: 0; color: var(--lulo-panama-primary);
             border-bottom: 1px solid var(--lulo-panama-primary);
-            padding-bottom: 5px; font-size: 1.05em; margin-bottom: 10px; /* Added margin-bottom */
+            padding-bottom: 5px; font-size: 1.05em; margin-bottom: 10px;
+            word-break: break-word; /* ADDED for text wrapping */
+            overflow-wrap: break-word; /* ADDED for better text wrapping */
+            min-width: 0; /* ADDED to allow h3 to shrink */
         }
         label { display: block; margin-bottom: 5px; font-weight: bold; }
         input[type="number"] {
-            width: 100%; /* Corrected: box-sizing: border-box handles the rest */
+            width: 100%;
             padding: 10px; margin-bottom: 10px;
             border: 1px solid var(--border-color); border-radius: 4px; box-sizing: border-box;
         }
         button {
-            background-color: var(--lulo-panama-primary); color: white; padding: 10px 15px; /* Increased padding slightly for touch */
+            background-color: var(--lulo-panama-primary); color: white; padding: 10px 15px;
             border: none; border-radius: 4px; cursor: pointer; font-size:0.9em;
             transition: background-color 0.3s ease; margin-right: 5px; margin-bottom: 5px;
-            -webkit-appearance: none; /* For iOS button styling */
-            -moz-appearance: none;    /* For Firefox button styling */
-            appearance: none;          /* Standard property */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        .control-group button { /* Target buttons specifically inside control-group for wrapping */
+            max-width: 100%;
+            box-sizing: border-box;
+            white-space: normal; /* Allow text to wrap */
+            word-break: break-word; /* More aggressive break if needed */
         }
         button:hover { background-color: #003338; }
 
         .document-buttons { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom:10px;}
         .document-buttons button {
-            flex-grow: 1; min-width: 100px; /* Relies on flex-grow and min-width */
-            margin: 2px; /* Existing margin */
+            flex-grow: 1; min-width: 100px;
+            margin: 2px;
         }
         .document-buttons button.active {
             background-color: #003338;
@@ -90,18 +102,20 @@
 
         .handwriting-pad-area, .signature-pad-area {
             margin: 0 auto 10px auto;
-            width: 100%; /* Ensure the area itself takes available width up to max-width */
-            max-width: 380px; /* Keep max-width if desired for larger views of these pads */
+            width: 100%;
+            max-width: 380px;
+            min-width: 0; /* ADDED to allow shrinking */
+            box-sizing: border-box; /* ADDED */
         }
-        /* Common class for all drawing pads */
-        .drawing-pad {
+        .drawing-pad { /* The <canvas> */
             border: 1px dashed var(--border-color); border-radius: 4px; cursor: crosshair;
-            width: 100%; /* CRITICAL: This allows canvas to scale with its parent area */
-            height: auto;  /* JS will set specific height to maintain aspect ratio */
+            width: 100%;
+            max-width: 100%; /* ADDED as an extra safeguard */
+            height: auto;
             display: block;
-            touch-action: none; /* Already on #mainDocumentCanvas, good here too */
+            touch-action: none;
         }
-        .drawing-pad.confirmed { /* Common style for confirmed pads */
+        .drawing-pad.confirmed {
             border: 2px solid var(--confirmed-pad-border) !important;
         }
 
@@ -110,14 +124,13 @@
             max-height: 75vh;
             overflow: auto; border: 1px solid var(--border-color);
             background-color: var(--lulo-panama-secondary);
-            padding: 5px; /* Reduced padding for all sizes, adjust if too little on desktop */
+            padding: 5px;
             box-sizing: border-box;
         }
         #mainDocumentCanvas {
             border-radius: 4px; display: block; margin: 0 auto;
             touch-action: none;
             background-color: #FFFFFF;
-            /* width and height styles are set by JS */
         }
         .selected-element-controls {
             padding: 10px; border: 1px dashed var(--lulo-panama-primary);
@@ -125,27 +138,25 @@
         }
         .selected-element-controls label { margin-top: 8px; }
 
-        /* Desktop Layout */
         @media (min-width: 992px) {
             .main-layout-grid {
-                 grid-template-columns: minmax(320px, 400px) 1fr; /* Sidebar for inputs, main area for document */
-                 align-items: start; /* Align items to the start of the grid area */
+                 grid-template-columns: minmax(320px, 400px) 1fr;
+                 align-items: start;
             }
-            .input-areas-container { /* Assign this to the first grid area */
+            .input-areas-container {
                 grid-column: 1 / 2;
             }
-            .input-areas-grid { /* Inputs stack vertically in the sidebar */
+            .input-areas-grid {
                 grid-template-columns: 1fr;
             }
             .document-display-area {
                 grid-column: 2 / 3;
             }
             .canvas-container {
-                padding: 10px; /* Slightly more padding for desktop */
+                padding: 10px;
             }
         }
 
-        /* Tablet and Smaller Adjustments */
         @media (max-width: 768px) {
             body { padding: 5px; }
             .container { padding: 10px;}
@@ -155,19 +166,14 @@
             button { padding: 8px 12px; font-size: 0.85em; }
         }
 
-        /* Mobile Specific Adjustments */
         @media (max-width: 480px) {
             h1 { font-size: 1.2em; }
             button { padding: 8px 10px; }
             input[type="number"] { padding: 8px; }
             .initial-guidance ul { padding-left: 15px; }
             .control-group { padding: 10px; }
-            .canvas-container {
-                padding: 5px; /* Keep it tight on small screens */
-            }
         }
 
-        /* Very Small Mobile Adjustments (Optional, if needed) */
         @media (max-width: 360px) {
             h1 { font-size: 1.1em; }
             .initial-guidance { font-size: 0.8em; }
@@ -329,34 +335,30 @@
             const logicalInitialWidth = parseInt(canvasEl.dataset.logicalWidth) || 300;
             const logicalInitialHeight = parseInt(canvasEl.dataset.logicalHeight) || 100;
             let logicalAspectRatio = logicalInitialWidth / logicalInitialHeight;
-            if (logicalInitialHeight === 0 || isNaN(logicalAspectRatio) || !isFinite(logicalAspectRatio)) { // Prevent division by zero for aspect ratio
-                logicalAspectRatio = 3; // Default aspect ratio e.g. 300/100
+            if (logicalInitialHeight === 0 || isNaN(logicalAspectRatio) || !isFinite(logicalAspectRatio)) {
+                logicalAspectRatio = 3; 
             }
 
-
-            let renderedWidth = canvasEl.clientWidth; // Get width from CSS (e.g., 100% of parent)
+            let renderedWidth = canvasEl.clientWidth;
             if (renderedWidth === 0 && canvasEl.parentElement) {
                  renderedWidth = canvasEl.parentElement.clientWidth || logicalInitialWidth;
             } else if (renderedWidth === 0) {
                  renderedWidth = logicalInitialWidth;
             }
-             // Ensure renderedWidth is not zero to prevent further issues
             if (renderedWidth === 0) renderedWidth = logicalInitialWidth;
-
 
             let renderedHeight = renderedWidth / logicalAspectRatio;
             if (isNaN(renderedHeight) || !isFinite(renderedHeight)) {
-                renderedHeight = renderedWidth / 3; // Use default aspect ratio if calculation failed
+                renderedHeight = renderedWidth / 3;
             }
 
-
-            canvasEl.style.height = renderedHeight + 'px'; // Set style height to maintain aspect ratio
+            canvasEl.style.height = renderedHeight + 'px';
 
             canvasEl.width = renderedWidth * dpr;
             canvasEl.height = renderedHeight * dpr;
 
             const ctx = canvasEl.getContext('2d');
-            configureDrawingContext(ctx, renderedWidth, renderedHeight); // Pass current logical dimensions
+            configureDrawingContext(ctx, renderedWidth, renderedHeight);
 
             if (!canvasEl.dataset.listenersAttached) {
                 const eventHandlerOptions = { passive: false };
@@ -389,7 +391,7 @@
                 clientX = event.clientX; clientY = event.clientY;
             } else { return null; }
 
-            if (rect.width === 0 || rect.height === 0) return {x:0, y:0}; // Avoid division by zero
+            if (rect.width === 0 || rect.height === 0) return {x:0, y:0};
             return {
                 x: (clientX - rect.left) * (canvasEl.width / dpr / rect.width),
                 y: (clientY - rect.top) * (canvasEl.height / dpr / rect.height)
@@ -507,7 +509,7 @@
                 const imageAspectRatio = appState.backgroundImage.naturalWidth / appState.backgroundImage.naturalHeight;
 
                 let targetWidth = canvasContainer.clientWidth;
-                let displayWidth = targetWidth; // Simplified from: Math.min(targetWidth, canvasContainer.clientWidth)
+                let displayWidth = targetWidth;
                 let displayHeight = displayWidth / imageAspectRatio;
 
                 let containerMaxHeight = parseFloat(containerStyle.maxHeight);
@@ -637,7 +639,7 @@
             if (!displayCoords) return;
 
             const mainCanvasRect = mainCanvas.getBoundingClientRect();
-            if (mainCanvasRect.width === 0 || mainCanvasRect.height === 0) return; // Avoid division by zero if canvas isn't rendered
+            if (mainCanvasRect.width === 0 || mainCanvasRect.height === 0) return;
 
             const logicalX = displayCoords.x * (mainCanvas.width / dpr / mainCanvasRect.width);
             const logicalY = displayCoords.y * (mainCanvas.height / dpr / mainCanvasRect.height);
@@ -673,7 +675,7 @@
                         startX: logicalX, startY: logicalY,
                         initialElement: {
                             x: element.x, y: element.y, width: element.width, height: element.height,
-                            aspectRatio: (element.height === 0) ? 1 : (element.width / element.height) // Avoid division by zero
+                            aspectRatio: (element.height === 0 || element.width === 0) ? 1 : (element.width / element.height)
                         }};
                     appState.dragState.isDragging = false;
                 } else {
@@ -706,7 +708,6 @@
                 newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
                 let newHeight = (initial.aspectRatio === 0) ? MIN_ELEMENT_DIM : (newWidth / initial.aspectRatio);
 
-
                 if (newHeight < MIN_ELEMENT_DIM) {
                     newHeight = MIN_ELEMENT_DIM;
                     if (initial.aspectRatio !== 0) newWidth = newHeight * initial.aspectRatio; else newWidth = MIN_ELEMENT_DIM;
@@ -714,7 +715,6 @@
                 newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
                 if (initial.aspectRatio !== 0) newHeight = newWidth / initial.aspectRatio; else newHeight = MIN_ELEMENT_DIM;
                 newHeight = Math.max(MIN_ELEMENT_DIM, newHeight);
-
 
                 element.width = newWidth;
                 element.height = newHeight;
@@ -767,42 +767,36 @@
                  newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
                  if (originalAspectRatio !== 0) newHeight = newWidth / originalAspectRatio; else newHeight = MIN_ELEMENT_DIM;
             } else {
-                elementWidthInput.value = Math.round(activeElement.width); // Ensure inputs reflect current if no valid change
+                elementWidthInput.value = Math.round(activeElement.width);
                 elementHeightInput.value = Math.round(activeElement.height);
                 return;
             }
 
-            // Ensure both dimensions meet min and maintain aspect ratio
             if (newHeight < MIN_ELEMENT_DIM) {
                 newHeight = MIN_ELEMENT_DIM;
                 if (originalAspectRatio !== 0) newWidth = newHeight * originalAspectRatio; else newWidth = MIN_ELEMENT_DIM;
             }
             newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
 
-            // Final adjustment to ensure aspect ratio and min dimensions
             if (originalAspectRatio !== 0) {
-                // If width drove change or was adjusted
                 let heightFromWidth = newWidth / originalAspectRatio;
-                // If height drove change or was adjusted
                 let widthFromHeight = newHeight * originalAspectRatio;
 
-                // Prioritize the changed dimension if possible, else ensure consistency
-                if (elementWidthInput === document.activeElement) {
+                if (elementWidthInput === document.activeElement || (elementHeightInput !== document.activeElement && newWidth !== activeElement.width) ) { // Width changed or is the primary driver
                     newHeight = Math.max(MIN_ELEMENT_DIM, heightFromWidth);
-                } else if (elementHeightInput === document.activeElement) {
+                    newWidth = Math.max(MIN_ELEMENT_DIM, newHeight * originalAspectRatio); // Recalculate width from potentially adjusted height
+                } else { // Height changed or is the primary driver
                     newWidth = Math.max(MIN_ELEMENT_DIM, widthFromHeight);
-                } else { // Default or programmatic change
-                    newHeight = Math.max(MIN_ELEMENT_DIM, heightFromWidth);
+                    newHeight = Math.max(MIN_ELEMENT_DIM, newWidth / originalAspectRatio); // Recalculate height from potentially adjusted width
                 }
-                 // Ensure the other dimension is also at least MIN_ELEMENT_DIM
-                newWidth = Math.max(MIN_ELEMENT_DIM, (originalAspectRatio !==0 ? newHeight * originalAspectRatio : MIN_ELEMENT_DIM));
-                newHeight = Math.max(MIN_ELEMENT_DIM, (originalAspectRatio !==0 ? newWidth / originalAspectRatio: MIN_ELEMENT_DIM));
-
-
-            } else { // No aspect ratio to maintain (e.g. original height was 0)
+            } else {
                 newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
                 newHeight = Math.max(MIN_ELEMENT_DIM, newHeight);
             }
+            
+            // Final clamping
+            newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
+            newHeight = Math.max(MIN_ELEMENT_DIM, newHeight);
 
 
             activeElement.width = Math.round(newWidth);
@@ -882,11 +876,11 @@
             loadDocument(initialDocPathToLoad);
         } else {
             console.error("No hay documentos APC configurados o no se pudo determinar doc inicial.");
-            if(!mainCanvas.width || mainCanvas.width === 0) { // Basic fallback if no doc loads
+            if(!mainCanvas.width || mainCanvas.width === 0) {
                  mainCanvas.style.width = "300px"; mainCanvas.style.height = "150px";
                  mainCanvas.width = 300 * dpr; mainCanvas.height = 150 * dpr;
             }
-             mainCtx = mainCanvas.getContext('2d'); // Ensure context if not already set
+             mainCtx = mainCanvas.getContext('2d');
              configureDrawingContext(mainCtx, mainCanvas.width/dpr, mainCanvas.height/dpr);
              mainCtx.fillStyle = "red"; mainCtx.font = "bold 16px Arial"; mainCtx.textAlign = "center";
              mainCtx.fillText("No hay documentos.", mainCanvas.width/(2*dpr), mainCanvas.height/(2*dpr));
