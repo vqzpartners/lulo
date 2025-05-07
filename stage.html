@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Firmador de Documentos APC - Lulo Panamá</title>
+    <title>Firma de APCs - Lulo Panamá</title>
     <meta name="robots" content="nofollow">
+    <link rel="icon" href="img/favicon.png" type="image/jpeg">
     <style>
         :root {
             --lulo-panama-primary: #004951;
@@ -211,12 +212,18 @@
             body { padding: 5px; }
             .container { padding: 10px;}
             .control-group { padding: 10px; }
-             .control-group h3 { padding-left: 5px; padding-right: 5px; }
-             .handwriting-pad-area, .signature-pad-area { padding: 0 5px; }
+            .control-group h3 { padding-left: 5px; padding-right: 5px; }
+            .handwriting-pad-area, .signature-pad-area { padding: 0 5px; }
             h1 { font-size: 1.4em; }
             .control-group h3 { font-size: 1em; }
             .initial-guidance { font-size: 0.85em; }
             button { padding: 8px 12px; font-size: 0.85em; } /* General button adjust */
+
+            /* --- MODIFICATION TO HIDE ELEMENT SIZING CONTROLS ON MOBILE --- */
+            #elementSizingControls {
+                display: none !important; 
+            }
+            /* --- END MODIFICATION --- */
         }
 
         /* Mobile Specific Adjustments */
@@ -230,6 +237,13 @@
                 margin-left: 5px;
                 margin-right: 5px;
             }
+            /* If #elementSizingControls was not hidden by the (max-width: 768px) rule 
+               or if you need to be absolutely sure for this specific breakpoint,
+               you could repeat the rule here. However, the 768px rule should cascade.
+               #elementSizingControls {
+                   display: none !important; 
+               }
+            */
         }
 
         /* NEW: Very Narrow Screen Adjustments */
@@ -598,8 +612,8 @@
 
                 let containerMaxHeight = parseFloat(containerStyle.maxHeight);
                  if (isNaN(containerMaxHeight) || containerMaxHeight <= 0) {
-                    containerMaxHeight = window.innerHeight * 0.75;
-                }
+                     containerMaxHeight = window.innerHeight * 0.75;
+                 }
                 if (displayHeight > containerMaxHeight) {
                     displayHeight = containerMaxHeight;
                     displayWidth = displayHeight * imageAspectRatio;
@@ -825,12 +839,19 @@
 
         function updateSelectedElementControls() {
             const activeElement = appState.activeElementId ? getElementById(appState.currentDocumentUrl, appState.activeElementId) : null;
-            if (activeElement) {
+            // Check if the elementSizingControls should be visible based on CSS (for mobile)
+            // The CSS rule `display: none !important` will take precedence on mobile.
+            // This JS logic primarily controls visibility on desktop or if the CSS rule wasn't there.
+            if (activeElement && elementSizingControls.style.display !== 'none') { // Check current style, JS might hide it too
                 elementSizingControls.style.display = 'block';
                 imageElementControls.style.display = 'block';
                 elementWidthInput.value = Math.round(activeElement.width);
                 elementHeightInput.value = Math.round(activeElement.height);
-            } else { elementSizingControls.style.display = 'none'; }}
+            } else {
+                 elementSizingControls.style.display = 'none';
+            }
+        }
+
 
         function handleSizeInputChange() {
             const activeElement = appState.activeElementId ? getElementById(appState.currentDocumentUrl, appState.activeElementId) : null;
