@@ -535,4 +535,244 @@
         }
 
         function calculateDistance(p1, p2) { // p1, p2 are {clientX, clientY}
-            return Math.sqrt(Math.pow(p2.clientX - p1.clientX, 2) + Math.pow(p2.clientY - p1
+            return Math.sqrt(Math.pow(p2.clientX - p1.clientX, 2) + Math.pow(p2.clientY - p1.clientY, 2));
+        }
+
+        function getCanvasCoordinates(event) { 
+            const rect = mainCanvas.getBoundingClientRect();
+            let clientX, clientY;
+            // For pinch, event might be the raw touch event, not a single touch point
+            if (event.touches && event.touches.length > 0) { // Usually for single touch
+                clientX = event.touches[0].clientX; clientY = event.touches[0].clientY;
+            } else if (event.clientX !== undefined) { // Mouse event
+                clientX = event.clientX; clientY = event.clientY;
+            } else { return null; }
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+        
+        function isPointInElement(pointX, pointY, element) { 
+            return pointX >= element.x && pointX <= element.x + element.width && 
+                   pointY >= element.y && pointY <= element.y + element.height;
+        }
+
+        function handleCanvasTouchStart(event) {
+            if (event.touches.length === 1) {
+                const coords = getCanvasCoordinates(event); // Uses event.touches[0]
+                if (!coords) return;
+
+                const currentDocSettings = appState.documentSettings[appState.currentDocumentUrl];
+                if (!currentDocSettings) return;
+                let selected = null;
+                for (let i = currentDocSettings.elements.length - 1; i >= 0; i--) {
+                    const el = currentDocSettings.elements[i];
+                    if (isPointInElement(coords.x, coords.y, el)) { selected = el; break; }
+                }
+                appState.activeElementId = selected ? selected.id : null;
+                if (selected) {
+                    appState.dragState = { isDragging: true, elementId: selected.id, offsetX: coords.x - selected.x, offsetY: coords.y - selected.y };
+                    appState.pinchState.isPinching = false; // Ensure pinch is off
+                } else {
+                    appState.dragState.isDragging = false;
+                }
+                
+            } else if (event.touches.length === 2 && appState.activeElementId) {
+                const element = getElementById(appState.currentDocumentUrl, appState.activeElementId);
+                if (!element) return;
+                
+                appState.dragState.isDragging = false; 
+                appState.pinchState.isPinching = true;
+                appState.pinchState.elementId = appState.activeElementId;
+
+                appState.pinchState.initialPinchDistance = calculateDistance(event.touches[0], event.touches[1]);
+                appState.pinchState.initialElement = { 
+                    width: element.width, height: element.height, 
+                    centerX: element.x + element.width / 2, 
+                    centerY: element.y + element.height / 2,
+                };
+            }
+            updateSelectedElementControls(); // Update UI based on activeElementId
+            redrawMainCanvas(); // Redraw for selection box
+            if (event.cancelable) event.preventDefault();
+        }
+        
+        function handleCanvasMouseDown(event) { // For Mouse - simpler, no pinch
+            const coords = getCanvasCoordinates(event);
+            if (!coords) return;
+            const { x, y } = coords;
+
+            const currentDocSettings = appState.documentSettings[appState.currentDocumentUrl];
+            if (!currentDocSettings) return;
+            let selected = null;
+            for (let i = currentDocSettings.elements.length - 1; i >= 0; i--) {
+                const el = currentDocSettings.elements[i];
+                if (isPointInElement(x, y, el)) { selected = el; break; }
+            }
+            appState.activeElementId = selected ? selected.id : null;
+            if (selected) {
+                appState.dragState = { isDragging: true, elementId: selected.id, offsetX: x - selected.x, offsetY: y - selected.y };
+            } else {
+                appState.dragState.isDragging = false;
+            }
+            updateSelectedElementControls();
+            redrawMainCanvas();
+            if (event.cancelable) event.preventDefault();
+        }
+
+
+        function handleCanvasTouchMove(event) {
+            if (appState.pinchState.isPinching && event.touches.length === 2 && appState.pinchState.elementId === appState.activeElementId) {
+                const element = getElementById(appState.currentDocumentUrl, appState.activeElementId);
+                if (!element) { appState.pinchState.isPinching = false; return; }
+
+                const currentPinchDistance = calculateDistance(event.touches[0], event.touches[1]);
+                if (appState.pinchState.initialPinchDistance === 0) return; 
+                let scale = currentPinchDistance / appState.pinchState.initialPinchDistance;
+                scale = Math.max(0.05, scale); 
+
+                const newWidth = appState.pinchState.initialElement.width * scale;
+                const newHeight = appState.pinchState.initialElement.height * scale;
+
+                element.width = Math.max(20, newWidth); 
+                element.height = Math.max(20, newHeight);
+                element.x = appState.pinchState.initialElement.centerX - element.width / 2;
+                element.y = appState.pinchState.initialElement.centerY - element.height / 2;
+                
+                redrawMainCanvas();
+                elementWidthInput.value = Math.round(element.width);
+                elementHeightInput.value = Math.round(element.height);
+
+            } else if (appState.dragState.isDragging && appState.dragState.elementId === appState.activeElementId && event.touches.length === 1) {
+                 const coords = getCanvasCoordinates(event); // Uses event.touches[0]
+                if (!coords) return;
+                const element = getElementById(appState.currentDocumentUrl, appState.dragState.elementId);
+                if (element) {
+                    element.x = coords.x - appState.dragState.offsetX;
+                    element.y = coords.y - appState.dragState.offsetY;
+                    redrawMainCanvas();
+                }
+            } else if (appState.pinchState.isPinching && event.touches.length !== 2) {
+                appState.pinchState.isPinching = false; // Pinch ended due to finger change
+            }
+             if (event.cancelable) event.preventDefault();
+        }
+
+        function handleCanvasMouseMove(event) { // For Mouse
+            if (!appState.dragState.isDragging || !appState.dragState.elementId) return;
+            const coords = getCanvasCoordinates(event);
+            if (!coords) return;
+            const element = getElementById(appState.currentDocumentUrl, appState.dragState.elementId);
+            if (element) {
+                element.x = coords.x - appState.dragState.offsetX;
+                element.y = coords.y - appState.dragState.offsetY;
+                redrawMainCanvas();
+            }
+            if (event.cancelable) event.preventDefault();
+        }
+
+
+        function handleCanvasInteractionEnd(event) { 
+            if (appState.pinchState.isPinching && (!event.touches || event.touches.length < 2)) {
+                appState.pinchState.isPinching = false;
+                appState.pinchState.elementId = null;
+            }
+            if (appState.dragState.isDragging && (!event.touches || event.touches.length === 0)) { // For mouseup or last touch up
+                appState.dragState.isDragging = false;
+            }
+            // For touchend, if there are still touches, we might not want to fully end interaction
+            // but the specific states (isPinching, isDragging) are key.
+        }
+        
+        function updateSelectedElementControls() {
+            const activeElement = appState.activeElementId ? getElementById(appState.currentDocumentUrl, appState.activeElementId) : null;
+            if (activeElement) { 
+                elementSizingControls.style.display = 'block';
+                imageElementControls.style.display = 'block'; 
+                elementWidthInput.value = Math.round(activeElement.width);
+                elementHeightInput.value = Math.round(activeElement.height);
+            } else {
+                elementSizingControls.style.display = 'none';
+            }
+        }
+
+        function handleSizeInputChange() { 
+            const activeElement = appState.activeElementId ? getElementById(appState.currentDocumentUrl, appState.activeElementId) : null;
+            if (!activeElement) return;
+            activeElement.width = parseInt(elementWidthInput.value, 10) || 100; 
+            activeElement.height = parseInt(elementHeightInput.value, 10) || 50;
+            // If scaling proportionally is desired, adjust one based on the other's change here.
+            // For now, independent width/height.
+            redrawMainCanvas();
+        }
+        
+        function setupEventListeners() {
+            documentSelector.addEventListener('change', (e) => {
+                appState.activeElementId = null; appState.dragState.isDragging = false; appState.pinchState.isPinching = false;
+                updateSelectedElementControls(); loadDocument(e.target.value);
+            });
+            clearNameBtn.addEventListener('click', () => clearDrawingPad(nameCtx, 'name', 'nameImageCache'));
+            confirmNameBtn.addEventListener('click', () => confirmDrawingPad(nameCtx, 'nameImageCache'));
+            clearCedulaBtn.addEventListener('click', () => clearDrawingPad(cedulaCtx, 'cedula', 'cedulaImageCache'));
+            confirmCedulaBtn.addEventListener('click', () => confirmDrawingPad(cedulaCtx, 'cedulaImageCache'));
+            clearSignatureBtn.addEventListener('click', () => clearDrawingPad(sigCtx, 'signature', 'signatureImageCache'));
+            confirmSignatureBtn.addEventListener('click', () => confirmDrawingPad(sigCtx, 'signatureImageCache'));
+
+            mainCanvas.addEventListener('mousedown', handleCanvasMouseDown);
+            mainCanvas.addEventListener('mousemove', handleCanvasMouseMove);
+            mainCanvas.addEventListener('mouseup', handleCanvasInteractionEnd);
+            mainCanvas.addEventListener('mouseleave', handleCanvasInteractionEnd); 
+            mainCanvas.addEventListener('touchstart', handleCanvasTouchStart, { passive: false });
+            mainCanvas.addEventListener('touchmove', handleCanvasTouchMove, { passive: false });
+            mainCanvas.addEventListener('touchend', handleCanvasInteractionEnd, { passive: false }); // Use common end logic
+
+            elementWidthInput.addEventListener('input', handleSizeInputChange); // 'input' for more real-time feel
+            elementHeightInput.addEventListener('input', handleSizeInputChange);
+
+            exportDocumentBtn.addEventListener('click', () => {
+                if (!appState.currentDocumentUrl || !appState.backgroundImage || !appState.backgroundImage.complete) {
+                    alert("Por favor, seleccione y cargue un documento primero."); return;
+                }
+                const lastActiveElement = appState.activeElementId;
+                appState.activeElementId = null; 
+                redrawMainCanvas(true); 
+                const dataUrl = mainCanvas.toDataURL('image/jpeg', 0.92); 
+                const link = document.createElement('a'); link.href = dataUrl;
+                const currentDocConfig = documentConfigurations.find(dc => dc.path === appState.currentDocumentUrl);
+                const shortNameForFile = currentDocConfig ? currentDocConfig.shortName : 'documento';
+                const dateForFile = new Date().toISOString().slice(0,10).replace(/-/g,'');
+                link.download = `APC_Firmado_${shortNameForFile}_${dateForFile}.jpg`;
+                document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                appState.activeElementId = lastActiveElement; 
+                if(lastActiveElement) redrawMainCanvas(); 
+            });
+
+            window.addEventListener('resize', () => {
+                initializeDrawingPads(); 
+                if (appState.currentDocumentUrl && appState.backgroundImage && appState.backgroundImage.complete) {
+                    loadDocument(appState.currentDocumentUrl); 
+                }
+            });
+        }
+
+        initializeDefaultDocumentSettings();
+        populateDocumentSelector();
+        initializeDrawingPads(); 
+        handleUrlParameters(); 
+        setupEventListeners();
+        
+        if (documentSelector.value) { 
+            loadDocument(documentSelector.value);
+        } else if (documentConfigurations.length > 0) { 
+            documentSelector.value = documentConfigurations[0].path;
+            loadDocument(documentConfigurations[0].path);
+        } else {
+            console.error("No hay documentos APC configurados.");
+             if(mainCanvas.width > 0 && mainCanvas.height > 0) {
+                mainCtx.resetTransform(); mainCtx.scale(dpr, dpr);
+                mainCtx.clearRect(0,0, mainCanvas.width/dpr, mainCanvas.height/dpr);
+                mainCtx.fillStyle = "red"; mainCtx.font = "16px Arial"; mainCtx.textAlign = "center";
+                mainCtx.fillText("No hay documentos APC configurados.", mainCanvas.width/(2*dpr), mainCanvas.height/(2*dpr));
+            }
+        }
+    </script>
+</body>
+</html>
