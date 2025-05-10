@@ -6,6 +6,7 @@
     <title>Chatea con Lulo - Lulo Panamá</title>
     <link rel="icon" type="image/png" href="img/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         /* Global reset and base styles */
         * {
@@ -16,7 +17,7 @@
 
         html, body {
             height: 100%;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Roboto', 'Arial', sans-serif; /* Changed to Roboto */
             background-color: #ffffff; /* White background for the page */
         }
 
@@ -179,6 +180,7 @@
             font-size: 16px;
             background: rgba(0, 0, 0, 0.5);
             color: #fff;
+            font-family: 'Roboto', sans-serif; /* Ensure Roboto */
         }
 
         .chatbot-input input::placeholder {
@@ -244,11 +246,18 @@
         .app-footer p {
             margin-bottom: 8px;
         }
+        
+        .app-footer .footer-links { /* Added a wrapper for links */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap; /* Allow wrapping on slightly larger screens if needed */
+        }
 
         .app-footer a {
-            color: # تقریباًwhite; /* A slightly off-white for links if needed */
+            color: #f0f0f0; /* A slightly off-white for links if needed */
             text-decoration: none;
-            margin: 0 10px;
+            margin: 0 10px; /* Horizontal spacing */
         }
 
         .app-footer a:hover {
@@ -263,12 +272,12 @@
                 top: 5px; /* Adjust sticky position for mobile */
             }
             .app-header img.logo {
-                height: 60px;
+                height: 60px; /* Logo smaller on medium mobile */
             }
 
             .page-container {
-                 /* Adjust top margin if header size/margin changes significantly on mobile */
-                margin-top: 60px;
+                /* Adjust top margin if header size/margin changes significantly on mobile */
+                margin-top: 60px; 
                 padding: 15px 5px; /* Less horizontal padding on mobile */
             }
 
@@ -310,12 +319,69 @@
                 font-size: 12px;
                 padding: 10px;
             }
-            .app-footer a {
-                margin: 0 5px;
-                display: block; /* Stack links on very small screens */
-                margin-bottom: 5px;
+            .app-footer .footer-links {
+                /* display: flex; Already set globally, will inherit */
+                /* justify-content: center; Already set globally */
+                /* flex-wrap: wrap; Already set globally */
             }
-            .app-footer a:last-child {
+            .app-footer a {
+                margin: 5px 8px; /* Adjust margin for side-by-side layout */
+                /* display: inline-block; remove if using flex on parent */
+            }
+        }
+
+        /* New Media Query for smaller screens */
+        @media (max-width: 480px) {
+            .app-header {
+                width: 95%;
+                padding: 6px 10px;
+                top: 5px;
+            }
+            .app-header img.logo {
+                height: 60px; /* Keep logo size consistent with 768px breakpoint or desired fixed size */
+            }
+            .page-container {
+                margin-top: 55px; /* Adjust if header is smaller */
+                padding: 10px 3px;
+            }
+            .chatbot-container {
+                padding: 8px;
+            }
+            .message {
+                font-size: 14px;
+                padding: 5px 8px;
+            }
+             .message-avatar {
+                width: 26px;
+                height: 26px;
+                margin: 0 5px;
+            }
+            .sector-option {
+                font-size: 14px;
+                padding: 4px 8px;
+            }
+            .chatbot-input input {
+                font-size: 14px;
+                padding: 7px 10px;
+            }
+            .chatbot-input button {
+                font-size: 15px;
+                width: 36px;
+                height: 36px;
+            }
+            .app-footer {
+                font-size: 11px;
+                padding: 8px;
+            }
+            .app-footer .footer-links {
+                flex-direction: column; /* Stack links vertically on very small screens */
+                align-items: center;
+            }
+            .app-footer a {
+                margin: 5px 0; /* Vertical margin when stacked */
+                display: block; /* Ensure they take full width if needed for centering text */
+            }
+             .app-footer a:last-child {
                 margin-bottom: 0;
             }
         }
@@ -324,7 +390,7 @@
 <body>
     <header class="app-header">
         <img src="img/white-web-logo.svg" alt="Lulo Logo" class="logo">
-        </header>
+    </header>
 
     <div class="page-container">
         <div class="chatbot-container">
@@ -338,8 +404,7 @@
 
     <footer class="app-footer">
         <p>&copy; <span id="currentYear"></span> Lulo Panamá. Todos los derechos reservados.</p>
-        <div>
-            <a href="https://lulopanama.com/terminos">Términos y Condiciones</a>
+        <div class="footer-links"> <a href="https://lulopanama.com/terminos">Términos y Condiciones</a>
             <a href="https://lulopanama.com/privacidad">Política de Privacidad</a>
         </div>
     </footer>
@@ -408,387 +473,11 @@
         containerDiv.appendChild(avatarImg);
         const messageDiv = document.createElement('div');
         messageDiv.className = 'message bot-message';
-        // For text content, use textContent to prevent XSS
-        // For HTML content, ensure it's sanitized or from a trusted source
-        // In this case, message is text, referralDiv.innerHTML is controlled
+
         const textNode = document.createTextNode(message + (options || includeReferralInfo ? " " : "")); // Add space if options/referral follow
         messageDiv.appendChild(textNode);
         
         if (includeReferralInfo) {
             const referralDiv = document.createElement('div');
             referralDiv.className = 'referral-highlight';
-            referralDiv.innerHTML = '💰 <strong>¡Gana dinero!</strong> Únete a nuestro programa de referidos y gana el 1% del monto de cada préstamo que refieras. ¡Imagina recibir $250 por referir un préstamo de $25,000!';
-            const referralButtonDiv = document.createElement('div');
-            referralButtonDiv.className = 'sector-options';
-            const referralButton = document.createElement('div');
-            referralButton.className = 'sector-option';
-            referralButton.textContent = 'Quiero unirme al programa de referidos';
-            referralButton.onclick = redirectToReferralProgram;
-            referralButtonDiv.appendChild(referralButton);
-            referralDiv.appendChild(referralButtonDiv);
-            messageDiv.appendChild(referralDiv);
-        }
-        
-        if (options) {
-            const optionsDiv = document.createElement('div');
-            optionsDiv.className = 'sector-options';
-            options.forEach(optionText => {
-                const optionDiv = document.createElement('div');
-                optionDiv.className = 'sector-option';
-                optionDiv.textContent = optionText;
-                optionDiv.onclick = () => handleOption(optionText);
-                optionsDiv.appendChild(optionDiv);
-            });
-            messageDiv.appendChild(optionsDiv);
-            userInput.disabled = true;
-            sendButton.disabled = true;
-        }
-        
-        containerDiv.appendChild(messageDiv);
-        chatbotMessages.appendChild(containerDiv);
-        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-    }
-
-    function addUserMessage(message) {
-        const containerDiv = document.createElement('div');
-        containerDiv.className = 'message-container user-container';
-        const avatarImg = document.createElement('img');
-        avatarImg.src = userProfilePic;
-        avatarImg.alt = "User";
-        avatarImg.className = 'message-avatar';
-        containerDiv.appendChild(avatarImg);
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message user-message';
-        messageDiv.textContent = message;
-        containerDiv.appendChild(messageDiv);
-        chatbotMessages.appendChild(containerDiv);
-        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-    }
-
-    function disableChat() {
-        userInput.disabled = true;
-        sendButton.disabled = true;
-        const reloadDiv = document.createElement('div');
-        reloadDiv.className = 'reload-suggestion';
-        reloadDiv.textContent = 'Recarga la página para comenzar de nuevo';
-        chatbotMessages.appendChild(reloadDiv);
-        sendDataToWebhook();
-    }
-
-    function showRejectionMessage() {
-        let reason = "";
-        if (userData.sector === 'Empresa Privada' && userData.salario < 1200) {
-            reason = "tu salario es menor a $1,200 y trabajas en empresa privada.";
-            userData.rejectionReason = "salario_bajo_empresa_privada";
-        } else if ((userData.sector === 'Especialista del Gobierno' || userData.sector === 'Administrativo del Gobierno') && userData.salario < 800) {
-            reason = "tu salario es menor a $800 y trabajas en el gobierno.";
-            userData.rejectionReason = "salario_bajo_gobierno";
-        } else if (userData.sector === 'Jubilado' && userData.salario < 300) {
-            reason = "tu ingreso de jubilación es menor a $300.";
-            userData.rejectionReason = "ingreso_bajo_jubilado";
-        } else if (userData.embargos === 'Sí') {
-            reason = "actualmente tienes embargos activos.";
-            userData.rejectionReason = "embargos_activos";
-        }
-        userData.qualified = false;
-        addBotMessage(`Lo siento, en este momento no aplicas para un préstamo personal con nuestros socios porque ${reason}`);
-        setTimeout(() => {
-            addBotMessage('¡Pero no te preocupes! Aún puedes beneficiarte con nosotros.', null, true);
-            disableChat();
-        }, 1000);
-    }
-
-    function redirectToReferralProgram() {
-        sendDataToWebhook();
-        window.location.href = "/referidos";
-    }
-
-    function handleOption(option) {
-        addUserMessage(option); // Add user message for the selected option first
-        userInput.disabled = false; // Re-enable input by default
-        sendButton.disabled = false;
-
-        if (step === 3) { // Sector selection
-            userData.sector = option;
-            step++;
-            setTimeout(() => {
-                const incomeLabel = userData.sector === 'Jubilado' ? 'ingreso' : 'salario';
-                addBotMessage(`¿De cuánto es tu ${incomeLabel}? (En USD)`);
-                userInput.type = 'number';
-                userInput.placeholder = 'Ingresa el monto en USD';
-                userInput.focus();
-            }, 500);
-        } else if (step === 5) { // Reason for loan
-            userData.razonPrestamo = option;
-            step++;
-            setTimeout(() => {
-                addBotMessage('¿Tienes buenas referencias?', ['Sí', 'No']);
-            }, 500);
-        } else if (step === 6) { // References
-            userData.referencias = option;
-            if (userData.sector === 'Especialista del Gobierno' || userData.sector === 'Administrativo del Gobierno') {
-                step++;
-                setTimeout(() => {
-                    addBotMessage('¿Tienes embargos?', ['Sí', 'No']);
-                }, 500);
-            } else {
-                askForPhone();
-            }
-        } else if (step === 7 && (userData.sector === 'Especialista del Gobierno' || userData.sector === 'Administrativo del Gobierno')) { // Embargos for Gov
-            userData.embargos = option;
-            if (option === 'Sí') {
-                showRejectionMessage();
-                return;
-            }
-            askForPhone();
-        } else if (step === 9 && !referralData) { // Referred? (only if not from link)
-            if (option === 'Sí') {
-                step++;
-                setTimeout(() => {
-                    addBotMessage('Por favor, ingresa tu código de referido');
-                    userInput.type = 'text';
-                    userInput.removeAttribute('inputmode');
-                    userInput.placeholder = 'Código de referido';
-                    userInput.focus();
-                }, 500);
-            } else {
-                userData.qualified = true;
-                showSuccessMessage();
-            }
-        }
-         // After processing an option, disable input again if next step involves options
-        if (step === 3 || step === 5 || step === 6 || (step === 7 && (userData.sector === 'Especialista del Gobierno' || userData.sector === 'Administrativo del Gobierno')) || (step === 9 && !referralData)) {
-           // Check if the next step will present options. If so, keep input disabled.
-           // This logic is a bit tricky because addBotMessage itself disables.
-           // For now, handleOption enables, and addBotMessage will disable IF it has options.
-        }
-    }
-
-    function askForPhone() {
-        step = 8;
-        userInput.disabled = false;
-        sendButton.disabled = false;
-        setTimeout(() => {
-            addBotMessage('¿Cuál es tu número de celular?');
-            userInput.type = 'tel';
-            userInput.setAttribute('inputmode', 'numeric');
-            userInput.value = '+507 ';
-            userInput.placeholder = '+507 XXXX-XXXX'; // Updated placeholder
-            userInput.focus();
-        }, 500);
-    }
-
-    function askReferidoQuestion() {
-        step = 9;
-        if (referralData) {
-            userData.referido = referralData.code;
-            userData.qualified = true;
-            showSuccessMessage();
-        } else {
-            userInput.disabled = true;
-            sendButton.disabled = true;
-            setTimeout(() => {
-                addBotMessage('¿Fuiste referido?', ['Sí', 'No']);
-            }, 500);
-        }
-    }
-
-    function validateEmail(email) {
-        const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(String(email).toLowerCase());
-    }
-
-    function formatPhoneNumber(input) {
-        let digits = input.replace(/[^\d]/g, '');
-        if (digits.startsWith('507')) {
-            digits = digits.substring(3);
-        }
-        // Ensure it starts with 6 for Panama mobile, unless it's empty
-        if (digits && digits.length > 0 && !digits.startsWith('6')) {
-             digits = '6' + digits;
-        }
-        digits = digits.substring(0, 8); // Max 8 digits after '6'
-        
-        let formatted = '+507 ';
-        if (digits.length > 0) {
-            formatted += digits.substring(0, 1); // Should be '6'
-            if (digits.length > 1) {
-                 formatted += digits.substring(1, 4);
-                 if (digits.length > 4) {
-                    formatted += '-' + digits.substring(4);
-                }
-            }
-        }
-        return formatted;
-    }
-
-
-    userInput.addEventListener('input', function(e) {
-        if (step === 8) { // Phone number step
-            const currentValue = this.value;
-            let selectionStart = this.selectionStart;
-            let selectionEnd = this.selectionEnd;
-
-            // Basic guard for the prefix. User shouldn't easily delete it.
-            if (!currentValue.startsWith('+507 6')) {
-                if (currentValue.startsWith('+507 ') && currentValue.length > 6) {
-                    // If user types something other than 6 after +507
-                     this.value = '+507 6' + currentValue.substring(6).replace(/[^\d]/g, '');
-                } else if (!currentValue.startsWith('+507 ')) {
-                    this.value = '+507 6';
-                } else if (currentValue === '+507 ') {
-                    // User deleted the 6
-                    this.value = '+507 6';
-                }
-            }
-            
-            let strippedValue = this.value.substring(6).replace(/[^\d]/g, ''); // Digits after +507 6
-            strippedValue = strippedValue.substring(0,7); // 6XXX-XXXX -> 7 digits after the first 6
-
-            let formatted = '+507 6';
-            if (strippedValue.length > 0) {
-                formatted += strippedValue.substring(0,3); // XXX
-                if (strippedValue.length > 3) {
-                    formatted += '-' + strippedValue.substring(3); // -XXXX
-                }
-            }
-            
-            // Avoid re-setting if the value is already what it should be for short inputs
-            if (this.value !== formatted) {
-                this.value = formatted;
-            }
-
-            // Cursor positioning is tricky with aggressive formatting.
-            // This is a simplified attempt, might need refinement for edge cases.
-            // Typically, you'd calculate the difference in non-digit characters.
-            if (currentValue.length > formatted.length) {
-                selectionStart--;
-            } else if (currentValue.length < formatted.length && selectionStart > 6) {
-                 selectionStart++;
-                 if (currentValue.charAt(selectionStart-2) === '-' && formatted.charAt(selectionStart-1) !== '-') {
-                    selectionStart++; // Jump over newly inserted hyphen
-                 }
-            }
-            
-            // Ensure cursor is not before the prefix
-            if (selectionStart < 7 && this.value.startsWith('+507 6')) selectionStart = this.value.length;
-
-
-            // Cap selectionStart to the length of the formatted value
-            selectionStart = Math.min(selectionStart, this.value.length);
-            this.setSelectionRange(selectionStart, selectionStart);
-        }
-    });
-
-
-    function showSuccessMessage() {
-        addBotMessage('¡Gracias por completar el formulario! Nos pondremos en contacto contigo pronto.');
-        disableChat();
-    }
-
-    function sendMessage() {
-        const message = userInput.value.trim();
-        
-        if (step === 8) { // Phone input
-            // Validate phone number format more strictly before sending
-            const phoneRegex = /^\+507 6\d{3}-\d{4}$/;
-            if (!phoneRegex.test(message)) {
-                addBotMessage('Por favor, ingresa un número válido de Panamá (ej: +507 6123-4567).');
-                userInput.value = '+507 6'; // Reset to prefix
-                userInput.focus();
-                return;
-            }
-        } else {
-             if (!message) return; // General case for other inputs
-        }
-
-        addUserMessage(message); // Display what user typed (or formatted for phone)
-        
-        // Clear input based on step
-        if (step !== 8) { // Don't clear phone input immediately if it was just validated
-             userInput.value = '';
-        }
-        userInput.placeholder = 'Escribe aquí...';
-
-
-        if (step === 1) { // Name
-            userData.nombre = message;
-            step = 2;
-            setTimeout(() => {
-                addBotMessage('¿Cuál es tu correo electrónico?');
-                userInput.type = 'email';
-                userInput.placeholder = 'ejemplo@correo.com';
-                userInput.focus();
-            }, 500);
-        } else if (step === 2) { // Email
-            if (!validateEmail(message)) {
-                addBotMessage('Por favor, ingresa un correo electrónico válido.');
-                 userInput.focus(); // Keep focus on email input
-                return;
-            }
-            userData.email = message;
-            step = 3;
-            setTimeout(() => {
-                addBotMessage('Elige el sector al que perteneces.', [
-                    'Especialista del Gobierno', 'Administrativo del Gobierno', 'Empresa Privada', 'Jubilado'
-                ]);
-            }, 500);
-        } else if (step === 4) { // Salary
-            const salary = parseFloat(message);
-            if (isNaN(salary) || salary <= 0) {
-                addBotMessage('Por favor, ingresa un monto de salario válido.');
-                userInput.focus();
-                return;
-            }
-            userData.salario = salary;
-            if ((userData.sector === 'Empresa Privada' && salary < 1200) ||
-                ((userData.sector === 'Especialista del Gobierno' || userData.sector === 'Administrativo del Gobierno') && salary < 800) ||
-                (userData.sector === 'Jubilado' && salary < 300)) {
-                showRejectionMessage();
-                return;
-            }
-            step = 5;
-            userInput.type = 'text'; // Change back from number
-            setTimeout(() => {
-                addBotMessage('¿Cuál es la razón de tu préstamo personal?', [
-                    'Consolidación de deudas', 'Remodelación de vivienda', 'Compra de vehículo', 'Otros gastos'
-                ]);
-            }, 500);
-        } else if (step === 8) { // Phone (already validated)
-            userData.celular = message; // Store the validated and formatted number
-            userInput.value = ''; // Clear after successful submission
-            askReferidoQuestion();
-        } else if (step === 10) { // Referral code
-            userData.referido = message;
-            userData.qualified = true;
-            showSuccessMessage();
-        }
-    }
-
-    function sendDataToWebhook() {
-        userData.timestamp = new Date().toISOString();
-        if (referralData) {
-            userData.referido = referralData.code;
-        }
-        const webhookData = { ...userData, completedFlow: true, source: window.location.href, userAgent: navigator.userAgent };
-        fetch(WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(webhookData)
-        })
-        .then(response => {
-            if (!response.ok) console.error('Error sending data to webhook:', response.statusText);
-            return response.json();
-        })
-        .then(data => console.log('Webhook response:', data))
-        .catch(error => console.error('Error sending data to webhook:', error));
-    }
-
-    userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !sendButton.disabled) { // Prevent Enter if button is disabled (e.g. waiting for option click)
-            sendMessage();
-        }
-    });
-    </script>
-</body>
-</html>
+            referralDiv.innerHTML = '💰 <strong>¡Gana dinero!</strong> Únete a
