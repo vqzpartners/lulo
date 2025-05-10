@@ -2,991 +2,796 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Firma de APCs - Lulo Panamá</title>
-    <meta name="robots" content="nofollow">
-    <link rel="icon" href="img/favicon.png" type="image/jpeg">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Lulo</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        :root {
-            --lulo-panama-primary: #004951;
-            --lulo-panama-secondary: #f3f3f3;
-            --text-color: #333;
-            --border-color: #ccc;
-            --selection-border-color: #0069d9;
-            --selection-handle-color: #0056b3;
-            --selection-handle-stroke: #ffffff;
-            --confirmed-pad-border: #28a745;
+        /* Global reset and base styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        /* Apply box-sizing universally and prevent html/body horizontal scroll */
-        html {
-            box-sizing: border-box;
-            overflow-x: hidden; /* Prevent horizontal scroll at the ROOT level */
-            -webkit-text-size-adjust: 100%; /* Prevent font scaling on orientation change */
-            -ms-text-size-adjust: 100%;
-        }
-        *, *:before, *:after {
-            box-sizing: inherit;
+        html, body {
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+            background-color: #ffffff; /* White background for the page */
         }
 
         body {
-            font-family: Arial, sans-serif; margin: 0;
-            /* Padding will be set below and in media queries */
-            background-color: var(--lulo-panama-secondary); color: var(--text-color);
-            display: flex; flex-direction: column; align-items: center;
-            -webkit-tap-highlight-color: transparent;
-            width: 100%;
-            overflow-x: hidden; /* Prevent body itself from creating horizontal scroll */
-            min-height: 100vh;
-        }
-        .container {
-            width: 100%; max-width: 1200px; background-color: white;
-            /* Padding will be set below and in media queries */
-            border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1);
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-        h1 {
-            color: var(--lulo-panama-primary); text-align: center;
-            margin-top: 0;
-            margin-bottom: 15px; font-size: 1.6em;
-            padding: 0 10px;
-        }
-        .initial-guidance {
-            background-color: #e9f3f4; border-left: 5px solid var(--lulo-panama-primary);
-            padding: 10px 15px; margin-bottom: 15px; font-size: 0.9em;
-            border-radius: 4px;
-        }
-        .initial-guidance ul { padding-left: 20px; margin-top: 5px; margin-bottom: 5px;}
-
-        .main-layout-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-            width: 100%;
-        }
-        .document-display-area {
-            grid-column: 1 / -1;
-            min-width: 0;
-        }
-
-        .input-areas-container {
-            min-width: 0;
-        }
-
-        .input-areas-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* Default */
-            gap: 15px;
-            margin-bottom: 20px;
-            padding: 0;
-        }
-        .control-group {
-             /* padding will be set below and in media queries */
-            border: 1px solid var(--border-color);
-            border-radius: 5px; background-color: #fdfdfd;
             display: flex;
             flex-direction: column;
-            min-width: 0;
-            overflow: hidden; /* Keep this to clip internal overflows if they somehow still happen */
         }
-        .control-group h3 {
-            margin-top: 0; color: var(--lulo-panama-primary);
-            border-bottom: 1px solid var(--lulo-panama-primary);
-            padding-bottom: 5px; font-size: 1.05em; margin-bottom: 10px;
-            word-break: break-word;
-            overflow-wrap: break-word;
-            min-width: 0;
-            /* padding left/right set below and in media queries */
-        }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="number"] {
-            width: 100%;
-            padding: 10px; margin-bottom: 10px;
-            border: 1px solid var(--border-color); border-radius: 4px;
-        }
-        /* Base button styles (will be adjusted in media queries) */
-        button {
-            background-color: var(--lulo-panama-primary); color: white; padding: 10px 15px;
-            border: none; border-radius: 4px; cursor: pointer; font-size:0.9em;
-            transition: background-color 0.3s ease; margin: 5px;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            display: block; /* Default to block */
-            width: calc(100% - 10px); /* Default to full width minus margins */
-            max-width: 300px; /* Cap width */
-            margin-left: auto; margin-right: auto; /* Center if max-width applies */
-            white-space: normal; /* Allow text wrapping */
-            word-break: break-word;
-        }
-        button:hover { background-color: #003338; }
 
-        /* Specific style for document selection buttons */
-        .document-buttons { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom:10px; justify-content: center;}
-        .document-buttons button {
-            flex-grow: 1; min-width: 100px;
-            width: auto; /* Override block */
-            display: inline-flex; /* Allow side-by-side */
+        a {
+            color: white;
+        }
+
+        /* Header Styles */
+        .app-header {
+            background-color: #285062;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center content for pill shape */
+            width: 95%; /* Adjust width as needed */
+            max-width: 1200px; /* Max width for the header */
+            margin: 15px auto; /* Top/bottom margin, auto for left/right centering */
+            border-radius: 50px; /* Pill shape */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky; /* Make header sticky */
+            top: 10px; /* Space from top when sticky */
+            z-index: 1000; /* Ensure header is above other content */
+        }
+
+        .app-header img.logo {
+            height: 40px; /* Adjust logo height as needed */
+            margin-right: 15px; /* Space between logo and title if any */
+        }
+        
+        /* Main Page Container for Chatbot */
+        .page-container {
+            flex-grow: 1; /* Allows this container to take up available space */
+            display: flex;
             justify-content: center;
             align-items: center;
-            margin: 2px; /* Specific margins for this group */
-            max-width: none; /* Remove max-width for these buttons */
-        }
-        .document-buttons button.active {
-            background-color: #003338;
-            box-shadow: 0 0 0 2px var(--selection-border-color) inset;
+            padding: 20px 10px; /* Top/bottom padding to avoid overlap with sticky header/footer, left/right for spacing */
+            overflow-y: auto; /* In case content overflows */
+            margin-top: 70px; /* Approximate height of header + its margin, adjust if needed */
+            margin-bottom: 60px; /* Approximate height of footer, adjust if needed */
         }
 
-        .handwriting-pad-area, .signature-pad-area {
-            margin: 0 auto 10px auto;
+        /* Chatbot specific styles */
+        .chatbot-container {
             width: 100%;
-            max-width: 380px;
-            min-width: 0;
-            /* padding set below and in media queries */
+            max-width: 900px; /* Increased max-width for PC */
+            height: 100%; /* Take full height of its parent (.page-container allocated space) */
+            max-height: 70vh; /* Max height relative to viewport, can adjust */
+            background: #004951;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
         }
-        .drawing-pad { /* The <canvas> */
-            border: 1px dashed var(--border-color); border-radius: 4px; cursor: crosshair;
+
+        .chatbot-messages {
+            height: 100%; /* Make it take the available space */
+            flex-grow: 1; /* Allow messages to take up available vertical space */
+            overflow-y: auto;
+            padding-right: 8px;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .message-container {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .bot-container {
+            flex-direction: row;
+        }
+        
+        .user-container {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin: 0 8px;
+            object-fit: cover;
+        }
+
+        .message {
+            padding: 8px 12px;
+            border-radius: 18px;
+            max-width: 80%; /* Allow messages to be a bit wider */
+            line-height: 1.4;
+            word-wrap: break-word;
+            font-size: 16px;
+        }
+
+        .bot-message {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-top-left-radius: 4px;
+        }
+
+        .user-message {
+            background: #fff;
+            color: #333;
+            text-align: left;
+            border-top-right-radius: 4px;
+        }
+
+        .sector-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .sector-option {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: inline-block;
+            font-size: 16px;
+        }
+
+        .sector-option:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .chatbot-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0; /* Prevent input from shrinking */
+        }
+
+        .chatbot-input input {
+            flex: 1;
+            padding: 10px 15px; /* Increased padding for better touch */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            outline: none;
+            font-size: 16px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+        }
+
+        .chatbot-input input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .chatbot-input input:disabled {
+            background: rgba(0, 0, 0, 0.3);
+            cursor: not-allowed;
+        }
+
+        .chatbot-input button {
+            background: #ff5733;
+            border: none;
+            color: #fff;
+            font-size: 18px; /* Slightly larger icon */
+            cursor: pointer;
+            border-radius: 50%;
+            width: 44px; /* Increased size */
+            height: 44px; /* Increased size */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .chatbot-input button:hover {
+            background: #FFD700;
+            color: black;
+        }
+
+        .chatbot-input button:disabled {
+            background: rgba(0, 194, 194, 0.5);
+            cursor: not-allowed;
+        }
+
+        .reload-suggestion {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 10px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .referral-highlight {
+            background: rgba(255, 215, 0, 0.2);
+            border-left: 3px solid #FFD700;
+            padding: 8px 12px;
+            margin-top: 8px;
+            border-radius: 4px;
+        }
+
+        /* Footer Styles */
+        .app-footer {
+            background-color: #285062;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 14px;
             width: 100%;
-            max-width: 100%;
-            height: auto;
-            display: block;
-            touch-action: none;
-        }
-        .drawing-pad.confirmed {
-            border: 2px solid var(--confirmed-pad-border) !important;
+            /* position: fixed; /* Uncomment if you want a truly fixed footer */
+            /* bottom: 0; */ /* Uncomment if you want a truly fixed footer */
+            /* left: 0; */ /* Uncomment if you want a truly fixed footer */
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
         }
 
-        .canvas-container {
-            width: 100%; margin-bottom: 20px; position: relative;
-            max-height: 75vh;
-            overflow: auto; border: 1px solid var(--border-color);
-            background-color: var(--lulo-panama-secondary);
-            padding: 5px;
-        }
-        #mainDocumentCanvas {
-            border-radius: 4px; display: block; margin: 0 auto;
-            touch-action: none;
-            background-color: #FFFFFF;
-        }
-        .selected-element-controls {
-            padding: 10px; border: 1px dashed var(--lulo-panama-primary);
-            margin-top: 10px; border-radius: 4px;
-        }
-        .selected-element-controls label { margin-top: 8px; }
-
-        /* --- Base Paddings & Styles --- */
-        body { padding: 10px; }
-        .container { padding: 15px; }
-        .control-group { padding: 15px; }
-        .control-group h3 { padding-left: 10px; padding-right: 10px; }
-        .handwriting-pad-area, .signature-pad-area { padding: 0 10px; }
-
-
-        /* --- Media Queries --- */
-
-        /* Desktop Layout */
-        @media (min-width: 992px) {
-            .main-layout-grid {
-                 grid-template-columns: minmax(320px, 400px) 1fr;
-                 align-items: start;
-            }
-            .input-areas-container { grid-column: 1 / 2; }
-            .input-areas-grid { grid-template-columns: 1fr; }
-            .document-display-area { grid-column: 2 / 3; }
-            .canvas-container { padding: 10px; }
-            /* Adjust button base style for desktop */
-            button {
-                display: inline-block; /* Allow side-by-side */
-                width: auto;
-                max-width: none; /* Remove max-width */
-                margin: 5px; margin-right: 5px; /* Reset margin */
-                margin-left: 0;
-            }
-            /* Ensure control group buttons follow general button style on desktop */
-             .control-group button { } /* Inherits general button style now */
+        .app-footer p {
+            margin-bottom: 8px;
         }
 
-        /* Tablet and Smaller Adjustments */
+        .app-footer a {
+            color: # تقریباًwhite; /* A slightly off-white for links if needed */
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .app-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Media Queries for Mobile Responsiveness */
         @media (max-width: 768px) {
-            body { padding: 5px; }
-            .container { padding: 10px;}
-            .control-group { padding: 10px; }
-            .control-group h3 { padding-left: 5px; padding-right: 5px; }
-            .handwriting-pad-area, .signature-pad-area { padding: 0 5px; }
-            h1 { font-size: 1.4em; }
-            .control-group h3 { font-size: 1em; }
-            .initial-guidance { font-size: 0.85em; }
-            button { padding: 8px 12px; font-size: 0.85em; } /* General button adjust */
+            .app-header {
+                width: 90%; /* Header can be a bit narrower on mobile */
+                padding: 8px 15px;
+                top: 5px; /* Adjust sticky position for mobile */
+            }
+            .app-header img.logo {
+                height: 30px;
+            }
 
-            /* --- MODIFICATION TO HIDE ELEMENT SIZING CONTROLS ON MOBILE --- */
-            #elementSizingControls {
-                display: none !important; 
+            .page-container {
+                 /* Adjust top margin if header size/margin changes significantly on mobile */
+                margin-top: 60px;
+                padding: 15px 5px; /* Less horizontal padding on mobile */
             }
-            /* --- END MODIFICATION --- */
-        }
 
-        /* Mobile Specific Adjustments */
-        @media (max-width: 480px) {
-            h1 { font-size: 1.2em; }
-            input[type="number"] { padding: 8px; }
-            .initial-guidance ul { padding-left: 15px; }
-            /* Button width for Limpiar/Confirmar type buttons */
-            .control-group button {
-                width: calc(100% - 10px); /* Full width minus margins (5+5) */
-                margin-left: 5px;
-                margin-right: 5px;
+            .chatbot-container {
+                max-width: 100%; /* Chatbot takes full available width */
+                padding: 10px;
+                max-height: none; /* Allow it to use the space given by page-container */
+                height: 100%;
             }
-            /* If #elementSizingControls was not hidden by the (max-width: 768px) rule 
-               or if you need to be absolutely sure for this specific breakpoint,
-               you could repeat the rule here. However, the 768px rule should cascade.
-               #elementSizingControls {
-                   display: none !important; 
-               }
-            */
-        }
 
-        /* NEW: Very Narrow Screen Adjustments */
-        @media (max-width: 359px) {
-            .input-areas-grid {
-                grid-template-columns: 1fr; /* Force single column, removes 260px min */
-                gap: 10px;
+            .message {
+                font-size: 15px;
+                padding: 6px 10px;
+                max-width: 85%;
             }
-            body { padding: 0 2px; } /* Minimal body padding */
-            .container { padding: 5px; } /* Minimal container padding */
-            .control-group { padding: 8px; } /* Minimal control group padding */
-            .control-group h3 {
-                padding-left: 5px; padding-right: 5px;
-                font-size: 0.9em; /* Slightly smaller heading */
+
+            .message-avatar {
+                width: 28px;
+                height: 28px;
+                margin: 0 6px;
             }
-            .handwriting-pad-area, .signature-pad-area {
-                padding: 0 2px; /* Minimal pad area padding */
+
+            .sector-option {
+                font-size: 15px;
+                padding: 5px 10px;
             }
-             /* Further adjust general button style if needed */
-            button {
-                padding: 6px 8px;
-                font-size: 0.8em;
-                margin: 3px;
-                width: calc(100% - 6px);
+
+            .chatbot-input input {
+                font-size: 15px;
+                padding: 8px 12px;
             }
-             .initial-guidance {
-                 font-size: 0.75em;
-                 padding: 8px 10px;
-             }
+
+            .chatbot-input button {
+                font-size: 16px;
+                width: 40px;
+                height: 40px;
+            }
+            .app-footer {
+                font-size: 12px;
+                padding: 10px;
+            }
+            .app-footer a {
+                margin: 0 5px;
+                display: block; /* Stack links on very small screens */
+                margin-bottom: 5px;
+            }
+            .app-footer a:last-child {
+                margin-bottom: 0;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Firmador de Documentos APC</h1>
-        <div class="initial-guidance">
-            <strong>Instrucciones Rápidas:</strong>
-            <ul>
-                <li>Seleccione un tipo de documento APC usando los botones.</li>
-                <li>Dibuje su Nombre, Cédula, Fecha y Firma en los recuadros correspondientes.</li>
-                <li>Presione "Confirmar" para cada campo manuscrito. El borde del recuadro se pondrá verde.</li>
-                <li>Arrastre los elementos confirmados sobre el documento APC para posicionarlos.</li>
-                <li>Para cambiar el tamaño de un elemento: selecciónelo y luego arrastre el punto azul en su esquina inferior derecha.</li>
-                <li>Cuando esté listo, presione "Exportar Documento Actual".</li>
-            </ul>
-            <small>Nota: Si redimensiona la ventana del navegador, los dibujos no confirmados en los recuadros podrían borrarse. Confirme sus dibujos frecuentemente.</small>
-        </div>
+    <header class="app-header">
+        <img src="img/white-web-logo.svg" alt="Lulo Logo" class="logo">
+        </header>
 
-        <div class="main-layout-grid">
-            <div class="input-areas-container">
-                <div class="input-areas-grid">
-                    <div class="control-group">
-                        <h3>1. Seleccione Documento</h3>
-                        <div id="documentButtonContainer" class="document-buttons"></div>
-                    </div>
-                    <div class="control-group">
-                        <h3>2. Nombre (Manuscrito)</h3>
-                        <div class="handwriting-pad-area">
-                            <canvas class="drawing-pad" id="nameCanvasEl" data-logical-width="360" data-logical-height="100"></canvas>
-                        </div>
-                        <button id="clearNameBtn">Limpiar</button>
-                        <button id="confirmNameBtn">Confirmar</button>
-                    </div>
-                    <div class="control-group">
-                        <h3>3. Cédula (Manuscrita)</h3>
-                        <div class="handwriting-pad-area">
-                            <canvas class="drawing-pad" id="cedulaCanvasEl" data-logical-width="360" data-logical-height="100"></canvas>
-                        </div>
-                        <button id="clearCedulaBtn">Limpiar</button>
-                        <button id="confirmCedulaBtn">Confirmar</button>
-                    </div>
-                     <div class="control-group">
-                        <h3>4. Fecha (Manuscrita)</h3>
-                        <div class="handwriting-pad-area">
-                            <canvas class="drawing-pad" id="dateCanvasEl" data-logical-width="360" data-logical-height="80"></canvas>
-                        </div>
-                        <button id="clearDateBtn">Limpiar</button>
-                        <button id="confirmDateBtn">Confirmar</button>
-                    </div>
-                    <div class="control-group">
-                        <h3>5. Firma</h3>
-                        <div class="signature-pad-area">
-                            <canvas class="drawing-pad" id="signaturePadEl" data-logical-width="360" data-logical-height="120"></canvas>
-                        </div>
-                        <button id="clearSignatureBtn">Limpiar</button>
-                        <button id="confirmSignatureBtn">Confirmar</button>
-                    </div>
-                     <div class="control-group" id="elementSizingControls" style="display:none;">
-                        <h3>6. Ajustar Elemento</h3>
-                        <p>Arrastre el punto en la esquina del elemento seleccionado para cambiar su tamaño.</p>
-                        <div id="imageElementControls">
-                            <label for="elementWidth">Ancho del Elemento (px):</label>
-                            <input type="number" id="elementWidth" min="10" max="1000">
-                            <label for="elementHeight">Alto del Elemento (px):</label>
-                            <input type="number" id="elementHeight" min="10" max="1000">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="document-display-area">
-                 <div class="control-group">
-                    <h3>Visualice y Ajuste el Documento</h3>
-                    <p>Arrastre los elementos para posicionarlos. Para cambiar tamaño, seleccione un elemento y arrastre el punto en su esquina.</p>
-                </div>
-                <div class="canvas-container">
-                    <canvas id="mainDocumentCanvas"></canvas>
-                </div>
-                <div style="text-align: center; margin-top: 20px;">
-                    <button id="exportDocumentBtn">Exportar Documento Actual (JPG)</button>
-                </div>
+    <div class="page-container">
+        <div class="chatbot-container">
+            <div class="chatbot-messages" id="chatbotMessages"></div>
+            <div class="chatbot-input">
+                <input type="text" id="userInput" placeholder="Escribe aquí..." />
+                <button id="sendButton" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
 
+    <footer class="app-footer">
+        <p>&copy; <span id="currentYear"></span> Lulo Panamá. Todos los derechos reservados.</p>
+        <div>
+            <a href="https://lulopanama.com/terminos">Términos y Condiciones</a>
+            <a href="https://lulopanama.com/privacidad">Política de Privacidad</a>
+        </div>
+    </footer>
+
     <script>
-        // --- JavaScript code remains the same as the previous version ---
-        // (Includes the implemented fixes for setupDrawingCanvas, getPadCoordinates, etc.)
-        const dpr = window.devicePixelRatio || 1;
-        const RESIZE_HANDLE_LOGICAL_SIZE = 10;
-        const RESIZE_HANDLE_CLICK_EXTENSION = 5;
-        const MIN_ELEMENT_DIM = 20;
+    // JavaScript for dynamic year in footer
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-        const documentConfigurations = [
-            { path: "apc/apc-multi-actual.jpg", shortName: "multi", displayName: "Multi" },
-            { path: "apc/apc-bac-actual.jpg", shortName: "bac", displayName: "BAC" },
-            { path: "apc/apc-global-actual.jpg", shortName: "global", displayName: "Global" }
-        ];
+    // --- Your existing chatbot JavaScript ---
+    let step = 1;
+    let userData = {
+        nombre: '',
+        email: '',        
+        sector: '',
+        celular: '',
+        razonPrestamo: '',    
+        referido: '',
+        salario: '',
+        referencias: '',
+        embargos: '',
+        qualified: false,
+        rejectionReason: ''
+    };
 
-        const appState = {
-            currentDocumentUrl: null,
-            nameImageCache: null, cedulaImageCache: null, dateImageCache: null, signatureImageCache: null,
-            documentSettings: {}, activeElementId: null,
-            dragState: { isDragging: false, elementId: null, offsetX: 0, offsetY: 0 },
-            resizeState: {
-                isResizing: false, elementId: null,
-                startX: 0, startY: 0,
-                initialElement: { x:0, y:0, width: 0, height: 0, aspectRatio: 1 }
-            },
-            backgroundImage: null,
-            lastWindowWidth: window.innerWidth,
-            lastWindowHeight: window.innerHeight,
-            resizeTimeout: null
-        };
+    const WEBHOOK_URL = "https://hook.us2.make.com/o63acpuru7c2j3vn4x4xljnlmhy23fqx";
+    const chatbotMessages = document.getElementById('chatbotMessages');
+    const userInput = document.getElementById('userInput');
+    const sendButton = document.getElementById('sendButton');
+    const botProfilePic = "https://www.lulopanama.com/storage/logo-new.jpg";
+    const userProfilePic = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23808080'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
 
-        const documentButtonContainer = document.getElementById('documentButtonContainer');
-        const nameCanvasEl = document.getElementById('nameCanvasEl');
-        const clearNameBtn = document.getElementById('clearNameBtn');
-        const confirmNameBtn = document.getElementById('confirmNameBtn');
-        let nameCtx;
-        const cedulaCanvasEl = document.getElementById('cedulaCanvasEl');
-        const clearCedulaBtn = document.getElementById('clearCedulaBtn');
-        const confirmCedulaBtn = document.getElementById('confirmCedulaBtn');
-        let cedulaCtx;
-        const dateCanvasEl = document.getElementById('dateCanvasEl');
-        const clearDateBtn = document.getElementById('clearDateBtn');
-        const confirmDateBtn = document.getElementById('confirmDateBtn');
-        let dateCtx;
-        const signaturePadEl = document.getElementById('signaturePadEl');
-        const clearSignatureBtn = document.getElementById('clearSignatureBtn');
-        const confirmSignatureBtn = document.getElementById('confirmSignatureBtn');
-        let sigCtx;
-        const mainCanvas = document.getElementById('mainDocumentCanvas');
-        let mainCtx = mainCanvas.getContext('2d');
-        const exportDocumentBtn = document.getElementById('exportDocumentBtn');
-        const elementSizingControls = document.getElementById('elementSizingControls');
-        const imageElementControls = document.getElementById('imageElementControls');
-        const elementWidthInput = document.getElementById('elementWidth');
-        const elementHeightInput = document.getElementById('elementHeight');
-
-        let drawingStates = {
-            name: {isDrawing: false, lastX:0, lastY:0, canvasElement: nameCanvasEl},
-            cedula: {isDrawing: false, lastX:0, lastY:0, canvasElement: cedulaCanvasEl},
-            date: {isDrawing: false, lastX:0, lastY:0, canvasElement: dateCanvasEl},
-            signature: {isDrawing: false, lastX:0, lastY:0, canvasElement: signaturePadEl}
-        };
-
-        function configureDrawingContext(ctx, currentLogicalWidth, currentLogicalHeight, clear = true) {
-            ctx.resetTransform();
-            ctx.scale(dpr, dpr);
-            ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 2;
-            ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-            if (clear) ctx.clearRect(0, 0, currentLogicalWidth, currentLogicalHeight);
-        }
-
-        function setupDrawingCanvas(canvasEl, stateKey) {
-            const logicalInitialWidth = parseInt(canvasEl.dataset.logicalWidth) || 300;
-            const logicalInitialHeight = parseInt(canvasEl.dataset.logicalHeight) || 100;
-            let logicalAspectRatio = logicalInitialWidth / logicalInitialHeight;
-            if (logicalInitialHeight === 0 || isNaN(logicalAspectRatio) || !isFinite(logicalAspectRatio)) {
-                logicalAspectRatio = 3;
-            }
-
-            let renderedWidth = canvasEl.clientWidth;
-            if (renderedWidth === 0 && canvasEl.parentElement) {
-                 renderedWidth = canvasEl.parentElement.clientWidth || logicalInitialWidth;
-            } else if (renderedWidth === 0) {
-                 renderedWidth = logicalInitialWidth;
-            }
-            if (renderedWidth === 0) renderedWidth = logicalInitialWidth;
-
-            let renderedHeight = renderedWidth / logicalAspectRatio;
-            if (isNaN(renderedHeight) || !isFinite(renderedHeight)) {
-                renderedHeight = renderedWidth / 3;
-            }
-
-            canvasEl.style.height = renderedHeight + 'px';
-
-            canvasEl.width = renderedWidth * dpr;
-            canvasEl.height = renderedHeight * dpr;
-
-            const ctx = canvasEl.getContext('2d');
-            configureDrawingContext(ctx, renderedWidth, renderedHeight);
-
-            if (!canvasEl.dataset.listenersAttached) {
-                const eventHandlerOptions = { passive: false };
-                canvasEl.addEventListener('mousedown', (e) => startDrawing(e, ctx, stateKey));
-                canvasEl.addEventListener('mousemove', (e) => draw(e, ctx, stateKey));
-                canvasEl.addEventListener('mouseup', () => stopDrawing(stateKey));
-                canvasEl.addEventListener('mouseleave', () => stopDrawing(stateKey));
-                canvasEl.addEventListener('touchstart', (e) => startDrawing(e, ctx, stateKey), eventHandlerOptions);
-                canvasEl.addEventListener('touchmove', (e) => draw(e, ctx, stateKey), eventHandlerOptions);
-                canvasEl.addEventListener('touchend', () => stopDrawing(stateKey));
-                canvasEl.dataset.listenersAttached = 'true';
-            }
-            drawingStates[stateKey].canvasElement = canvasEl;
-            return ctx;
-        }
-
-        function initializeDrawingPads() {
-            nameCtx = setupDrawingCanvas(nameCanvasEl, 'name');
-            cedulaCtx = setupDrawingCanvas(cedulaCanvasEl, 'cedula');
-            dateCtx = setupDrawingCanvas(dateCanvasEl, 'date');
-            sigCtx = setupDrawingCanvas(signaturePadEl, 'signature');
-        }
-
-        function getPadCoordinates(canvasEl, event) {
-            const rect = canvasEl.getBoundingClientRect();
-            let clientX, clientY;
-            if (event.touches && event.touches.length > 0) {
-                clientX = event.touches[0].clientX; clientY = event.touches[0].clientY;
-            } else if (event.clientX !== undefined) {
-                clientX = event.clientX; clientY = event.clientY;
-            } else { return null; }
-
-            if (rect.width === 0 || rect.height === 0) return {x:0, y:0};
+    function getReferralData() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const referralCode = urlParams.get('r');
+        if (referralCode) {
+            const nameMatch = referralCode.match(/^([a-zA-Z]+)/);
+            const referrerName = nameMatch ? nameMatch[0] : null;
             return {
-                x: (clientX - rect.left) * (canvasEl.width / dpr / rect.width),
-                y: (clientY - rect.top) * (canvasEl.height / dpr / rect.height)
+                code: referralCode,
+                name: referrerName ? referrerName.charAt(0).toUpperCase() + referrerName.slice(1).toLowerCase() : null
             };
         }
+        return null;
+    }
 
-        function startDrawing(e, ctx, stateKey) {
-            const padState = drawingStates[stateKey];
-            padState.isDrawing = true;
-            const coords = getPadCoordinates(padState.canvasElement, e);
-            if (!coords) return;
-            ctx.beginPath(); ctx.moveTo(coords.x, coords.y);
-            padState.lastX = coords.x; padState.lastY = coords.y;
-            if(e.cancelable) e.preventDefault();
-        }
+    const referralData = getReferralData();
 
-        function draw(e, ctx, stateKey) {
-            const padState = drawingStates[stateKey];
-            if (!padState.isDrawing) return;
-            const coords = getPadCoordinates(padState.canvasElement, e);
-            if (!coords) return;
-            ctx.lineTo(coords.x, coords.y); ctx.stroke();
-            padState.lastX = coords.x; padState.lastY = coords.y;
-            if(e.cancelable) e.preventDefault();
-        }
-
-        function stopDrawing(stateKey) {
-            if (drawingStates[stateKey].isDrawing) drawingStates[stateKey].isDrawing = false;
-        }
-
-        function clearDrawingPad(ctx, imageCacheKey, canvasElement) {
-            const currentRenderedWidth = canvasElement.width / dpr;
-            const currentRenderedHeight = canvasElement.height / dpr;
-            configureDrawingContext(ctx, currentRenderedWidth, currentRenderedHeight, true);
-
-            appState[imageCacheKey] = null;
-            canvasElement.classList.remove('confirmed');
-            redrawMainCanvas();
-        }
-
-        function confirmDrawingPad(ctx, imageCacheKey, canvasElement) {
-            const tempImage = new Image();
-            tempImage.onload = () => {
-                appState[imageCacheKey] = tempImage;
-                canvasElement.classList.add('confirmed');
-                redrawMainCanvas();
-            }
-            tempImage.src = ctx.canvas.toDataURL('image/png');
-        }
-
-        function initializeDefaultDocumentSettings() {
-            const defaultElementWidth = 180; const defaultElementHeight = 45;
-            const defaultDateHeight = 35; const defaultSigWidth = 190; const defaultSigHeight = 70;
-            documentConfigurations.forEach(docConfig => {
-                const docPath = docConfig.path;
-                if (!appState.documentSettings[docPath]) {
-                    appState.documentSettings[docPath] = {
-                        elements: [
-                            { id: 'name', type: 'image', x: 50, y: 50, width: defaultElementWidth, height: defaultElementHeight },
-                            { id: 'cedula', type: 'image', x: 50, y: 105, width: defaultElementWidth, height: defaultElementHeight },
-                            { id: 'date', type: 'image', x: 50, y: 160, width: defaultElementWidth * 0.8, height: defaultDateHeight },
-                            { id: 'signature', type: 'image', x: 50, y: 205, width: defaultSigWidth, height: defaultSigHeight }
-                        ]};
-                }});
-        }
-
-        function populateDocumentButtons() {
-            documentButtonContainer.innerHTML = '';
-            documentConfigurations.forEach(docConfig => {
-                const button = document.createElement('button');
-                button.textContent = docConfig.displayName;
-                button.dataset.docPath = docConfig.path;
-                button.addEventListener('click', () => {
-                    appState.activeElementId = null;
-                    updateSelectedElementControls();
-                    loadDocument(docConfig.path);
-                });
-                documentButtonContainer.appendChild(button);
-            });
-        }
-
-        function setActiveDocumentButton(docPath) {
-            const buttons = documentButtonContainer.querySelectorAll('button');
-            buttons.forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.docPath === docPath);
-            });
-        }
-
-        function handleUrlParameters() {
-            const params = new URLSearchParams(window.location.search);
-            let selectedDocPath = null; const eParamValue = params.get('e');
-            if (eParamValue) {
-                const foundDoc = documentConfigurations.find(doc => doc.shortName.toLowerCase() === eParamValue.toLowerCase());
-                if (foundDoc) selectedDocPath = foundDoc.path;
-            }
-            if (!selectedDocPath) {
-                for (const docConfig of documentConfigurations) {
-                    if (params.has(docConfig.shortName.toLowerCase())) {
-                        selectedDocPath = docConfig.path; break;
-                    }}}
-            return selectedDocPath;
-        }
-
-        function loadDocument(docUrl) {
-            if (!docUrl) {
-                console.error("loadDocument called with invalid URL:", docUrl);
-                return;
-            }
-            appState.currentDocumentUrl = docUrl;
-            setActiveDocumentButton(docUrl);
-            appState.backgroundImage = new Image();
-            appState.backgroundImage.onload = () => {
-                const canvasContainer = mainCanvas.parentElement;
-                const containerStyle = getComputedStyle(canvasContainer);
-                const imageAspectRatio = appState.backgroundImage.naturalWidth / appState.backgroundImage.naturalHeight;
-
-                let targetWidth = canvasContainer.clientWidth;
-                let displayWidth = targetWidth;
-                let displayHeight = displayWidth / imageAspectRatio;
-
-                let containerMaxHeight = parseFloat(containerStyle.maxHeight);
-                 if (isNaN(containerMaxHeight) || containerMaxHeight <= 0) {
-                     containerMaxHeight = window.innerHeight * 0.75;
-                 }
-                if (displayHeight > containerMaxHeight) {
-                    displayHeight = containerMaxHeight;
-                    displayWidth = displayHeight * imageAspectRatio;
-                }
-                if (displayWidth > targetWidth) {
-                    displayWidth = targetWidth;
-                    displayHeight = displayWidth / imageAspectRatio;
-                }
-
-                mainCanvas.style.width = displayWidth + 'px';
-                mainCanvas.style.height = displayHeight + 'px';
-                mainCanvas.width = displayWidth * dpr;
-                mainCanvas.height = displayHeight * dpr;
-
-                configureDrawingContext(mainCtx, displayWidth, displayHeight, false);
-                mainCtx.imageSmoothingEnabled = true; mainCtx.imageSmoothingQuality = "high";
-                redrawMainCanvas();
-            };
-            appState.backgroundImage.onerror = () => {
-                console.error("Error cargando imagen:", docUrl);
-                 const logicalWidth = mainCanvas.style.width ? parseFloat(mainCanvas.style.width) : 300;
-                 const logicalHeight = mainCanvas.style.height ? parseFloat(mainCanvas.style.height) : 150;
-                 if (mainCanvas.width !== logicalWidth * dpr || mainCanvas.height !== logicalHeight * dpr) {
-                     mainCanvas.width = logicalWidth * dpr; mainCanvas.height = logicalHeight * dpr;
-                     mainCanvas.style.width = logicalWidth + 'px'; mainCanvas.style.height = logicalHeight + 'px';
-                 }
-                 configureDrawingContext(mainCtx, logicalWidth, logicalHeight);
-                 mainCtx.fillStyle = "red"; mainCtx.font = "bold 16px Arial"; mainCtx.textAlign = "center";
-                 const docName = documentConfigurations.find(dc => dc.path === docUrl)?.displayName || docUrl.split('/').pop();
-                 mainCtx.fillText("Error al cargar: " + docName, logicalWidth / 2, logicalHeight / 2);
-            }
-            appState.backgroundImage.src = docUrl;
-        }
-
-        function getElementById(docUrl, elementId) {
-            if (docUrl && appState.documentSettings[docUrl] && elementId) {
-                return appState.documentSettings[docUrl].elements.find(el => el.id === elementId);
-            } return null;
-        }
-
-        function getResizeHandleRect(element) {
-            const handleSize = RESIZE_HANDLE_LOGICAL_SIZE;
-            return {
-                x: element.x + element.width - handleSize / 2,
-                y: element.y + element.height - handleSize / 2,
-                width: handleSize, height: handleSize
-            };
-        }
-
-        function redrawMainCanvas(isExporting = false) {
-            if (!mainCtx || !mainCanvas.width || !mainCanvas.height ) { return; }
-            const logicalWidth = mainCanvas.width / dpr;
-            const logicalHeight = mainCanvas.height / dpr;
-
-            if (mainCtx.getTransform().a !== dpr || mainCtx.getTransform().d !== dpr ) {
-                 configureDrawingContext(mainCtx, logicalWidth, logicalHeight, false);
-            }
-
-            if (!appState.currentDocumentUrl || !appState.backgroundImage || !appState.backgroundImage.complete || appState.backgroundImage.naturalWidth === 0) {
-                if (logicalWidth > 0 && logicalHeight > 0) {
-                    mainCtx.clearRect(0, 0, logicalWidth, logicalHeight);
-                    mainCtx.fillStyle = "gray"; mainCtx.font = "16px Arial"; mainCtx.textAlign = "center";
-                    mainCtx.fillText("Cargando documento...", logicalWidth / 2, logicalHeight / 2);
-                } return;
-            }
-
-            mainCtx.clearRect(0, 0, logicalWidth, logicalHeight);
-            mainCtx.drawImage(appState.backgroundImage, 0, 0, logicalWidth, logicalHeight);
-
-            const currentDocSettings = appState.documentSettings[appState.currentDocumentUrl];
-            if (!currentDocSettings) return;
-
-            currentDocSettings.elements.forEach(element => {
-                const imageToDraw = appState[element.id + 'ImageCache'];
-                if (imageToDraw) {
-                    mainCtx.drawImage(imageToDraw, element.x, element.y, element.width, element.height);
-                    if (appState.activeElementId === element.id && !isExporting) {
-                        mainCtx.strokeStyle = 'var(--selection-border-color)';
-                        mainCtx.lineWidth = 1.5;
-                        mainCtx.setLineDash([]);
-                        mainCtx.strokeRect(element.x, element.y, element.width, element.height);
-
-                        const handle = getResizeHandleRect(element);
-                        mainCtx.fillStyle = 'var(--selection-handle-color)';
-                        mainCtx.fillRect(handle.x, handle.y, handle.width, handle.height);
-                        mainCtx.strokeStyle = 'var(--selection-handle-stroke)';
-                        mainCtx.lineWidth = 1;
-                        mainCtx.strokeRect(handle.x, handle.y, handle.width, handle.height);
-                    }
-                }
-            });
-        }
-
-        function getCanvasCoordinates(event) {
-            const rect = mainCanvas.getBoundingClientRect();
-            let clientX, clientY;
-            if (event.touches && event.touches.length > 0) {
-                clientX = event.touches[0].clientX; clientY = event.touches[0].clientY;
-            } else if (event.clientX !== undefined) {
-                clientX = event.clientX; clientY = event.clientY;
-            } else { return null; }
-            return { x: (clientX - rect.left), y: (clientY - rect.top) };
-        }
-
-        function isPointInElement(pointX, pointY, element) {
-            return pointX >= element.x && pointX <= element.x + element.width &&
-                   pointY >= element.y && pointY <= element.y + element.height;
-        }
-        function isPointInResizeHandle(pointX, pointY, element) {
-            if (!element) return false;
-            const handle = getResizeHandleRect(element);
-            const RHL = RESIZE_HANDLE_LOGICAL_SIZE;
-            const clickablePadding = RESIZE_HANDLE_CLICK_EXTENSION;
-            return pointX >= handle.x - clickablePadding && pointX <= handle.x + RHL + clickablePadding &&
-                   pointY >= handle.y - clickablePadding && pointY <= handle.y + RHL + clickablePadding;
-        }
-
-        function handleCanvasInteractionStart(event) {
-            if (event.cancelable) event.preventDefault();
-            const displayCoords = getCanvasCoordinates(event);
-            if (!displayCoords) return;
-
-            const mainCanvasRect = mainCanvas.getBoundingClientRect();
-            if (mainCanvasRect.width === 0 || mainCanvasRect.height === 0) return;
-
-            const logicalX = displayCoords.x * (mainCanvas.width / dpr / mainCanvasRect.width);
-            const logicalY = displayCoords.y * (mainCanvas.height / dpr / mainCanvasRect.height);
-
-            const currentDocSettings = appState.documentSettings[appState.currentDocumentUrl];
-            if (!currentDocSettings) return;
-
-            let newActiveElementId = null;
-            let clickedOnResizeHandle = false;
-
-            if (appState.activeElementId) {
-                const activeEl = getElementById(appState.currentDocumentUrl, appState.activeElementId);
-                if (activeEl && isPointInResizeHandle(logicalX, logicalY, activeEl)) {
-                    newActiveElementId = appState.activeElementId;
-                    clickedOnResizeHandle = true;
-                }
-            }
-
-            if (!clickedOnResizeHandle) {
-                for (let i = currentDocSettings.elements.length - 1; i >= 0; i--) {
-                    const el = currentDocSettings.elements[i];
-                    if (isPointInElement(logicalX, logicalY, el)) {
-                        newActiveElementId = el.id; break;
-                    }}}
-
-            appState.activeElementId = newActiveElementId;
-
-            if (newActiveElementId) {
-                const element = getElementById(appState.currentDocumentUrl, newActiveElementId);
-                if (clickedOnResizeHandle) {
-                    appState.resizeState = {
-                        isResizing: true, elementId: newActiveElementId,
-                        startX: logicalX, startY: logicalY,
-                        initialElement: {
-                            x: element.x, y: element.y, width: element.width, height: element.height,
-                            aspectRatio: (element.height === 0 || element.width === 0) ? 1 : (element.width / element.height)
-                        }};
-                    appState.dragState.isDragging = false;
-                } else {
-                    appState.dragState = { isDragging: true, elementId: newActiveElementId, offsetX: logicalX - element.x, offsetY: logicalY - element.y };
-                    appState.resizeState.isResizing = false;
-                }} else {
-                appState.dragState.isDragging = false; appState.resizeState.isResizing = false;
-            }
-            updateSelectedElementControls(); redrawMainCanvas();
-        }
-
-        function handleCanvasInteractionMove(event) {
-            if (event.cancelable) event.preventDefault();
-            const displayCoords = getCanvasCoordinates(event);
-            if (!displayCoords) return;
-
-            const mainCanvasRect = mainCanvas.getBoundingClientRect();
-            if (mainCanvasRect.width === 0 || mainCanvasRect.height === 0) return;
-
-            const logicalX = displayCoords.x * (mainCanvas.width / dpr / mainCanvasRect.width);
-            const logicalY = displayCoords.y * (mainCanvas.height / dpr / mainCanvasRect.height);
-
-            if (appState.resizeState.isResizing && appState.resizeState.elementId === appState.activeElementId) {
-                const element = getElementById(appState.currentDocumentUrl, appState.activeElementId);
-                if (!element) {appState.resizeState.isResizing = false; return;}
-                const initial = appState.resizeState.initialElement;
-                const deltaX = logicalX - appState.resizeState.startX;
-
-                let newWidth = initial.width + deltaX;
-                newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
-                let newHeight = (initial.aspectRatio === 0) ? MIN_ELEMENT_DIM : (newWidth / initial.aspectRatio);
-
-                if (newHeight < MIN_ELEMENT_DIM) {
-                    newHeight = MIN_ELEMENT_DIM;
-                    if (initial.aspectRatio !== 0) newWidth = newHeight * initial.aspectRatio; else newWidth = MIN_ELEMENT_DIM;
-                }
-                newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
-                if (initial.aspectRatio !== 0) newHeight = newWidth / initial.aspectRatio; else newHeight = MIN_ELEMENT_DIM;
-                newHeight = Math.max(MIN_ELEMENT_DIM, newHeight);
-
-                element.width = newWidth;
-                element.height = newHeight;
-                redrawMainCanvas();
-                elementWidthInput.value = Math.round(element.width);
-                elementHeightInput.value = Math.round(element.height);
-
-            } else if (appState.dragState.isDragging && appState.dragState.elementId === appState.activeElementId) {
-                const element = getElementById(appState.currentDocumentUrl, appState.dragState.elementId);
-                if (element) {
-                    element.x = logicalX - appState.dragState.offsetX;
-                    element.y = logicalY - appState.dragState.offsetY;
-                    redrawMainCanvas();
-                }}}
-
-        function handleCanvasInteractionEnd(event) {
-            if (appState.resizeState.isResizing) {
-                appState.resizeState.isResizing = false;
-                if(appState.activeElementId) updateSelectedElementControls();
-            }
-            if (appState.dragState.isDragging) {
-                appState.dragState.isDragging = false;
-            }}
-
-        function updateSelectedElementControls() {
-            const activeElement = appState.activeElementId ? getElementById(appState.currentDocumentUrl, appState.activeElementId) : null;
-            // Check if the elementSizingControls should be visible based on CSS (for mobile)
-            // The CSS rule `display: none !important` will take precedence on mobile.
-            // This JS logic primarily controls visibility on desktop or if the CSS rule wasn't there.
-            if (activeElement && elementSizingControls.style.display !== 'none') { // Check current style, JS might hide it too
-                elementSizingControls.style.display = 'block';
-                imageElementControls.style.display = 'block';
-                elementWidthInput.value = Math.round(activeElement.width);
-                elementHeightInput.value = Math.round(activeElement.height);
-            } else {
-                 elementSizingControls.style.display = 'none';
-            }
-        }
-
-
-        function handleSizeInputChange() {
-            const activeElement = appState.activeElementId ? getElementById(appState.currentDocumentUrl, appState.activeElementId) : null;
-            if (!activeElement) return;
-
-            let newWidth = parseFloat(elementWidthInput.value) || activeElement.width;
-            let newHeight = parseFloat(elementHeightInput.value) || activeElement.height;
-
-            const originalAspectRatio = (activeElement.height === 0 || activeElement.width === 0) ? 1 : (activeElement.width / activeElement.height);
-
-            if (elementWidthInput === document.activeElement && newWidth !== activeElement.width) {
-                newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
-                if (originalAspectRatio !== 0) newHeight = newWidth / originalAspectRatio; else newHeight = MIN_ELEMENT_DIM;
-            } else if (elementHeightInput === document.activeElement && newHeight !== activeElement.height) {
-                newHeight = Math.max(MIN_ELEMENT_DIM, newHeight);
-                if (originalAspectRatio !== 0) newWidth = newHeight * originalAspectRatio; else newWidth = MIN_ELEMENT_DIM;
-            } else if (newWidth !== activeElement.width || newHeight !== activeElement.height) {
-                 newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
-                 if (originalAspectRatio !== 0) newHeight = newWidth / originalAspectRatio; else newHeight = MIN_ELEMENT_DIM;
-            } else {
-                elementWidthInput.value = Math.round(activeElement.width);
-                elementHeightInput.value = Math.round(activeElement.height);
-                return;
-            }
-
-            if (newHeight < MIN_ELEMENT_DIM) {
-                newHeight = MIN_ELEMENT_DIM;
-                if (originalAspectRatio !== 0) newWidth = newHeight * originalAspectRatio; else newWidth = MIN_ELEMENT_DIM;
-            }
-            newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
-
-            if (originalAspectRatio !== 0) {
-                let heightFromWidth = newWidth / originalAspectRatio;
-                if (elementWidthInput === document.activeElement || (elementHeightInput !== document.activeElement && newWidth !== activeElement.width)) {
-                    newHeight = Math.max(MIN_ELEMENT_DIM, heightFromWidth);
-                    newWidth = Math.max(MIN_ELEMENT_DIM, newHeight * originalAspectRatio);
-                } else {
-                    let widthFromHeight = newHeight * originalAspectRatio;
-                    newWidth = Math.max(MIN_ELEMENT_DIM, widthFromHeight);
-                    newHeight = Math.max(MIN_ELEMENT_DIM, newWidth / originalAspectRatio);
-                }
-            } else {
-                newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
-                newHeight = Math.max(MIN_ELEMENT_DIM, newHeight);
-            }
-
-            newWidth = Math.max(MIN_ELEMENT_DIM, newWidth);
-            newHeight = Math.max(MIN_ELEMENT_DIM, newHeight);
-
-            activeElement.width = Math.round(newWidth);
-            activeElement.height = Math.round(newHeight);
-            elementWidthInput.value = Math.round(activeElement.width);
-            elementHeightInput.value = Math.round(activeElement.height);
-            redrawMainCanvas();
-        }
-
-        const RESIZE_DEBOUNCE_MS = 250;
-
-        function handleAppResize() {
-            clearTimeout(appState.resizeTimeout);
-            appState.resizeTimeout = setTimeout(() => {
-                const newWindowWidth = window.innerWidth;
-                const newWindowHeight = window.innerHeight;
-                initializeDrawingPads();
-                if (appState.currentDocumentUrl) {
-                    loadDocument(appState.currentDocumentUrl);
-                }
-                appState.lastWindowWidth = newWindowWidth;
-                appState.lastWindowHeight = newWindowHeight;
-            }, RESIZE_DEBOUNCE_MS);
-        }
-
-        function setupEventListeners() {
-            clearNameBtn.addEventListener('click', () => clearDrawingPad(nameCtx, 'nameImageCache', nameCanvasEl));
-            confirmNameBtn.addEventListener('click', () => confirmDrawingPad(nameCtx, 'nameImageCache', nameCanvasEl));
-            clearCedulaBtn.addEventListener('click', () => clearDrawingPad(cedulaCtx, 'cedulaImageCache', cedulaCanvasEl));
-            confirmCedulaBtn.addEventListener('click', () => confirmDrawingPad(cedulaCtx, 'cedulaImageCache', cedulaCanvasEl));
-            clearDateBtn.addEventListener('click', () => clearDrawingPad(dateCtx, 'dateImageCache', dateCanvasEl));
-            confirmDateBtn.addEventListener('click', () => confirmDrawingPad(dateCtx, 'dateImageCache', dateCanvasEl));
-            clearSignatureBtn.addEventListener('click', () => clearDrawingPad(sigCtx, 'signatureImageCache', signaturePadEl));
-            confirmSignatureBtn.addEventListener('click', () => confirmDrawingPad(sigCtx, 'signatureImageCache', signaturePadEl));
-
-            mainCanvas.addEventListener('mousedown', handleCanvasInteractionStart);
-            mainCanvas.addEventListener('mousemove', handleCanvasInteractionMove);
-            mainCanvas.addEventListener('mouseup', handleCanvasInteractionEnd);
-            mainCanvas.addEventListener('mouseleave', handleCanvasInteractionEnd);
-            mainCanvas.addEventListener('touchstart', handleCanvasInteractionStart, { passive: false });
-            mainCanvas.addEventListener('touchmove', handleCanvasInteractionMove, { passive: false });
-            mainCanvas.addEventListener('touchend', handleCanvasInteractionEnd, { passive: false });
-
-            elementWidthInput.addEventListener('change', handleSizeInputChange);
-            elementHeightInput.addEventListener('change', handleSizeInputChange);
-            exportDocumentBtn.addEventListener('click', () => {
-                if (!appState.currentDocumentUrl || !appState.backgroundImage || !appState.backgroundImage.complete || appState.backgroundImage.naturalWidth === 0) {
-                    alert("Por favor, seleccione y cargue un documento primero, o espere a que cargue."); return;
-                }
-                const lastActiveElement = appState.activeElementId;
-                appState.activeElementId = null;
-                redrawMainCanvas(true);
-                const dataUrl = mainCanvas.toDataURL('image/jpeg', 0.92);
-                const link = document.createElement('a'); link.href = dataUrl;
-                const currentDocConfig = documentConfigurations.find(dc => dc.path === appState.currentDocumentUrl);
-                const shortNameForFile = currentDocConfig ? currentDocConfig.shortName : 'documento';
-                const dateForFile = new Date().toISOString().slice(0,10).replace(/-/g,'');
-                link.download = `APC_Firmado_${shortNameForFile}_${dateForFile}.jpg`;
-                document.body.appendChild(link); link.click(); document.body.removeChild(link);
-                appState.activeElementId = lastActiveElement;
-                if(lastActiveElement) redrawMainCanvas();
-            });
-            window.addEventListener('resize', handleAppResize);
-        }
-
-        initializeDefaultDocumentSettings();
-        populateDocumentButtons();
-        initializeDrawingPads();
-        setupEventListeners();
-
-        let initialDocPathToLoad = handleUrlParameters();
-        if (!initialDocPathToLoad && documentConfigurations.length > 0) {
-            initialDocPathToLoad = documentConfigurations[0].path;
-        }
-
-        if (initialDocPathToLoad) {
-            loadDocument(initialDocPathToLoad);
+    setTimeout(() => {
+        if (referralData && referralData.name) {
+            addBotMessage(`¡Hola! Veo que ${referralData.name} te refirió :D`);
         } else {
-            console.error("No hay documentos APC configurados o no se pudo determinar doc inicial.");
-            if(!mainCanvas.width || mainCanvas.width === 0) {
-                 mainCanvas.style.width = "300px"; mainCanvas.style.height = "150px";
-                 mainCanvas.width = 300 * dpr; mainCanvas.height = 150 * dpr;
-            }
-             mainCtx = mainCanvas.getContext('2d');
-             configureDrawingContext(mainCtx, mainCanvas.width/dpr, mainCanvas.height/dpr);
-             mainCtx.fillStyle = "red"; mainCtx.font = "bold 16px Arial"; mainCtx.textAlign = "center";
-             mainCtx.fillText("No hay documentos.", mainCanvas.width/(2*dpr), mainCanvas.height/(2*dpr));
+            addBotMessage('¡Hola! ¿Necesitas un préstamo?');
         }
+        setTimeout(() => {
+            addBotMessage('¿Cuál es tu nombre?');
+        }, 1000);
+    }, 500);
+
+    function addBotMessage(message, options = null, includeReferralInfo = false) {
+        const containerDiv = document.createElement('div');
+        containerDiv.className = 'message-container bot-container';
+        const avatarImg = document.createElement('img');
+        avatarImg.src = botProfilePic;
+        avatarImg.alt = "Lulo";
+        avatarImg.className = 'message-avatar';
+        containerDiv.appendChild(avatarImg);
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message bot-message';
+        // For text content, use textContent to prevent XSS
+        // For HTML content, ensure it's sanitized or from a trusted source
+        // In this case, message is text, referralDiv.innerHTML is controlled
+        const textNode = document.createTextNode(message + (options || includeReferralInfo ? " " : "")); // Add space if options/referral follow
+        messageDiv.appendChild(textNode);
+        
+        if (includeReferralInfo) {
+            const referralDiv = document.createElement('div');
+            referralDiv.className = 'referral-highlight';
+            referralDiv.innerHTML = '💰 <strong>¡Gana dinero!</strong> Únete a nuestro programa de referidos y gana el 1% del monto de cada préstamo que refieras. ¡Imagina recibir $250 por referir un préstamo de $25,000!';
+            const referralButtonDiv = document.createElement('div');
+            referralButtonDiv.className = 'sector-options';
+            const referralButton = document.createElement('div');
+            referralButton.className = 'sector-option';
+            referralButton.textContent = 'Quiero unirme al programa de referidos';
+            referralButton.onclick = redirectToReferralProgram;
+            referralButtonDiv.appendChild(referralButton);
+            referralDiv.appendChild(referralButtonDiv);
+            messageDiv.appendChild(referralDiv);
+        }
+        
+        if (options) {
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'sector-options';
+            options.forEach(optionText => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'sector-option';
+                optionDiv.textContent = optionText;
+                optionDiv.onclick = () => handleOption(optionText);
+                optionsDiv.appendChild(optionDiv);
+            });
+            messageDiv.appendChild(optionsDiv);
+            userInput.disabled = true;
+            sendButton.disabled = true;
+        }
+        
+        containerDiv.appendChild(messageDiv);
+        chatbotMessages.appendChild(containerDiv);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+
+    function addUserMessage(message) {
+        const containerDiv = document.createElement('div');
+        containerDiv.className = 'message-container user-container';
+        const avatarImg = document.createElement('img');
+        avatarImg.src = userProfilePic;
+        avatarImg.alt = "User";
+        avatarImg.className = 'message-avatar';
+        containerDiv.appendChild(avatarImg);
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message user-message';
+        messageDiv.textContent = message;
+        containerDiv.appendChild(messageDiv);
+        chatbotMessages.appendChild(containerDiv);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+
+    function disableChat() {
+        userInput.disabled = true;
+        sendButton.disabled = true;
+        const reloadDiv = document.createElement('div');
+        reloadDiv.className = 'reload-suggestion';
+        reloadDiv.textContent = 'Recarga la página para comenzar de nuevo';
+        chatbotMessages.appendChild(reloadDiv);
+        sendDataToWebhook();
+    }
+
+    function showRejectionMessage() {
+        let reason = "";
+        if (userData.sector === 'Empresa Privada' && userData.salario < 1200) {
+            reason = "tu salario es menor a $1,200 y trabajas en empresa privada.";
+            userData.rejectionReason = "salario_bajo_empresa_privada";
+        } else if ((userData.sector === 'Especialista del Gobierno' || userData.sector === 'Administrativo del Gobierno') && userData.salario < 800) {
+            reason = "tu salario es menor a $800 y trabajas en el gobierno.";
+            userData.rejectionReason = "salario_bajo_gobierno";
+        } else if (userData.sector === 'Jubilado' && userData.salario < 300) {
+            reason = "tu ingreso de jubilación es menor a $300.";
+            userData.rejectionReason = "ingreso_bajo_jubilado";
+        } else if (userData.embargos === 'Sí') {
+            reason = "actualmente tienes embargos activos.";
+            userData.rejectionReason = "embargos_activos";
+        }
+        userData.qualified = false;
+        addBotMessage(`Lo siento, en este momento no aplicas para un préstamo personal con nuestros socios porque ${reason}`);
+        setTimeout(() => {
+            addBotMessage('¡Pero no te preocupes! Aún puedes beneficiarte con nosotros.', null, true);
+            disableChat();
+        }, 1000);
+    }
+
+    function redirectToReferralProgram() {
+        sendDataToWebhook();
+        window.location.href = "/referidos";
+    }
+
+    function handleOption(option) {
+        addUserMessage(option); // Add user message for the selected option first
+        userInput.disabled = false; // Re-enable input by default
+        sendButton.disabled = false;
+
+        if (step === 3) { // Sector selection
+            userData.sector = option;
+            step++;
+            setTimeout(() => {
+                const incomeLabel = userData.sector === 'Jubilado' ? 'ingreso' : 'salario';
+                addBotMessage(`¿De cuánto es tu ${incomeLabel}? (En USD)`);
+                userInput.type = 'number';
+                userInput.placeholder = 'Ingresa el monto en USD';
+                userInput.focus();
+            }, 500);
+        } else if (step === 5) { // Reason for loan
+            userData.razonPrestamo = option;
+            step++;
+            setTimeout(() => {
+                addBotMessage('¿Tienes buenas referencias?', ['Sí', 'No']);
+            }, 500);
+        } else if (step === 6) { // References
+            userData.referencias = option;
+            if (userData.sector === 'Especialista del Gobierno' || userData.sector === 'Administrativo del Gobierno') {
+                step++;
+                setTimeout(() => {
+                    addBotMessage('¿Tienes embargos?', ['Sí', 'No']);
+                }, 500);
+            } else {
+                askForPhone();
+            }
+        } else if (step === 7 && (userData.sector === 'Especialista del Gobierno' || userData.sector === 'Administrativo del Gobierno')) { // Embargos for Gov
+            userData.embargos = option;
+            if (option === 'Sí') {
+                showRejectionMessage();
+                return;
+            }
+            askForPhone();
+        } else if (step === 9 && !referralData) { // Referred? (only if not from link)
+            if (option === 'Sí') {
+                step++;
+                setTimeout(() => {
+                    addBotMessage('Por favor, ingresa tu código de referido');
+                    userInput.type = 'text';
+                    userInput.removeAttribute('inputmode');
+                    userInput.placeholder = 'Código de referido';
+                    userInput.focus();
+                }, 500);
+            } else {
+                userData.qualified = true;
+                showSuccessMessage();
+            }
+        }
+         // After processing an option, disable input again if next step involves options
+        if (step === 3 || step === 5 || step === 6 || (step === 7 && (userData.sector === 'Especialista del Gobierno' || userData.sector === 'Administrativo del Gobierno')) || (step === 9 && !referralData)) {
+           // Check if the next step will present options. If so, keep input disabled.
+           // This logic is a bit tricky because addBotMessage itself disables.
+           // For now, handleOption enables, and addBotMessage will disable IF it has options.
+        }
+    }
+
+    function askForPhone() {
+        step = 8;
+        userInput.disabled = false;
+        sendButton.disabled = false;
+        setTimeout(() => {
+            addBotMessage('¿Cuál es tu número de celular?');
+            userInput.type = 'tel';
+            userInput.setAttribute('inputmode', 'numeric');
+            userInput.value = '+507 ';
+            userInput.placeholder = '+507 XXXX-XXXX'; // Updated placeholder
+            userInput.focus();
+        }, 500);
+    }
+
+    function askReferidoQuestion() {
+        step = 9;
+        if (referralData) {
+            userData.referido = referralData.code;
+            userData.qualified = true;
+            showSuccessMessage();
+        } else {
+            userInput.disabled = true;
+            sendButton.disabled = true;
+            setTimeout(() => {
+                addBotMessage('¿Fuiste referido?', ['Sí', 'No']);
+            }, 500);
+        }
+    }
+
+    function validateEmail(email) {
+        const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+    function formatPhoneNumber(input) {
+        let digits = input.replace(/[^\d]/g, '');
+        if (digits.startsWith('507')) {
+            digits = digits.substring(3);
+        }
+        // Ensure it starts with 6 for Panama mobile, unless it's empty
+        if (digits && digits.length > 0 && !digits.startsWith('6')) {
+             digits = '6' + digits;
+        }
+        digits = digits.substring(0, 8); // Max 8 digits after '6'
+        
+        let formatted = '+507 ';
+        if (digits.length > 0) {
+            formatted += digits.substring(0, 1); // Should be '6'
+            if (digits.length > 1) {
+                 formatted += digits.substring(1, 4);
+                 if (digits.length > 4) {
+                    formatted += '-' + digits.substring(4);
+                }
+            }
+        }
+        return formatted;
+    }
+
+
+    userInput.addEventListener('input', function(e) {
+        if (step === 8) { // Phone number step
+            const currentValue = this.value;
+            let selectionStart = this.selectionStart;
+            let selectionEnd = this.selectionEnd;
+
+            // Basic guard for the prefix. User shouldn't easily delete it.
+            if (!currentValue.startsWith('+507 6')) {
+                if (currentValue.startsWith('+507 ') && currentValue.length > 6) {
+                    // If user types something other than 6 after +507
+                     this.value = '+507 6' + currentValue.substring(6).replace(/[^\d]/g, '');
+                } else if (!currentValue.startsWith('+507 ')) {
+                    this.value = '+507 6';
+                } else if (currentValue === '+507 ') {
+                    // User deleted the 6
+                    this.value = '+507 6';
+                }
+            }
+            
+            let strippedValue = this.value.substring(6).replace(/[^\d]/g, ''); // Digits after +507 6
+            strippedValue = strippedValue.substring(0,7); // 6XXX-XXXX -> 7 digits after the first 6
+
+            let formatted = '+507 6';
+            if (strippedValue.length > 0) {
+                formatted += strippedValue.substring(0,3); // XXX
+                if (strippedValue.length > 3) {
+                    formatted += '-' + strippedValue.substring(3); // -XXXX
+                }
+            }
+            
+            // Avoid re-setting if the value is already what it should be for short inputs
+            if (this.value !== formatted) {
+                this.value = formatted;
+            }
+
+            // Cursor positioning is tricky with aggressive formatting.
+            // This is a simplified attempt, might need refinement for edge cases.
+            // Typically, you'd calculate the difference in non-digit characters.
+            if (currentValue.length > formatted.length) {
+                selectionStart--;
+            } else if (currentValue.length < formatted.length && selectionStart > 6) {
+                 selectionStart++;
+                 if (currentValue.charAt(selectionStart-2) === '-' && formatted.charAt(selectionStart-1) !== '-') {
+                    selectionStart++; // Jump over newly inserted hyphen
+                 }
+            }
+            
+            // Ensure cursor is not before the prefix
+            if (selectionStart < 7 && this.value.startsWith('+507 6')) selectionStart = this.value.length;
+
+
+            // Cap selectionStart to the length of the formatted value
+            selectionStart = Math.min(selectionStart, this.value.length);
+            this.setSelectionRange(selectionStart, selectionStart);
+        }
+    });
+
+
+    function showSuccessMessage() {
+        addBotMessage('¡Gracias por completar el formulario! Nos pondremos en contacto contigo pronto.');
+        disableChat();
+    }
+
+    function sendMessage() {
+        const message = userInput.value.trim();
+        
+        if (step === 8) { // Phone input
+            // Validate phone number format more strictly before sending
+            const phoneRegex = /^\+507 6\d{3}-\d{4}$/;
+            if (!phoneRegex.test(message)) {
+                addBotMessage('Por favor, ingresa un número válido de Panamá (ej: +507 6123-4567).');
+                userInput.value = '+507 6'; // Reset to prefix
+                userInput.focus();
+                return;
+            }
+        } else {
+             if (!message) return; // General case for other inputs
+        }
+
+        addUserMessage(message); // Display what user typed (or formatted for phone)
+        
+        // Clear input based on step
+        if (step !== 8) { // Don't clear phone input immediately if it was just validated
+             userInput.value = '';
+        }
+        userInput.placeholder = 'Escribe aquí...';
+
+
+        if (step === 1) { // Name
+            userData.nombre = message;
+            step = 2;
+            setTimeout(() => {
+                addBotMessage('¿Cuál es tu correo electrónico?');
+                userInput.type = 'email';
+                userInput.placeholder = 'ejemplo@correo.com';
+                userInput.focus();
+            }, 500);
+        } else if (step === 2) { // Email
+            if (!validateEmail(message)) {
+                addBotMessage('Por favor, ingresa un correo electrónico válido.');
+                 userInput.focus(); // Keep focus on email input
+                return;
+            }
+            userData.email = message;
+            step = 3;
+            setTimeout(() => {
+                addBotMessage('Elige el sector al que perteneces.', [
+                    'Especialista del Gobierno', 'Administrativo del Gobierno', 'Empresa Privada', 'Jubilado'
+                ]);
+            }, 500);
+        } else if (step === 4) { // Salary
+            const salary = parseFloat(message);
+            if (isNaN(salary) || salary <= 0) {
+                addBotMessage('Por favor, ingresa un monto de salario válido.');
+                userInput.focus();
+                return;
+            }
+            userData.salario = salary;
+            if ((userData.sector === 'Empresa Privada' && salary < 1200) ||
+                ((userData.sector === 'Especialista del Gobierno' || userData.sector === 'Administrativo del Gobierno') && salary < 800) ||
+                (userData.sector === 'Jubilado' && salary < 300)) {
+                showRejectionMessage();
+                return;
+            }
+            step = 5;
+            userInput.type = 'text'; // Change back from number
+            setTimeout(() => {
+                addBotMessage('¿Cuál es la razón de tu préstamo personal?', [
+                    'Consolidación de deudas', 'Remodelación de vivienda', 'Compra de vehículo', 'Otros gastos'
+                ]);
+            }, 500);
+        } else if (step === 8) { // Phone (already validated)
+            userData.celular = message; // Store the validated and formatted number
+            userInput.value = ''; // Clear after successful submission
+            askReferidoQuestion();
+        } else if (step === 10) { // Referral code
+            userData.referido = message;
+            userData.qualified = true;
+            showSuccessMessage();
+        }
+    }
+
+    function sendDataToWebhook() {
+        userData.timestamp = new Date().toISOString();
+        if (referralData) {
+            userData.referido = referralData.code;
+        }
+        const webhookData = { ...userData, completedFlow: true, source: window.location.href, userAgent: navigator.userAgent };
+        fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(webhookData)
+        })
+        .then(response => {
+            if (!response.ok) console.error('Error sending data to webhook:', response.statusText);
+            return response.json();
+        })
+        .then(data => console.log('Webhook response:', data))
+        .catch(error => console.error('Error sending data to webhook:', error));
+    }
+
+    userInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !sendButton.disabled) { // Prevent Enter if button is disabled (e.g. waiting for option click)
+            sendMessage();
+        }
+    });
     </script>
 </body>
 </html>
