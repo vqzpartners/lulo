@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* Global reset and base styles */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -17,8 +16,8 @@
 
         html, body {
             height: 100%;
-            font-family: 'Roboto', 'Arial', sans-serif; /* Changed to Roboto */
-            background-color: #ffd700; /* White background for the page */
+            font-family: 'Roboto', 'Arial', sans-serif;
+            background-color: #ffd700;
         }
 
         body {
@@ -30,47 +29,44 @@
             color: white;
         }
 
-        /* Header Styles */
         .app-header {
             background-color: #004951;
             color: white;
             padding: 10px 20px;
             display: flex;
             align-items: center;
-            justify-content: center; /* Center content for pill shape */
-            width: 95%; /* Adjust width as needed */
-            max-width: 1200px; /* Max width for the header */
-            margin: 15px auto; /* Top/bottom margin, auto for left/right centering */
+            justify-content: center;
+            width: 95%;
+            max-width: 1200px;
+            margin: 15px auto;
             border-radius: 50px; /* Pill shape */
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            position: sticky; /* Make header sticky */
-            top: 10px; /* Space from top when sticky */
-            z-index: 1000; /* Ensure header is above other content */
+            position: sticky;
+            top: 10px;
+            z-index: 1000;
         }
 
         .app-header img.logo {
-            height: 80px; /* Adjust logo height as needed */
-            margin-right: 15px; /* Space between logo and title if any */
+            height: 80px;
+            margin-right: 15px;
         }
         
-        /* Main Page Container for Chatbot */
         .page-container {
-            flex-grow: 1; /* Allows this container to take up available space */
+            flex-grow: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px 10px; /* Top/bottom padding to avoid overlap with sticky header/footer, left/right for spacing */
-            overflow-y: auto; /* In case content overflows */
-            margin-top: 70px; /* Approximate height of header + its margin, adjust if needed */
-            margin-bottom: 60px; /* Approximate height of footer, adjust if needed */
+            padding: 20px 10px;
+            overflow-y: auto;
+            margin-top: 70px; /* Adjust if header height/margin changes */
+            margin-bottom: 60px; /* Adjust if footer height changes */
         }
 
-        /* Chatbot specific styles */
         .chatbot-container {
             width: 100%;
-            max-width: 900px; /* Increased max-width for PC */
-            height: 100%; /* Take full height of its parent (.page-container allocated space) */
-            max-height: 70vh; /* Max height relative to viewport, can adjust */
+            max-width: 900px;
+            height: 100%;
+            max-height: 70vh;
             background: #004951;
             border-radius: 15px;
             padding: 15px;
@@ -81,8 +77,8 @@
         }
 
         .chatbot-messages {
-            height: 100%; /* Make it take the available space */
-            flex-grow: 1; /* Allow messages to take up available vertical space */
+            height: 100%;
+            flex-grow: 1;
             overflow-y: auto;
             padding-right: 8px;
             display: flex;
@@ -124,7 +120,7 @@
         .message {
             padding: 8px 12px;
             border-radius: 18px;
-            max-width: 80%; /* Allow messages to be a bit wider */
+            max-width: 80%;
             line-height: 1.4;
             word-wrap: break-word;
             font-size: 16px;
@@ -168,19 +164,19 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            flex-shrink: 0; /* Prevent input from shrinking */
+            flex-shrink: 0;
         }
 
         .chatbot-input input {
             flex: 1;
-            padding: 10px 15px; /* Increased padding for better touch */
+            padding: 10px 15px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 20px;
             outline: none;
             font-size: 16px;
             background: rgba(0, 0, 0, 0.5);
             color: #fff;
-            font-family: 'Roboto', sans-serif; /* Ensure Roboto */
+            font-family: 'Roboto', sans-serif;
         }
 
         .chatbot-input input::placeholder {
@@ -196,11 +192,11 @@
             background: #ff5733;
             border: none;
             color: #fff;
-            font-size: 18px; /* Slightly larger icon */
+            font-size: 18px;
             cursor: pointer;
             border-radius: 50%;
-            width: 44px; /* Increased size */
-            height: 44px; /* Increased size */
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -232,7 +228,6 @@
             border-radius: 4px;
         }
 
-        /* Footer Styles */
         .app-footer {
             background-color: #004951;
             color: white;
@@ -247,44 +242,42 @@
             margin-bottom: 8px;
         }
         
-        .app-footer .footer-links { /* Added a wrapper for links */
+        .app-footer .footer-links {
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-wrap: wrap; /* Allow wrapping on slightly larger screens if needed */
+            flex-wrap: wrap;
         }
 
         .app-footer a {
-            color: #f0f0f0; /* A slightly off-white for links if needed */
+            color: #f0f0f0;
             text-decoration: none;
-            margin: 0 10px; /* Horizontal spacing */
+            margin: 0 10px;
         }
 
         .app-footer a:hover {
             text-decoration: underline;
         }
 
-        /* Media Queries for Mobile Responsiveness */
         @media (max-width: 768px) {
             .app-header {
-                width: 90%; /* Header can be a bit narrower on mobile */
+                width: 90%;
                 padding: 8px 15px;
-                top: 5px; /* Adjust sticky position for mobile */
+                top: 5px;
             }
             .app-header img.logo {
-                height: 60px; /* Logo smaller on medium mobile */
+                height: 60px;
             }
 
             .page-container {
-                /* Adjust top margin if header size/margin changes significantly on mobile */
                 margin-top: 60px; 
-                padding: 15px 5px; /* Less horizontal padding on mobile */
+                padding: 15px 5px;
             }
 
             .chatbot-container {
-                max-width: 100%; /* Chatbot takes full available width */
+                max-width: 100%;
                 padding: 10px;
-                max-height: none; /* Allow it to use the space given by page-container */
+                max-height: none;
                 height: 100%;
             }
 
@@ -319,18 +312,11 @@
                 font-size: 12px;
                 padding: 10px;
             }
-            .app-footer .footer-links {
-                /* display: flex; Already set globally, will inherit */
-                /* justify-content: center; Already set globally */
-                /* flex-wrap: wrap; Already set globally */
-            }
             .app-footer a {
-                margin: 5px 8px; /* Adjust margin for side-by-side layout */
-                /* display: inline-block; remove if using flex on parent */
+                margin: 5px 8px;
             }
         }
 
-        /* New Media Query for smaller screens */
         @media (max-width: 480px) {
             .app-header {
                 width: 95%;
@@ -338,10 +324,10 @@
                 top: 5px;
             }
             .app-header img.logo {
-                height: 60px; /* Keep logo size consistent with 768px breakpoint or desired fixed size */
+                height: 60px;
             }
             .page-container {
-                margin-top: 55px; /* Adjust if header is smaller */
+                margin-top: 55px;
                 padding: 10px 3px;
             }
             .chatbot-container {
@@ -374,12 +360,12 @@
                 padding: 8px;
             }
             .app-footer .footer-links {
-                flex-direction: column; /* Stack links vertically on very small screens */
+                flex-direction: column;
                 align-items: center;
             }
             .app-footer a {
-                margin: 5px 0; /* Vertical margin when stacked */
-                display: block; /* Ensure they take full width if needed for centering text */
+                margin: 5px 0;
+                display: block;
             }
              .app-footer a:last-child {
                 margin-bottom: 0;
@@ -404,425 +390,14 @@
 
     <footer class="app-footer">
         <p>&copy; <span id="currentYear"></span> Lulo Panamá. Todos los derechos reservados.</p>
-        <div class="footer-links"> <a href="https://lulopanama.com/terminos">Términos y Condiciones</a>
-            <a href="https://lulopanama.com/privacidad">Política de Privacidad</a>
+        <div class="footer-links">
+            <a href="https://lulopanama.com/terminos" rel="nofollow">Términos y Condiciones</a>
+            <a href="https://lulopanama.com/privacidad" rel="nofollow">Política de Privacidad</a>
         </div>
     </footer>
 
     <script>
-    // JavaScript for dynamic year in footer
-    document.getElementById('currentYear').textContent = new Date().getFullYear();
-
-    // --- Your existing chatbot JavaScript ---
-    let step = 1;
-    let userData = {
-        nombre: '',
-        email: '',        
-        sector: '',
-        celular: '',
-        razonPrestamo: '',    
-        referido: '',
-        salario: '',
-        referencias: '',
-        embargos: '',
-        qualified: false,
-        rejectionReason: ''
-    };
-
-    const WEBHOOK_URL = "https://hook.us2.make.com/o63acpuru7c2j3vn4x4xljnlmhy23fqx";
-    const chatbotMessages = document.getElementById('chatbotMessages');
-    const userInput = document.getElementById('userInput');
-    const sendButton = document.getElementById('sendButton');
-    const botProfilePic = "https://www.lulopanama.com/storage/logo-new.jpg";
-    const userProfilePic = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23808080'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E";
-
-    function getReferralData() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const referralCode = urlParams.get('r');
-        if (referralCode) {
-            const nameMatch = referralCode.match(/^([a-zA-Z]+)/);
-            const referrerName = nameMatch ? nameMatch[0] : null;
-            return {
-                code: referralCode,
-                name: referrerName ? referrerName.charAt(0).toUpperCase() + referrerName.slice(1).toLowerCase() : null
-            };
-        }
-        return null;
-    }
-
-    const referralData = getReferralData();
-
-    setTimeout(() => {
-        if (referralData && referralData.name) {
-            addBotMessage(`¡Hola! Veo que ${referralData.name} te refirió :D`);
-        } else {
-            addBotMessage('¡Hola! ¿Necesitas un préstamo?');
-        }
-        setTimeout(() => {
-            addBotMessage('¿Cuál es tu nombre?');
-        }, 1000);
-    }, 500);
-
-    function addBotMessage(message, options = null, includeReferralInfo = false) {
-        const containerDiv = document.createElement('div');
-        containerDiv.className = 'message-container bot-container';
-        const avatarImg = document.createElement('img');
-        avatarImg.src = botProfilePic;
-        avatarImg.alt = "Lulo";
-        avatarImg.className = 'message-avatar';
-        containerDiv.appendChild(avatarImg);
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message bot-message';
-        // For text content, use textContent to prevent XSS
-        // For HTML content, ensure it's sanitized or from a trusted source
-        // In this case, message is text, referralDiv.innerHTML is controlled
-        const textNode = document.createTextNode(message + (options || includeReferralInfo ? " " : "")); // Add space if options/referral follow
-        messageDiv.appendChild(textNode);
-        
-        if (includeReferralInfo) {
-            const referralDiv = document.createElement('div');
-            referralDiv.className = 'referral-highlight';
-            referralDiv.innerHTML = '💰 <strong>¡Gana dinero!</strong> Únete a nuestro programa de referidos y gana el 1% del monto de cada préstamo que refieras. ¡Imagina recibir $250 por referir un préstamo de $25,000!';
-            const referralButtonDiv = document.createElement('div');
-            referralButtonDiv.className = 'sector-options'; // Re-use class for button styling if appropriate
-            const referralButton = document.createElement('div');
-            referralButton.className = 'sector-option';
-            referralButton.textContent = 'Quiero unirme al programa de referidos';
-            referralButton.onclick = redirectToReferralProgram;
-            referralButtonDiv.appendChild(referralButton);
-            referralDiv.appendChild(referralButtonDiv);
-            messageDiv.appendChild(referralDiv);
-        }
-        
-        if (options) {
-            const optionsDiv = document.createElement('div');
-            optionsDiv.className = 'sector-options';
-            options.forEach(optionText => {
-                const optionDiv = document.createElement('div');
-                optionDiv.className = 'sector-option';
-                optionDiv.textContent = optionText;
-                optionDiv.onclick = () => handleOption(optionText);
-                optionsDiv.appendChild(optionDiv);
-            });
-            messageDiv.appendChild(optionsDiv);
-            userInput.disabled = true;
-            sendButton.disabled = true;
-        }
-        
-        containerDiv.appendChild(messageDiv);
-        chatbotMessages.appendChild(containerDiv);
-        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-    }
-
-    function addUserMessage(message) {
-        const containerDiv = document.createElement('div');
-        containerDiv.className = 'message-container user-container';
-        const avatarImg = document.createElement('img');
-        avatarImg.src = userProfilePic;
-        avatarImg.alt = "User";
-        avatarImg.className = 'message-avatar';
-        containerDiv.appendChild(avatarImg);
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message user-message';
-        messageDiv.textContent = message;
-        containerDiv.appendChild(messageDiv);
-        chatbotMessages.appendChild(containerDiv);
-        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-    }
-
-    function disableChat() {
-        userInput.disabled = true;
-        sendButton.disabled = true;
-        const reloadDiv = document.createElement('div');
-        reloadDiv.className = 'reload-suggestion';
-        reloadDiv.textContent = 'Recarga la página para comenzar de nuevo';
-        chatbotMessages.appendChild(reloadDiv);
-        sendDataToWebhook();
-    }
-
-    function showRejectionMessage() {
-        let reason = "";
-        if (userData.sector === 'Empresa Privada' && userData.salario < 1200) {
-            reason = "tu salario es menor a $1,200 y trabajas en empresa privada.";
-            userData.rejectionReason = "salario_bajo_empresa_privada";
-        } else if ((userData.sector === 'Especialista del Gobierno' || userData.sector === 'Administrativo del Gobierno') && userData.salario < 800) {
-            reason = "tu salario es menor a $800 y trabajas en el gobierno.";
-            userData.rejectionReason = "salario_bajo_gobierno";
-        } else if (userData.sector === 'Jubilado' && userData.salario < 300) {
-            reason = "tu ingreso de jubilación es menor a $300.";
-            userData.rejectionReason = "ingreso_bajo_jubilado";
-        } else if (userData.embargos === 'Sí') {
-            reason = "actualmente tienes embargos activos.";
-            userData.rejectionReason = "embargos_activos";
-        }
-        userData.qualified = false;
-        addBotMessage(`Lo siento, en este momento no aplicas para un préstamo personal con nuestros socios porque ${reason}`);
-        setTimeout(() => {
-            addBotMessage('¡Pero no te preocupes! Aún puedes beneficiarte con nosotros.', null, true);
-            disableChat();
-        }, 1000);
-    }
-
-    function redirectToReferralProgram() {
-        sendDataToWebhook(); // Send data before redirecting
-        window.location.href = "/referidos"; // Make sure this path is correct
-    }
-
-    function handleOption(option) {
-        addUserMessage(option); // Add user message for the selected option first
-        userInput.disabled = false; // Re-enable input by default
-        sendButton.disabled = false;
-
-        if (step === 3) { // Sector selection
-            userData.sector = option;
-            step++;
-            setTimeout(() => {
-                const incomeLabel = userData.sector === 'Jubilado' ? 'ingreso' : 'salario';
-                addBotMessage(`¿De cuánto es tu ${incomeLabel}? (En USD)`);
-                userInput.type = 'number';
-                userInput.placeholder = 'Ingresa el monto en USD';
-                userInput.focus();
-            }, 500);
-        } else if (step === 5) { // Reason for loan
-            userData.razonPrestamo = option;
-            step++;
-            setTimeout(() => {
-                addBotMessage('¿Tienes buenas referencias?', ['Sí', 'No']);
-            }, 500);
-        } else if (step === 6) { // References
-            userData.referencias = option;
-            if (userData.sector === 'Especialista del Gobierno' || userData.sector === 'Administrativo del Gobierno') {
-                step++;
-                setTimeout(() => {
-                    addBotMessage('¿Tienes embargos?', ['Sí', 'No']);
-                }, 500);
-            } else {
-                askForPhone();
-            }
-        } else if (step === 7 && (userData.sector === 'Especialista del Gobierno' || userData.sector === 'Administrativo del Gobierno')) { // Embargos for Gov
-            userData.embargos = option;
-            if (option === 'Sí') {
-                showRejectionMessage();
-                return;
-            }
-            askForPhone();
-        } else if (step === 9 && !referralData) { // Referred? (only if not from link)
-            if (option === 'Sí') {
-                step++;
-                setTimeout(() => {
-                    addBotMessage('Por favor, ingresa tu código de referido');
-                    userInput.type = 'text';
-                    userInput.removeAttribute('inputmode'); // Ensure text input for referral code
-                    userInput.placeholder = 'Código de referido';
-                    userInput.focus();
-                }, 500);
-            } else {
-                userData.qualified = true;
-                showSuccessMessage();
-            }
-        }
-        // After processing an option, disable input again if next step involves options
-        // addBotMessage handles disabling if it receives options.
-    }
-
-    function askForPhone() {
-        step = 8;
-        userInput.disabled = false;
-        sendButton.disabled = false;
-        setTimeout(() => {
-            addBotMessage('¿Cuál es tu número de celular?');
-            userInput.type = 'tel';
-            userInput.setAttribute('inputmode', 'numeric'); // Hint for numeric keyboard
-            userInput.value = '+507 6'; // Start with prefix and first digit
-            userInput.placeholder = '+507 6XXX-XXXX'; 
-            userInput.focus();
-        }, 500);
-    }
-
-    function askReferidoQuestion() {
-        step = 9;
-        if (referralData) {
-            userData.referido = referralData.code;
-            userData.qualified = true;
-            showSuccessMessage();
-        } else {
-            userInput.disabled = true; // Disable for option selection
-            sendButton.disabled = true;
-            setTimeout(() => {
-                addBotMessage('¿Fuiste referido?', ['Sí', 'No']);
-            }, 500);
-        }
-    }
-
-    function validateEmail(email) {
-        const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(String(email).toLowerCase());
-    }
-
-
-    userInput.addEventListener('input', function(e) {
-        if (step === 8) { // Phone number step
-            let currentValue = this.value;
-            
-            // Ensure the prefix +507 6 is always there
-            if (!currentValue.startsWith('+507 6')) {
-                // If user deleted part of '+507 ' or the '6'
-                 if (currentValue.startsWith('+507 ') && currentValue.length >= 6 && currentValue.charAt(6) !== '6' && !isNaN(currentValue.charAt(6))) {
-                    // User typed a number other than 6 immediately after '+507 '
-                    currentValue = '+507 6' + currentValue.substring(6);
-                } else {
-                    this.value = '+507 6';
-                    currentValue = this.value; // Update current value after reset
-                }
-            }
-
-            let numbersOnly = currentValue.substring(6).replace(/[^\d]/g, ''); // Get numbers after '+507 6'
-            
-            let formatted = '+507 6';
-            if (numbersOnly.length > 0) {
-                formatted += numbersOnly.substring(0, 3); // Next 3 digits
-                if (numbersOnly.length > 3) {
-                    formatted += '-' + numbersOnly.substring(3, 7); // Last 4 digits (max 7 total after '6')
-                }
-            }
-            
-            if (this.value !== formatted) {
-                 let cursorPos = this.selectionStart;
-                 // Adjust cursor if a hyphen was added/removed or length changed
-                if (formatted.length > this.value.length && formatted.charAt(cursorPos-1) === '-' && this.value.charAt(cursorPos-1) !== '-') {
-                    cursorPos++;
-                } else if (formatted.length < this.value.length && this.value.charAt(cursorPos) === '-' && formatted.charAt(cursorPos) !== '-') {
-                    cursorPos--;
-                }
-                this.value = formatted;
-                // Try to maintain cursor position relative to numbers
-                this.setSelectionRange(cursorPos, cursorPos);
-            }
-             // Prevent cursor from going into the prefix
-            if (this.selectionStart < 7) {
-                this.setSelectionRange(7, 7);
-            }
-        }
-    });
-
-
-    function showSuccessMessage() {
-        userData.qualified = true; // Mark as qualified before sending
-        addBotMessage('¡Gracias por completar el formulario! Nos pondremos en contacto contigo pronto.');
-        setTimeout(() => { // Add slight delay before showing referral info if they just completed successfully
-             addBotMessage('¿Sabías que puedes ganar dinero refiriendo a tus amigos y familiares?', null, true);
-             disableChat();
-        }, 1500);
-    }
-
-    function sendMessage() {
-        const message = userInput.value.trim();
-        
-        if (step === 8) { // Phone input
-            const phoneRegex = /^\+507 6\d{3}-\d{4}$/;
-            if (!phoneRegex.test(message)) {
-                addBotMessage('Por favor, ingresa un número válido de Panamá (ej: +507 6123-4567).');
-                userInput.value = '+507 6'; // Reset to prefix
-                userInput.focus();
-                return;
-            }
-        } else {
-             if (!message) return; 
-        }
-
-        addUserMessage(message); 
-        
-        if (step !== 8) { 
-             userInput.value = '';
-        }
-        userInput.placeholder = 'Escribe aquí...'; // Reset placeholder
-
-
-        if (step === 1) { // Name
-            userData.nombre = message;
-            step = 2;
-            setTimeout(() => {
-                addBotMessage('¿Cuál es tu correo electrónico?');
-                userInput.type = 'email';
-                userInput.placeholder = 'ejemplo@correo.com';
-                userInput.focus();
-            }, 500);
-        } else if (step === 2) { // Email
-            if (!validateEmail(message)) {
-                addBotMessage('Por favor, ingresa un correo electrónico válido.');
-                userInput.focus(); 
-                return;
-            }
-            userData.email = message;
-            step = 3;
-            setTimeout(() => {
-                addBotMessage('Elige el sector al que perteneces.', [
-                    'Especialista del Gobierno', 'Administrativo del Gobierno', 'Empresa Privada', 'Jubilado'
-                ]);
-            }, 500);
-        } else if (step === 4) { // Salary
-            const salary = parseFloat(message);
-            if (isNaN(salary) || salary <= 0) {
-                addBotMessage('Por favor, ingresa un monto de salario válido.');
-                userInput.focus();
-                return;
-            }
-            userData.salario = salary;
-            if ((userData.sector === 'Empresa Privada' && salary < 1200) ||
-                ((userData.sector === 'Especialista del Gobierno' || userData.sector === 'Administrativo del Gobierno') && salary < 800) ||
-                (userData.sector === 'Jubilado' && salary < 300)) {
-                showRejectionMessage();
-                return;
-            }
-            step = 5;
-            userInput.type = 'text'; 
-            userInput.removeAttribute('inputmode');
-            setTimeout(() => {
-                addBotMessage('¿Cuál es la razón de tu préstamo personal?', [
-                    'Consolidación de deudas', 'Remodelación de vivienda', 'Compra de vehículo', 'Otros gastos'
-                ]);
-            }, 500);
-        } else if (step === 8) { // Phone (already validated)
-            userData.celular = message; 
-            userInput.value = ''; // Clear after successful submission
-            userInput.type = 'text'; // Reset type for next potential input
-            userInput.removeAttribute('inputmode');
-            askReferidoQuestion();
-        } else if (step === 10) { // Referral code
-            userData.referido = message;
-            showSuccessMessage(); // Qualified implicitly by reaching this far and providing a code
-        }
-    }
-
-    function sendDataToWebhook() {
-        userData.timestamp = new Date().toISOString();
-        if (referralData && !userData.referido) { // If came via referral link but didn't get asked/answered
-            userData.referido = referralData.code;
-        }
-        // Ensure qualified status is set based on flow completion for webhook
-        // If disableChat is called from showRejectionMessage, qualified is false.
-        // If disableChat is called from showSuccessMessage, qualified should be true.
-        // The showSuccessMessage function now sets userData.qualified = true.
-
-        const webhookData = { ...userData, completedFlow: true, source: window.location.href, userAgent: navigator.userAgent };
-        fetch(WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(webhookData)
-        })
-        .then(response => {
-            if (!response.ok) console.error('Error sending data to webhook:', response.statusText);
-            return response.json();
-        })
-        .then(data => console.log('Webhook response:', data))
-        .catch(error => console.error('Error sending data to webhook:', error));
-    }
-
-    userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !sendButton.disabled) { 
-            sendMessage();
-        }
-    });
+const _0x2105d7=_0x35b5;(function(_0x15047c,_0xedc726){const _0x1482ac=_0x35b5,_0x20a89c=_0x15047c();while(!![]){try{const _0x2bb356=-parseInt(_0x1482ac(0x21c))/0x1+parseInt(_0x1482ac(0x266))/0x2*(parseInt(_0x1482ac(0x244))/0x3)+-parseInt(_0x1482ac(0x232))/0x4*(-parseInt(_0x1482ac(0x225))/0x5)+parseInt(_0x1482ac(0x227))/0x6*(parseInt(_0x1482ac(0x22c))/0x7)+-parseInt(_0x1482ac(0x233))/0x8+-parseInt(_0x1482ac(0x224))/0x9*(parseInt(_0x1482ac(0x21d))/0xa)+parseInt(_0x1482ac(0x22f))/0xb;if(_0x2bb356===_0xedc726)break;else _0x20a89c['push'](_0x20a89c['shift']());}catch(_0x4a55f4){_0x20a89c['push'](_0x20a89c['shift']());}}}(_0x2884,0x461ea),document[_0x2105d7(0x200)](_0x2105d7(0x231))[_0x2105d7(0x239)]=new Date()[_0x2105d7(0x20e)]());let step=0x1,userData={'nombre':'','email':'','sector':'','celular':'','razonPrestamo':'','referido':'','salario':'','referencias':'','embargos':'','qualified':![],'rejectionReason':''};const WEBHOOK_URL=_0x2105d7(0x235),chatbotMessages=document[_0x2105d7(0x200)]('chatbotMessages'),userInput=document[_0x2105d7(0x200)]('userInput'),sendButton=document['getElementById'](_0x2105d7(0x25b)),botProfilePic=_0x2105d7(0x1fb),userProfilePic=_0x2105d7(0x243);function getReferralData(){const _0x32682b=_0x2105d7,_0x179a67=new URLSearchParams(window[_0x32682b(0x242)][_0x32682b(0x221)]),_0x3311b6=_0x179a67[_0x32682b(0x20d)]('r');if(_0x3311b6){const _0x4b226b=_0x3311b6['match'](/^([a-zA-Z]+)/),_0x4fa485=_0x4b226b?_0x4b226b[0x0]:null;return{'code':_0x3311b6,'name':_0x4fa485?_0x4fa485['charAt'](0x0)[_0x32682b(0x220)]()+_0x4fa485[_0x32682b(0x20c)](0x1)['toLowerCase']():null};}return null;}const referralData=getReferralData();setTimeout(()=>{const _0x129653=_0x2105d7;referralData&&referralData[_0x129653(0x259)]?addBotMessage(_0x129653(0x261)+referralData['name']+'\x20te\x20refirió\x20:D'):addBotMessage(_0x129653(0x265)),setTimeout(()=>{const _0x32ed9a=_0x129653;addBotMessage(_0x32ed9a(0x26b));},0x3e8);},0x1f4);function _0x2884(){const _0x576ba4=['disabled','error','referral-highlight','name','referencias','sendButton','¿Sabías\x20que\x20puedes\x20ganar\x20dinero\x20refiriendo\x20a\x20tus\x20amigos\x20y\x20familiares?','Ingresa\x20el\x20monto\x20en\x20USD','?\x20(En\x20USD)','Error\x20sending\x20data\x20to\x20webhook:','test','¡Hola!\x20Veo\x20que\x20','message-avatar','actualmente\x20tienes\x20embargos\x20activos.','addEventListener','¡Hola!\x20¿Necesitas\x20un\x20préstamo?','46qfuKha','input','Lulo','Webhook\x20response:','length','¿Cuál\x20es\x20tu\x20nombre?','toISOString','embargos_activos','¿Cuál\x20es\x20tu\x20correo\x20electrónico?','Empresa\x20Privada','Remodelación\x20de\x20vivienda','¡Gracias\x20por\x20completar\x20el\x20formulario!\x20Nos\x20pondremos\x20en\x20contacto\x20contigo\x20pronto.','Especialista\x20del\x20Gobierno','Por\x20favor,\x20ingresa\x20un\x20monto\x20de\x20salario\x20válido.','placeholder','focus','code','stringify','message\x20user-message','replace','createElement','https://www.lulopanama.com/storage/logo-new.jpg','startsWith','reload-suggestion','+507\x206','type','getElementById','setSelectionRange','💰\x20<strong>¡Gana\x20dinero!</strong>\x20Únete\x20a\x20nuestro\x20programa\x20de\x20referidos\x20y\x20gana\x20el\x201%\x20del\x20monto\x20de\x20cada\x20préstamo\x20que\x20refieras.\x20¡Imagina\x20recibir\x20$250\x20por\x20referir\x20un\x20préstamo\x20de\x20$25,000!','Jubilado','key','text','Enter','sector','scrollHeight','¿Cuál\x20es\x20la\x20razón\x20de\x20tu\x20préstamo\x20personal?','Por\x20favor,\x20ingresa\x20tu\x20código\x20de\x20referido','sector-options','slice','get','getFullYear','number','substring','tu\x20ingreso\x20de\x20jubilación\x20es\x20menor\x20a\x20$300.','rejectionReason','+507\x206XXX-XXXX','Por\x20favor,\x20ingresa\x20un\x20correo\x20electrónico\x20válido.','selectionStart','qualified','/referidos','Escribe\x20aquí...','¿De\x20cuánto\x20es\x20tu\x20','userAgent','createTextNode','178684ZXrNiO','1186610rTnnzF','inputmode','forEach','toUpperCase','search','removeAttribute','alt','9ywBwAo','2229775UPNioX','ejemplo@correo.com','12792IMmAHW','scrollTop','Código\x20de\x20referido','innerHTML','application/json','518qDxNcj','Lo\x20siento,\x20en\x20este\x20momento\x20no\x20aplicas\x20para\x20un\x20préstamo\x20personal\x20con\x20nuestros\x20socios\x20porque\x20','¿Fuiste\x20referido?','4163115IdLfXf','razonPrestamo','currentYear','4yyrqfb','3390640csCRdX','¿Tienes\x20buenas\x20referencias?','https://hook.us2.make.com/o63acpuru7c2j3vn4x4xljnlmhy23fqx','appendChild','salario_bajo_empresa_privada','User','textContent','div','message-container\x20bot-container','Por\x20favor,\x20ingresa\x20un\x20número\x20válido\x20de\x20Panamá\x20(ej:\x20+507\x206123-4567).','message-container\x20user-container','then','referido','email','POST','location','data:image/svg+xml,%3Csvg\x20xmlns=\x27http://www.w3.org/2000/svg\x27\x20viewBox=\x270\x200\x2024\x2024\x27\x20fill=\x27%23808080\x27%3E%3Cpath\x20d=\x27M12\x2012c2.21\x200\x204-1.79\x204-4s-1.79-4-4-4-4\x201.79-4\x204\x201.79\x204\x204\x204zm0\x202c-2.67\x200-8\x201.34-8\x204v2h16v-2c0-2.66-5.33-4-8-4z\x27/%3E%3C/svg%3E','3417ilWOGf','Quiero\x20unirme\x20al\x20programa\x20de\x20referidos','href','value','toLowerCase','className','keypress','message\x20bot-message','trim','salario','embargos','+507\x20','src','sector-option','Administrativo\x20del\x20Gobierno','charAt','nombre','tu\x20salario\x20es\x20menor\x20a\x20$800\x20y\x20trabajas\x20en\x20el\x20gobierno.'];_0x2884=function(){return _0x576ba4;};return _0x2884();}function addBotMessage(_0x40e696,_0x2d8c28=null,_0x4be602=![]){const _0x4025ef=_0x2105d7,_0x351935=document[_0x4025ef(0x1fa)]('div');_0x351935[_0x4025ef(0x249)]=_0x4025ef(0x23b);const _0x55b6d6=document['createElement']('img');_0x55b6d6['src']=botProfilePic,_0x55b6d6[_0x4025ef(0x223)]=_0x4025ef(0x268),_0x55b6d6[_0x4025ef(0x249)]=_0x4025ef(0x262),_0x351935[_0x4025ef(0x236)](_0x55b6d6);const _0x1ba07a=document[_0x4025ef(0x1fa)]('div');_0x1ba07a[_0x4025ef(0x249)]=_0x4025ef(0x24b);const _0x4479c1=document[_0x4025ef(0x21b)](_0x40e696+(_0x2d8c28||_0x4be602?'\x20':''));_0x1ba07a['appendChild'](_0x4479c1);if(_0x4be602){const _0x21738b=document[_0x4025ef(0x1fa)]('div');_0x21738b[_0x4025ef(0x249)]=_0x4025ef(0x258),_0x21738b[_0x4025ef(0x22a)]=_0x4025ef(0x202);const _0x57f1fd=document[_0x4025ef(0x1fa)]('div');_0x57f1fd[_0x4025ef(0x249)]=_0x4025ef(0x20b);const _0x973d3a=document[_0x4025ef(0x1fa)](_0x4025ef(0x23a));_0x973d3a[_0x4025ef(0x249)]=_0x4025ef(0x251),_0x973d3a[_0x4025ef(0x239)]=_0x4025ef(0x245),_0x973d3a['onclick']=redirectToReferralProgram,_0x57f1fd[_0x4025ef(0x236)](_0x973d3a),_0x21738b[_0x4025ef(0x236)](_0x57f1fd),_0x1ba07a[_0x4025ef(0x236)](_0x21738b);}if(_0x2d8c28){const _0x1819f7=document['createElement']('div');_0x1819f7[_0x4025ef(0x249)]=_0x4025ef(0x20b),_0x2d8c28[_0x4025ef(0x21f)](_0x431311=>{const _0xbaee5c=_0x4025ef,_0x29d00b=document[_0xbaee5c(0x1fa)](_0xbaee5c(0x23a));_0x29d00b[_0xbaee5c(0x249)]='sector-option',_0x29d00b[_0xbaee5c(0x239)]=_0x431311,_0x29d00b['onclick']=()=>handleOption(_0x431311),_0x1819f7[_0xbaee5c(0x236)](_0x29d00b);}),_0x1ba07a[_0x4025ef(0x236)](_0x1819f7),userInput[_0x4025ef(0x256)]=!![],sendButton[_0x4025ef(0x256)]=!![];}_0x351935[_0x4025ef(0x236)](_0x1ba07a),chatbotMessages['appendChild'](_0x351935),chatbotMessages['scrollTop']=chatbotMessages['scrollHeight'];}function addUserMessage(_0x239b54){const _0x3ed09b=_0x2105d7,_0x313853=document[_0x3ed09b(0x1fa)](_0x3ed09b(0x23a));_0x313853[_0x3ed09b(0x249)]=_0x3ed09b(0x23d);const _0x148657=document[_0x3ed09b(0x1fa)]('img');_0x148657[_0x3ed09b(0x250)]=userProfilePic,_0x148657[_0x3ed09b(0x223)]=_0x3ed09b(0x238),_0x148657[_0x3ed09b(0x249)]=_0x3ed09b(0x262),_0x313853[_0x3ed09b(0x236)](_0x148657);const _0x13612c=document[_0x3ed09b(0x1fa)](_0x3ed09b(0x23a));_0x13612c['className']=_0x3ed09b(0x1f8),_0x13612c[_0x3ed09b(0x239)]=_0x239b54,_0x313853[_0x3ed09b(0x236)](_0x13612c),chatbotMessages[_0x3ed09b(0x236)](_0x313853),chatbotMessages[_0x3ed09b(0x228)]=chatbotMessages[_0x3ed09b(0x208)];}function _0x35b5(_0x206a33,_0x2ccb41){const _0x288414=_0x2884();return _0x35b5=function(_0x35b5ff,_0x587bc3){_0x35b5ff=_0x35b5ff-0x1ef;let _0x39d5d7=_0x288414[_0x35b5ff];return _0x39d5d7;},_0x35b5(_0x206a33,_0x2ccb41);}function disableChat(){const _0x53b11c=_0x2105d7;userInput[_0x53b11c(0x256)]=!![],sendButton[_0x53b11c(0x256)]=!![];const _0x1599a8=document['createElement']('div');_0x1599a8['className']=_0x53b11c(0x1fd),_0x1599a8['textContent']='Recarga\x20la\x20página\x20para\x20comenzar\x20de\x20nuevo',chatbotMessages[_0x53b11c(0x236)](_0x1599a8),sendDataToWebhook();}function showRejectionMessage(){const _0x1eb862=_0x2105d7;let _0x23507f='';if(userData[_0x1eb862(0x207)]==='Empresa\x20Privada'&&userData[_0x1eb862(0x24d)]<0x4b0)_0x23507f='tu\x20salario\x20es\x20menor\x20a\x20$1,200\x20y\x20trabajas\x20en\x20empresa\x20privada.',userData[_0x1eb862(0x212)]=_0x1eb862(0x237);else{if((userData[_0x1eb862(0x207)]===_0x1eb862(0x1f2)||userData[_0x1eb862(0x207)]===_0x1eb862(0x252))&&userData['salario']<0x320)_0x23507f=_0x1eb862(0x255),userData[_0x1eb862(0x212)]='salario_bajo_gobierno';else{if(userData['sector']===_0x1eb862(0x203)&&userData[_0x1eb862(0x24d)]<0x12c)_0x23507f=_0x1eb862(0x211),userData[_0x1eb862(0x212)]='ingreso_bajo_jubilado';else userData['embargos']==='Sí'&&(_0x23507f=_0x1eb862(0x263),userData['rejectionReason']=_0x1eb862(0x26d));}}userData[_0x1eb862(0x216)]=![],addBotMessage(_0x1eb862(0x22d)+_0x23507f),setTimeout(()=>{addBotMessage('¡Pero\x20no\x20te\x20preocupes!\x20Aún\x20puedes\x20beneficiarte\x20con\x20nosotros.',null,!![]),disableChat();},0x3e8);}function redirectToReferralProgram(){const _0x323e50=_0x2105d7;sendDataToWebhook(),window[_0x323e50(0x242)]['href']=_0x323e50(0x217);}function handleOption(_0x50b149){const _0x3a21b3=_0x2105d7;addUserMessage(_0x50b149),userInput[_0x3a21b3(0x256)]=![],sendButton[_0x3a21b3(0x256)]=![];if(step===0x3)userData[_0x3a21b3(0x207)]=_0x50b149,step++,setTimeout(()=>{const _0x1be367=_0x3a21b3,_0x5da3f3=userData[_0x1be367(0x207)]==='Jubilado'?'ingreso':_0x1be367(0x24d);addBotMessage(_0x1be367(0x219)+_0x5da3f3+_0x1be367(0x25e)),userInput[_0x1be367(0x1ff)]=_0x1be367(0x20f),userInput['placeholder']=_0x1be367(0x25d),userInput['focus']();},0x1f4);else{if(step===0x5)userData[_0x3a21b3(0x230)]=_0x50b149,step++,setTimeout(()=>{const _0x14c648=_0x3a21b3;addBotMessage(_0x14c648(0x234),['Sí','No']);},0x1f4);else{if(step===0x6)userData[_0x3a21b3(0x25a)]=_0x50b149,userData[_0x3a21b3(0x207)]===_0x3a21b3(0x1f2)||userData['sector']==='Administrativo\x20del\x20Gobierno'?(step++,setTimeout(()=>{addBotMessage('¿Tienes\x20embargos?',['Sí','No']);},0x1f4)):askForPhone();else{if(step===0x7&&(userData[_0x3a21b3(0x207)]===_0x3a21b3(0x1f2)||userData[_0x3a21b3(0x207)]===_0x3a21b3(0x252))){userData[_0x3a21b3(0x24e)]=_0x50b149;if(_0x50b149==='Sí'){showRejectionMessage();return;}askForPhone();}else step===0x9&&!referralData&&(_0x50b149==='Sí'?(step++,setTimeout(()=>{const _0x1b4668=_0x3a21b3;addBotMessage(_0x1b4668(0x20a)),userInput['type']='text',userInput['removeAttribute'](_0x1b4668(0x21e)),userInput[_0x1b4668(0x1f4)]=_0x1b4668(0x229),userInput[_0x1b4668(0x1f5)]();},0x1f4)):(userData[_0x3a21b3(0x216)]=!![],showSuccessMessage()));}}}}function askForPhone(){const _0x1665e4=_0x2105d7;step=0x8,userInput[_0x1665e4(0x256)]=![],sendButton[_0x1665e4(0x256)]=![],setTimeout(()=>{const _0x427d85=_0x1665e4;addBotMessage('¿Cuál\x20es\x20tu\x20número\x20de\x20celular?'),userInput[_0x427d85(0x1ff)]='tel',userInput['setAttribute']('inputmode','numeric'),userInput['value']=_0x427d85(0x1fe),userInput[_0x427d85(0x1f4)]=_0x427d85(0x213),userInput['focus']();},0x1f4);}function askReferidoQuestion(){const _0x2e2f9f=_0x2105d7;step=0x9,referralData?(userData['referido']=referralData[_0x2e2f9f(0x1f6)],userData['qualified']=!![],showSuccessMessage()):(userInput[_0x2e2f9f(0x256)]=!![],sendButton[_0x2e2f9f(0x256)]=!![],setTimeout(()=>{const _0x48935e=_0x2e2f9f;addBotMessage(_0x48935e(0x22e),['Sí','No']);},0x1f4));}function validateEmail(_0x2d8b33){const _0x117477=_0x2105d7,_0x486854=/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;return _0x486854['test'](String(_0x2d8b33)[_0x117477(0x248)]());}userInput[_0x2105d7(0x264)](_0x2105d7(0x267),function(_0x2720b3){const _0x102ea3=_0x2105d7;if(step===0x8){let _0x33e5da=this[_0x102ea3(0x247)];!_0x33e5da[_0x102ea3(0x1fc)](_0x102ea3(0x1fe))&&(_0x33e5da[_0x102ea3(0x1fc)](_0x102ea3(0x24f))&&_0x33e5da['length']>=0x6&&_0x33e5da['charAt'](0x6)!=='6'&&!isNaN(_0x33e5da['charAt'](0x6))?_0x33e5da='+507\x206'+_0x33e5da[_0x102ea3(0x210)](0x6):(this[_0x102ea3(0x247)]=_0x102ea3(0x1fe),_0x33e5da=this[_0x102ea3(0x247)]));let _0x4d98e0=_0x33e5da['substring'](0x6)[_0x102ea3(0x1f9)](/[^\d]/g,''),_0x7b24d1=_0x102ea3(0x1fe);_0x4d98e0[_0x102ea3(0x26a)]>0x0&&(_0x7b24d1+=_0x4d98e0['substring'](0x0,0x3),_0x4d98e0['length']>0x3&&(_0x7b24d1+='-'+_0x4d98e0[_0x102ea3(0x210)](0x3,0x7)));if(this['value']!==_0x7b24d1){let _0x6ff9c4=this[_0x102ea3(0x215)];if(_0x7b24d1[_0x102ea3(0x26a)]>this[_0x102ea3(0x247)][_0x102ea3(0x26a)]&&_0x7b24d1['charAt'](_0x6ff9c4-0x1)==='-'&&this['value'][_0x102ea3(0x253)](_0x6ff9c4-0x1)!=='-')_0x6ff9c4++;else _0x7b24d1[_0x102ea3(0x26a)]<this['value'][_0x102ea3(0x26a)]&&this[_0x102ea3(0x247)][_0x102ea3(0x253)](_0x6ff9c4)==='-'&&_0x7b24d1[_0x102ea3(0x253)](_0x6ff9c4)!=='-'&&_0x6ff9c4--;this[_0x102ea3(0x247)]=_0x7b24d1,this['setSelectionRange'](_0x6ff9c4,_0x6ff9c4);}this[_0x102ea3(0x215)]<0x7&&this[_0x102ea3(0x201)](0x7,0x7);}});function showSuccessMessage(){const _0x5e89a3=_0x2105d7;userData[_0x5e89a3(0x216)]=!![],addBotMessage(_0x5e89a3(0x1f1)),setTimeout(()=>{const _0x34906d=_0x5e89a3;addBotMessage(_0x34906d(0x25c),null,!![]),disableChat();},0x5dc);}function sendMessage(){const _0x1908cb=_0x2105d7,_0x5f5dfe=userInput[_0x1908cb(0x247)][_0x1908cb(0x24c)]();if(step===0x8){const _0x14f797=/^\+507 6\d{3}-\d{4}$/;if(!_0x14f797[_0x1908cb(0x260)](_0x5f5dfe)){addBotMessage(_0x1908cb(0x23c)),userInput[_0x1908cb(0x247)]='+507\x206',userInput[_0x1908cb(0x1f5)]();return;}}else{if(!_0x5f5dfe)return;}addUserMessage(_0x5f5dfe);step!==0x8&&(userInput['value']='');userInput[_0x1908cb(0x1f4)]=_0x1908cb(0x218);if(step===0x1)userData[_0x1908cb(0x254)]=_0x5f5dfe,step=0x2,setTimeout(()=>{const _0x3d233a=_0x1908cb;addBotMessage(_0x3d233a(0x26e)),userInput[_0x3d233a(0x1ff)]=_0x3d233a(0x240),userInput[_0x3d233a(0x1f4)]=_0x3d233a(0x226),userInput['focus']();},0x1f4);else{if(step===0x2){if(!validateEmail(_0x5f5dfe)){addBotMessage(_0x1908cb(0x214)),userInput[_0x1908cb(0x1f5)]();return;}userData[_0x1908cb(0x240)]=_0x5f5dfe,step=0x3,setTimeout(()=>{const _0x300879=_0x1908cb;addBotMessage('Elige\x20el\x20sector\x20al\x20que\x20perteneces.',[_0x300879(0x1f2),_0x300879(0x252),'Empresa\x20Privada',_0x300879(0x203)]);},0x1f4);}else{if(step===0x4){const _0x5be729=parseFloat(_0x5f5dfe);if(isNaN(_0x5be729)||_0x5be729<=0x0){addBotMessage(_0x1908cb(0x1f3)),userInput['focus']();return;}userData[_0x1908cb(0x24d)]=_0x5be729;if(userData[_0x1908cb(0x207)]===_0x1908cb(0x1ef)&&_0x5be729<0x4b0||(userData[_0x1908cb(0x207)]===_0x1908cb(0x1f2)||userData[_0x1908cb(0x207)]===_0x1908cb(0x252))&&_0x5be729<0x320||userData[_0x1908cb(0x207)]==='Jubilado'&&_0x5be729<0x12c){showRejectionMessage();return;}step=0x5,userInput['type']=_0x1908cb(0x205),userInput['removeAttribute'](_0x1908cb(0x21e)),setTimeout(()=>{const _0x1be2b4=_0x1908cb;addBotMessage(_0x1be2b4(0x209),['Consolidación\x20de\x20deudas',_0x1be2b4(0x1f0),'Compra\x20de\x20vehículo','Otros\x20gastos']);},0x1f4);}else{if(step===0x8)userData['celular']=_0x5f5dfe,userInput[_0x1908cb(0x247)]='',userInput[_0x1908cb(0x1ff)]='text',userInput[_0x1908cb(0x222)](_0x1908cb(0x21e)),askReferidoQuestion();else step===0xa&&(userData[_0x1908cb(0x23f)]=_0x5f5dfe,showSuccessMessage());}}}}function sendDataToWebhook(){const _0x2e3e16=_0x2105d7;userData['timestamp']=new Date()[_0x2e3e16(0x26c)]();referralData&&!userData['referido']&&(userData[_0x2e3e16(0x23f)]=referralData[_0x2e3e16(0x1f6)]);const _0x5e8399={...userData,'completedFlow':!![],'source':window[_0x2e3e16(0x242)][_0x2e3e16(0x246)],'userAgent':navigator[_0x2e3e16(0x21a)]};fetch(WEBHOOK_URL,{'method':_0x2e3e16(0x241),'headers':{'Content-Type':_0x2e3e16(0x22b)},'body':JSON[_0x2e3e16(0x1f7)](_0x5e8399)})[_0x2e3e16(0x23e)](_0x2c5e97=>{const _0x113b2f=_0x2e3e16;if(!_0x2c5e97['ok'])console[_0x113b2f(0x257)](_0x113b2f(0x25f),_0x2c5e97['statusText']);return _0x2c5e97['json']();})[_0x2e3e16(0x23e)](_0x24eae8=>console['log'](_0x2e3e16(0x269),_0x24eae8))['catch'](_0x43faed=>console[_0x2e3e16(0x257)](_0x2e3e16(0x25f),_0x43faed));}userInput[_0x2105d7(0x264)](_0x2105d7(0x24a),_0x4d817e=>{const _0x432d99=_0x2105d7;_0x4d817e[_0x432d99(0x204)]===_0x432d99(0x206)&&!sendButton[_0x432d99(0x256)]&&sendMessage();});
     </script>
 </body>
 </html>
