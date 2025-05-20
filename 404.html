@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página no encontrada - Lulo Panamá</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #004951;
+            --secondary-color: #ff5733;
+            --accent-color: #ffd700;
+            --text-color: #333;
+            --light-text: #fff;
+            --background-color: #f9f9f9;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--primary-color);
+            padding: 15px 0;
+            position: relative;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 60px;
+            transition: var(--transition);
+        }
+
+        .logo:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-content::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 73, 81, 0.03) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        .main-content::after {
+            content: "";
+            position: absolute;
+            bottom: -50%;
+            left: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 87, 51, 0.03) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        .error-container {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+            padding: 40px;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .error-code {
+            font-size: 120px;
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .error-code::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--secondary-color);
+            border-radius: 2px;
+        }
+
+        .error-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .error-message {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #666;
+        }
+
+        .home-button {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: var(--light-text);
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .home-button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background-color: var(--accent-color);
+            transition: var(--transition);
+            z-index: -1;
+            border-radius: 30px;
+        }
+
+        .home-button:hover {
+            color: var(--text-color);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .home-button:hover::before {
+            width: 100%;
+        }
+
+        .home-button i {
+            margin-right: 8px;
+        }
+
+        /* Floating Elements */
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-element {
+            position: absolute;
+            background-color: var(--primary-color);
+            opacity: 0.1;
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .floating-element:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+            animation-duration: 20s;
+        }
+
+        .floating-element:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            top: 20%;
+            right: 15%;
+            animation-delay: 2s;
+            animation-duration: 18s;
+            background-color: var(--secondary-color);
+        }
+
+        .floating-element:nth-child(3) {
+            width: 40px;
+            height: 40px;
+            bottom: 15%;
+            left: 20%;
+            animation-delay: 4s;
+            animation-duration: 16s;
+            background-color: var(--accent-color);
+        }
+
+        .floating-element:nth-child(4) {
+            width: 70px;
+            height: 70px;
+            bottom: 20%;
+            right: 10%;
+            animation-delay: 6s;
+            animation-duration: 22s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+            50% {
+                transform: translateY(0) rotate(10deg);
+            }
+            75% {
+                transform: translateY(20px) rotate(5deg);
+            }
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .footer p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .error-code {
+                font-size: 100px;
+            }
+
+            .error-title {
+                font-size: 24px;
+            }
+
+            .error-message {
+                font-size: 16px;
+            }
+
+            .error-container {
+                padding: 30px;
+                margin: 0 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .error-code {
+                font-size: 80px;
+            }
+
+            .error-title {
+                font-size: 20px;
+            }
+
+            .error-message {
+                font-size: 14px;
+            }
+
+            .error-container {
+                padding: 20px;
+            }
+
+            .logo img {
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <a href="/" class="logo">
+                <img src="img/white-web-logo.svg" alt="Lulo Logo" id="logo">
+            </a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="floating-elements">
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+        </div>
+        
+        <div class="container">
+            <div class="error-container">
+                <h1 class="error-code">404</h1>
+                <h2 class="error-title">Página no encontrada</h2>
+                <p class="error-message">Lo sentimos, la página que estás buscando no existe o ha sido movida.</p>
+                <a href="/" class="home-button">
+                    <i class="fas fa-home"></i> Volver al inicio
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; <span id="currentYear"></span> Lulo Panamá. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Fallback for logo if the image doesn't load
+        document.getElementById('logo').onerror = function() {
+            // Create a text fallback for the logo
+            this.style.display = 'none';
+            const logoContainer = this.parentElement;
+            const textLogo = document.createElement('span');
+            textLogo.textContent = 'LULO';
+            textLogo.style.color = '#fff';
+            textLogo.style.fontSize = '24px';
+            textLogo.style.fontWeight = 'bold';
+            logoContainer.appendChild(textLogo);
+        };
+
+        // Add interactive mouse movement effect
+        document.addEventListener('mousemove', function(e) {
+            const elements = document.querySelectorAll('.floating-element');
+            const moveX = (e.clientX - window.innerWidth / 2) / 50;
+            const moveY = (e.clientY - window.innerHeight / 2) / 50;
+            
+            elements.forEach(element => {
+                // Create a slightly different movement for each element
+                const randomFactor = parseFloat(element.style.animationDelay || 0) + 1;
+                element.style.transform = `translate(${moveX * randomFactor}px, ${moveY * randomFactor}px)`;
+            });
+        });
+
+        // Add a fun console message
+        console.log('%c¡Oops! Página no encontrada 🔍', 'color: #004951; font-size: 20px; font-weight: bold;');
+        console.log('%cPero no te preocupes, puedes volver al inicio fácilmente.', 'color: #ff5733; font-size: 14px;');
+    </script>
+</body>
+</html>
