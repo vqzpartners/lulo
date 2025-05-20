@@ -1,5 +1,84 @@
+// Header scroll effect
+window.addEventListener("scroll", () => {
+  const header = document.getElementById("header")
+  if (window.scrollY > 50) {
+    header.classList.add("scrolled")
+  } else {
+    header.classList.remove("scrolled")
+  }
+})
+
 // Initialize current year in footer
 document.getElementById("currentYear").textContent = new Date().getFullYear()
+
+// Testimonial slider functionality
+let currentSlide = 0
+const testimonialSlider = document.getElementById("testimonialSlider")
+const testimonialSlides = document.querySelectorAll(".testimonial-slide")
+const dotsContainer = document.getElementById("testimonialDots")
+const prevButton = document.getElementById("prevTestimonial")
+const nextButton = document.getElementById("nextTestimonial")
+
+// Create dots
+if (testimonialSlides.length > 0 && dotsContainer) {
+  testimonialSlides.forEach((_, index) => {
+    const dot = document.createElement("div")
+    dot.classList.add("testimonial-dot")
+    if (index === 0) dot.classList.add("active")
+    dot.addEventListener("click", () => goToSlide(index))
+    dotsContainer.appendChild(dot)
+  })
+}
+
+function updateSlider() {
+  if (!testimonialSlider) return
+  testimonialSlider.style.transform = `translateX(-${currentSlide * 100}%)`
+
+  // Update dots
+  document.querySelectorAll(".testimonial-dot").forEach((dot, index) => {
+    if (index === currentSlide) {
+      dot.classList.add("active")
+    } else {
+      dot.classList.remove("active")
+    }
+  })
+}
+
+function goToSlide(index) {
+  if (!testimonialSlider) return
+  currentSlide = index
+  updateSlider()
+}
+
+function nextSlide() {
+  if (!testimonialSlider) return
+  currentSlide = (currentSlide + 1) % testimonialSlides.length
+  updateSlider()
+}
+
+function prevSlide() {
+  if (!testimonialSlider) return
+  currentSlide = (currentSlide - 1 + testimonialSlides.length) % testimonialSlides.length
+  updateSlider()
+}
+
+// Add event listeners for testimonial controls
+if (prevButton) prevButton.addEventListener("click", prevSlide)
+if (nextButton) nextButton.addEventListener("click", nextSlide)
+
+// Auto-advance testimonials
+let testimonialInterval = setInterval(nextSlide, 5000)
+
+// Pause auto-advance on hover
+if (testimonialSlider) {
+  testimonialSlider.addEventListener("mouseenter", () => {
+    clearInterval(testimonialInterval)
+  })
+
+  testimonialSlider.addEventListener("mouseleave", () => {
+    testimonialInterval = setInterval(nextSlide, 5000)
+  })
+}
 
 // Accordion functionality
 document.querySelectorAll(".accordion-button").forEach((button) => {
