@@ -123,7 +123,6 @@ section {
 }
 
 .header.scrolled {
-  background-color: var(--primary-color); /* Solid background when scrolled */
   padding: 10px 0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
@@ -137,6 +136,7 @@ section {
   justify-content: space-between;
   align-items: center;
   transition: all 0.3s ease;
+  background-color: rgba(0, 73, 81, 0.95);
 }
 
 .logo img {
