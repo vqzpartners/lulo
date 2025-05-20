@@ -7,11 +7,12 @@
     <meta name="description" content="En Lulo, puedes obtener la asesoría financiera que necesitas para tu préstamo personal, de manera simple, sin costo y sin complicaciones.">
     <link rel="icon" type="image/png" href="img/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <header class="header">
+    <header class="header" id="header">
         <div class="header-container">
             <a href="/" class="logo">
                 <img src="img/white-web-logo.svg" alt="Lulo Logo">
@@ -26,11 +27,11 @@
         <!-- Hero Section -->
         <section class="hero">
             <div class="hero-content">
-                <div class="hero-text">
+                <div class="hero-text" data-aos="fade-up" data-aos-duration="1000">
                     <h1>Lulo te conecta con asesores financieros en Panamá</h1>
                     <p>En Lulo, puedes obtener la asesoría financiera que necesitas para tu préstamo personal, de manera simple, sin costo y sin complicaciones.</p>
                 </div>
-                <div class="chatbot-container">
+                <div class="chatbot-container" data-aos="fade-up" data-aos-delay="200" data-aos-duration="1000">
                     <div class="chatbot-messages" id="chatbotMessages"></div>
                     <div class="chatbot-input">
                         <input type="text" id="userInput" placeholder="Escribe aquí..." />
@@ -43,24 +44,24 @@
         <!-- How It Works Section -->
         <section class="how-it-works">
             <div class="container">
-                <h2>¿Cómo funciona?</h2>
+                <h2 data-aos="fade-up">¿Cómo funciona?</h2>
                 <div class="steps">
-                    <div class="step">
+                    <div class="step" data-aos="fade-up" data-aos-delay="100">
                         <div class="step-number">1</div>
                         <h3>Pre-calificación</h3>
                         <p>Lulo te guía en el proceso de pre-calificación para que no pierdas el tiempo yendo de banco en banco.</p>
                     </div>
-                    <div class="step">
+                    <div class="step" data-aos="fade-up" data-aos-delay="200">
                         <div class="step-number">2</div>
                         <h3>Acompañamiento</h3>
                         <p>Te conectamos con las instituciones donde tienes mayor probabilidad de aprobación, simplificando cada etapa del proceso.</p>
                     </div>
-                    <div class="step">
+                    <div class="step" data-aos="fade-up" data-aos-delay="300">
                         <div class="step-number">3</div>
                         <h3>Selección informada</h3>
                         <p>Presentamos tus alternativas con claridad para que elijas la opción que mejor se alinee con tus metas financieras.</p>
                     </div>
-                    <div class="step">
+                    <div class="step" data-aos="fade-up" data-aos-delay="400">
                         <div class="step-number">4</div>
                         <h3>Desembolso</h3>
                         <p>Recibe tu dinero por ventanilla en la entidad financiera que tenga la oferta que elegiste.</p>
@@ -72,9 +73,9 @@
         <!-- Requirements Section -->
         <section class="requirements">
             <div class="container">
-                <h2>Requisitos por sector</h2>
+                <h2 data-aos="fade-up">Requisitos por sector</h2>
                 <div class="requirements-grid">
-                    <div class="requirement-card">
+                    <div class="requirement-card" data-aos="fade-up" data-aos-delay="100">
                         <h3>Empresa Privada</h3>
                         <ul>
                             <li>Cédula Panameña</li>
@@ -85,7 +86,7 @@
                             <li>Carta de saldo (si la posee)</li>
                         </ul>
                     </div>
-                    <div class="requirement-card">
+                    <div class="requirement-card" data-aos="fade-up" data-aos-delay="200">
                         <h3>Gobierno Especialistas</h3>
                         <ul>
                             <li>Cédula Panameña</li>
@@ -95,7 +96,7 @@
                             <li>Carta de saldo (si la posee)</li>
                         </ul>
                     </div>
-                    <div class="requirement-card">
+                    <div class="requirement-card" data-aos="fade-up" data-aos-delay="300">
                         <h3>Gobierno Administrativo</h3>
                         <ul>
                             <li>Cédula Panameña</li>
@@ -105,7 +106,7 @@
                             <li>Carta de saldo (si la posee)</li>
                         </ul>
                     </div>
-                    <div class="requirement-card">
+                    <div class="requirement-card" data-aos="fade-up" data-aos-delay="400">
                         <h3>Jubilados</h3>
                         <ul>
                             <li>Cédula Panameña</li>
@@ -120,9 +121,9 @@
         <!-- FAQ Section -->
         <section class="faq">
             <div class="container">
-                <h2>Preguntas Frecuentes</h2>
+                <h2 data-aos="fade-up">Preguntas Frecuentes</h2>
                 <div class="accordion">
-                    <div class="accordion-item">
+                    <div class="accordion-item" data-aos="fade-up" data-aos-delay="100">
                         <button class="accordion-button">¿Mis datos están seguros?</button>
                         <div class="accordion-content">
                             <p>Sí, seguimos los estándares de seguridad recomendados por la industria.</p>
@@ -145,6 +146,131 @@
                         <button class="accordion-button">¿Cuánto demora el proceso?</button>
                         <div class="accordion-content">
                             <p>El proceso suele demorar entre 1 y 3 días hábiles.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="testimonials">
+            <div class="container">
+                <h2 data-aos="fade-up">Lo que dicen nuestros clientes</h2>
+                <div class="testimonial-slider" id="testimonialSlider">
+                    <div class="testimonial-slide" data-aos="fade-up" data-aos-delay="100">
+                        <div class="testimonial-content">
+                            <div class="testimonial-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <p class="testimonial-text">"Gracias a Lulo pude conseguir mi préstamo personal en tiempo récord. El proceso fue muy sencillo y el asesoramiento fue excelente."</p>
+                            <div class="testimonial-author">
+                                <div class="testimonial-avatar">
+                                    <img src="/placeholder.svg?height=60&width=60" alt="Cliente">
+                                </div>
+                                <div class="testimonial-info">
+                                    <h4>Carlos Mendoza</h4>
+                                    <p>Préstamo para consolidación de deudas</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-slide" data-aos="fade-up" data-aos-delay="200">
+                        <div class="testimonial-content">
+                            <div class="testimonial-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <p class="testimonial-text">"Pensé que sería complicado obtener un préstamo siendo jubilado, pero con Lulo fue muy fácil. Me conectaron con la entidad perfecta para mi situación."</p>
+                            <div class="testimonial-author">
+                                <div class="testimonial-avatar">
+                                    <img src="/placeholder.svg?height=60&width=60" alt="Cliente">
+                                </div>
+                                <div class="testimonial-info">
+                                    <h4>María González</h4>
+                                    <p>Préstamo para gastos médicos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-slide" data-aos="fade-up" data-aos-delay="300">
+                        <div class="testimonial-content">
+                            <div class="testimonial-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <p class="testimonial-text">"El acompañamiento durante todo el proceso fue excepcional. Me ahorraron mucho tiempo y estrés al no tener que ir de banco en banco."</p>
+                            <div class="testimonial-author">
+                                <div class="testimonial-avatar">
+                                    <img src="/placeholder.svg?height=60&width=60" alt="Cliente">
+                                </div>
+                                <div class="testimonial-info">
+                                    <h4>Roberto Pérez</h4>
+                                    <p>Préstamo para remodelación</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-controls">
+                    <button id="prevTestimonial" aria-label="Testimonio anterior"><i class="fas fa-chevron-left"></i></button>
+                    <div class="testimonial-dots" id="testimonialDots"></div>
+                    <button id="nextTestimonial" aria-label="Siguiente testimonio"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <section class="trust-indicators">
+            <div class="container">
+                <h2 data-aos="fade-up">¿Por qué confiar en Lulo?</h2>
+                <div class="stats-container">
+                    <div class="stat-item" data-aos="fade-up" data-aos-delay="100">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-number">5,000+</div>
+                        <div class="stat-label">Clientes satisfechos</div>
+                    </div>
+                    <div class="stat-item" data-aos="fade-up" data-aos-delay="200">
+                        <div class="stat-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <div class="stat-number">15+</div>
+                        <div class="stat-label">Entidades financieras aliadas</div>
+                    </div>
+                    <div class="stat-item" data-aos="fade-up" data-aos-delay="300">
+                        <div class="stat-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-number">$10M+</div>
+                        <div class="stat-label">En préstamos gestionados</div>
+                    </div>
+                </div>
+                <div class="partners-container">
+                    <h3 data-aos="fade-up">Nuestros aliados financieros</h3>
+                    <div class="partners-logos">
+                        <div class="partner-logo" data-aos="fade-up" data-aos-delay="100">
+                            <img src="/placeholder.svg?height=60&width=120" alt="Banco Aliado">
+                        </div>
+                        <div class="partner-logo" data-aos="fade-up" data-aos-delay="150">
+                            <img src="/placeholder.svg?height=60&width=120" alt="Banco Aliado">
+                        </div>
+                        <div class="partner-logo" data-aos="fade-up" data-aos-delay="200">
+                            <img src="/placeholder.svg?height=60&width=120" alt="Banco Aliado">
+                        </div>
+                        <div class="partner-logo" data-aos="fade-up" data-aos-delay="250">
+                            <img src="/placeholder.svg?height=60&width=120" alt="Banco Aliado">
+                        </div>
+                        <div class="partner-logo" data-aos="fade-up" data-aos-delay="300">
+                            <img src="/placeholder.svg?height=60&width=120" alt="Banco Aliado">
                         </div>
                     </div>
                 </div>
@@ -180,6 +306,13 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="js/script.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            once: true,
+            disable: 'mobile'
+        });
+    </script>
 </body>
 </html>
