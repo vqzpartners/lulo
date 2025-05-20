@@ -51,20 +51,36 @@ function goToSlide(index) {
 }
 
 function nextSlide() {
-  if (!testimonialSlider) return
+  if (!testimonialSlider || !testimonialSlides.length) return
   currentSlide = (currentSlide + 1) % testimonialSlides.length
   updateSlider()
 }
 
 function prevSlide() {
-  if (!testimonialSlider) return
+  if (!testimonialSlider || !testimonialSlides.length) return
   currentSlide = (currentSlide - 1 + testimonialSlides.length) % testimonialSlides.length
   updateSlider()
 }
 
 // Add event listeners for testimonial controls
-if (prevButton) prevButton.addEventListener("click", prevSlide)
-if (nextButton) nextButton.addEventListener("click", nextSlide)
+if (prevButton) {
+  prevButton.addEventListener("click", (e) => {
+    e.preventDefault()
+    prevSlide()
+  })
+}
+
+if (nextButton) {
+  nextButton.addEventListener("click", (e) => {
+    e.preventDefault()
+    nextSlide()
+  })
+}
+
+// Initialize slider on page load
+document.addEventListener("DOMContentLoaded", () => {
+  updateSlider()
+})
 
 // Auto-advance testimonials
 let testimonialInterval = setInterval(nextSlide, 5000)
