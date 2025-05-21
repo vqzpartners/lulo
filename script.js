@@ -80,21 +80,10 @@ if (nextButton) {
 // Initialize slider on page load
 document.addEventListener("DOMContentLoaded", () => {
   updateSlider()
+
+  // Auto-advance testimonials
+  setInterval(nextSlide, 5000)
 })
-
-// Auto-advance testimonials
-let testimonialInterval = setInterval(nextSlide, 5000)
-
-// Pause auto-advance on hover
-if (testimonialSlider) {
-  testimonialSlider.addEventListener("mouseenter", () => {
-    clearInterval(testimonialInterval)
-  })
-
-  testimonialSlider.addEventListener("mouseleave", () => {
-    testimonialInterval = setInterval(nextSlide, 5000)
-  })
-}
 
 // Accordion functionality
 document.querySelectorAll(".accordion-button").forEach((button) => {
