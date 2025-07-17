@@ -1183,19 +1183,29 @@ section {
   position: absolute;
   top: 0;
   height: 100%;
-  width: 100px;
+  width: 150px;
   z-index: 2;
   pointer-events: none;
 }
 
 .marquee-overlay.left {
   left: 0;
-  background: linear-gradient(to right, var(--primary-color), transparent);
+  background: linear-gradient(to right, 
+    var(--primary-color) 0%, 
+    var(--primary-color) 20%, 
+    rgba(0, 73, 81, 0.8) 40%, 
+    rgba(0, 73, 81, 0.4) 70%, 
+    transparent 100%);
 }
 
 .marquee-overlay.right {
   right: 0;
-  background: linear-gradient(to left, var(--primary-color), transparent);
+  background: linear-gradient(to left, 
+    var(--primary-color) 0%, 
+    var(--primary-color) 20%, 
+    rgba(0, 73, 81, 0.8) 40%, 
+    rgba(0, 73, 81, 0.4) 70%, 
+    transparent 100%);
 }
 
 .marquee-container {
