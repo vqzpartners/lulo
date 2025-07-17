@@ -1262,7 +1262,7 @@ section {
 }
 
 .partner-logo {
-  background: rgba(0, 73, 81, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
   padding: 24px 32px;
   margin: 0 16px;
@@ -1271,7 +1271,7 @@ section {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(0, 73, 81, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   color: var(--light-text);
   font-weight: 600;
   font-size: 1.1rem;
@@ -1279,13 +1279,13 @@ section {
 }
 
 .partner-logo:hover {
-  background: rgba(0, 73, 81, 0.2);
+  background: rgba(255, 255, 255, 0.25);
   transform: translateY(-4px);
 }
 
 @media (hover: none) {
   .partner-logo:hover {
-    background: rgba(0, 73, 81, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     transform: none;
   }
 }
