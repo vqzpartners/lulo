@@ -1177,13 +1177,16 @@ section {
 .marquee-wrapper {
   position: relative;
   overflow: hidden;
+  width: 100vw;
+  margin-left: 50%;
+  transform: translateX(-50%);
 }
 
 .marquee-overlay {
   position: absolute;
   top: 0;
   height: 100%;
-  width: 200px;
+  width: 25vw;
   z-index: 2;
   pointer-events: none;
 }
@@ -1192,11 +1195,13 @@ section {
   left: 0;
   background: linear-gradient(to right, 
     #004951 0%, 
-    #004951 15%, 
-    rgba(0, 73, 81, 0.9) 30%, 
-    rgba(0, 73, 81, 0.7) 50%, 
-    rgba(0, 73, 81, 0.4) 70%, 
+    #004951 20%, 
+    rgba(0, 73, 81, 0.95) 35%, 
+    rgba(0, 73, 81, 0.8) 50%, 
+    rgba(0, 73, 81, 0.6) 65%, 
+    rgba(0, 73, 81, 0.4) 75%, 
     rgba(0, 73, 81, 0.2) 85%, 
+    rgba(0, 73, 81, 0.1) 92%, 
     transparent 100%);
 }
 
@@ -1204,11 +1209,13 @@ section {
   right: 0;
   background: linear-gradient(to left, 
     #006b7a 0%, 
-    #006b7a 15%, 
-    rgba(0, 107, 122, 0.9) 30%, 
-    rgba(0, 107, 122, 0.7) 50%, 
-    rgba(0, 107, 122, 0.4) 70%, 
+    #006b7a 20%, 
+    rgba(0, 107, 122, 0.95) 35%, 
+    rgba(0, 107, 122, 0.8) 50%, 
+    rgba(0, 107, 122, 0.6) 65%, 
+    rgba(0, 107, 122, 0.4) 75%, 
     rgba(0, 107, 122, 0.2) 85%, 
+    rgba(0, 107, 122, 0.1) 92%, 
     transparent 100%);
 }
 
@@ -1599,24 +1606,30 @@ section {
   }
 
   .marquee-overlay {
-    width: 80px;
+    width: 30vw;
   }
 
   .marquee-overlay.left {
     background: linear-gradient(to right, 
       #004951 0%, 
-      #004951 20%, 
-      rgba(0, 73, 81, 0.8) 40%, 
-      rgba(0, 73, 81, 0.4) 70%, 
+      #004951 25%, 
+      rgba(0, 73, 81, 0.9) 40%, 
+      rgba(0, 73, 81, 0.7) 55%, 
+      rgba(0, 73, 81, 0.5) 70%, 
+      rgba(0, 73, 81, 0.3) 80%, 
+      rgba(0, 73, 81, 0.1) 90%, 
       transparent 100%);
   }
 
   .marquee-overlay.right {
     background: linear-gradient(to left, 
       #006b7a 0%, 
-      #006b7a 20%, 
-      rgba(0, 107, 122, 0.8) 40%, 
-      rgba(0, 107, 122, 0.4) 70%, 
+      #006b7a 25%, 
+      rgba(0, 107, 122, 0.9) 40%, 
+      rgba(0, 107, 122, 0.7) 55%, 
+      rgba(0, 107, 122, 0.5) 70%, 
+      rgba(0, 107, 122, 0.3) 80%, 
+      rgba(0, 107, 122, 0.1) 90%, 
       transparent 100%);
   }
 
