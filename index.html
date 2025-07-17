@@ -52,7 +52,7 @@
 
 <!-- Stylesheets -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -63,7 +63,10 @@
                 <img src="img/logo-lulo-brand.svg" alt="Lulo Logo">
             </a>
             <nav class="nav">
-                <a href="/referidos" class="nav-button">Programa de Referidos</a>
+                <a href="/referidos" class="nav-button">
+                    <i class="fas fa-coins"></i>
+                    <span>Programa de Referidos</span>
+                </a>
             </nav>
         </div>
     </header>
@@ -77,10 +80,30 @@
                     <p>En Lulo, puedes obtener la asesoría financiera que necesitas para tu préstamo personal, de manera simple, sin costo y sin complicaciones.</p>
                 </div>
                 <div class="chatbot-container" data-aos="fade-up" data-aos-delay="200" data-aos-duration="1000">
+                    <div class="chatbot-header">
+                        <div class="chatbot-avatar">
+                            <img src="img/logo-chatbot.jpg" alt="Lulo Assistant">
+                        </div>
+                        <div class="chatbot-title">
+                            <h3>Asistente Virtual de Lulo</h3>
+                            <span class="status-indicator">
+                                <div class="status-dot"></div>
+                                En línea
+                            </span>
+                        </div>
+                    </div>
                     <div class="chatbot-messages" id="chatbotMessages"></div>
-                    <div class="chatbot-input">
-                        <input type="text" id="userInput" placeholder="Escribe aquí..." />
-                        <button id="sendButton" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                    <div class="chatbot-input-wrapper">
+                        <div class="chatbot-input">
+                            <input type="text" id="userInput" placeholder="Escribe tu mensaje aquí..." />
+                            <button id="sendButton" onclick="sendMessage()">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <div class="input-suggestions">
+                            <span class="suggestion-pill">💰 Necesito un préstamo</span>
+                            <span class="suggestion-pill">❓ ¿Cómo funciona?</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -89,27 +112,64 @@
         <!-- How It Works Section -->
         <section class="how-it-works">
             <div class="container">
-                <h2 data-aos="fade-up">¿Cómo funciona?</h2>
-                <div class="steps">
-                    <div class="step" data-aos="fade-up" data-aos-delay="100">
-                        <div class="step-number">1</div>
-                        <h3>Pre-calificación</h3>
-                        <p>Lulo te guía en el proceso de pre-calificación para que no pierdas el tiempo yendo de banco en banco.</p>
+                <div class="section-header" data-aos="fade-up">
+                    <h2>¿Cómo funciona?</h2>
+                    <p class="section-subtitle">Un proceso simple y transparente en 4 pasos</p>
+                </div>
+                <div class="steps-timeline">
+                    <div class="step-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="step-icon">
+                            <div class="icon-wrapper">
+                                <i class="fas fa-clipboard-check"></i>
+                            </div>
+                            <div class="step-number">01</div>
+                        </div>
+                        <div class="step-content">
+                            <h3>Pre-calificación</h3>
+                            <p>Lulo te guía en el proceso de pre-calificación para que no pierdas el tiempo yendo de banco en banco.</p>
+                        </div>
+                        <div class="step-connector"></div>
                     </div>
-                    <div class="step" data-aos="fade-up" data-aos-delay="200">
-                        <div class="step-number">2</div>
-                        <h3>Acompañamiento</h3>
-                        <p>Te conectamos con las instituciones donde tienes mayor probabilidad de aprobación, simplificando cada etapa del proceso.</p>
+                    
+                    <div class="step-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="step-icon">
+                            <div class="icon-wrapper">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <div class="step-number">02</div>
+                        </div>
+                        <div class="step-content">
+                            <h3>Acompañamiento</h3>
+                            <p>Te conectamos con las instituciones donde tienes mayor probabilidad de aprobación, simplificando cada etapa del proceso.</p>
+                        </div>
+                        <div class="step-connector"></div>
                     </div>
-                    <div class="step" data-aos="fade-up" data-aos-delay="300">
-                        <div class="step-number">3</div>
-                        <h3>Selección informada</h3>
-                        <p>Presentamos tus alternativas con claridad para que elijas la opción que mejor se alinee con tus metas financieras.</p>
+                    
+                    <div class="step-card" data-aos="fade-up" data-aos-delay="300">
+                        <div class="step-icon">
+                            <div class="icon-wrapper">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="step-number">03</div>
+                        </div>
+                        <div class="step-content">
+                            <h3>Selección informada</h3>
+                            <p>Presentamos tus alternativas con claridad para que elijas la opción que mejor se alinee con tus metas financieras.</p>
+                        </div>
+                        <div class="step-connector"></div>
                     </div>
-                    <div class="step" data-aos="fade-up" data-aos-delay="400">
-                        <div class="step-number">4</div>
-                        <h3>Desembolso</h3>
-                        <p>Recibe tu dinero por ventanilla en la entidad financiera que tenga la oferta que elegiste.</p>
+                    
+                    <div class="step-card" data-aos="fade-up" data-aos-delay="400">
+                        <div class="step-icon">
+                            <div class="icon-wrapper">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="step-number">04</div>
+                        </div>
+                        <div class="step-content">
+                            <h3>Desembolso</h3>
+                            <p>Recibe tu dinero por ventanilla en la entidad financiera que tenga la oferta que elegiste.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -118,46 +178,133 @@
         <!-- Requirements Section -->
         <section class="requirements">
             <div class="container">
-                <h2 data-aos="fade-up">Requisitos por sector</h2>
+                <div class="section-header" data-aos="fade-up">
+                    <h2>Requisitos por sector</h2>
+                    <p class="section-subtitle">Documentos necesarios según tu situación laboral</p>
+                </div>
                 <div class="requirements-grid">
                     <div class="requirement-card" data-aos="fade-up" data-aos-delay="100">
-                        <h3>Empresa Privada</h3>
-                        <ul>
-                            <li>Cédula Panameña</li>
-                            <li>Comprobante de pago reciente</li>
-                            <li>Ficha reciente</li>
-                            <li>Carta de trabajo</li>
-                            <li>Recibo de agua, luz o teléfono</li>
-                            <li>Carta de saldo (si la posee)</li>
-                        </ul>
+                        <div class="card-header">
+                            <div class="sector-icon">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <h3>Empresa Privada</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="requirement-item">
+                                <i class="fas fa-id-card"></i>
+                                <span>Cédula Panameña</span>
+                            </div>
+                            <div class="requirement-item">
+                                <i class="fas fa-receipt"></i>
+                                <span>Comprobante de pago reciente</span>
+                            </div>
+                            <div class="requirement-item">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Ficha reciente</span>
+                            </div>
+                            <div class="requirement-item">
+                                <i class="fas fa-briefcase"></i>
+                                <span>Carta de trabajo</span>
+                            </div>
+                            <div class="requirement-item">
+                                <i class="fas fa-home"></i>
+                                <span>Recibo de agua, luz o teléfono</span>
+                            </div>
+                            <div class="requirement-item optional">
+                                <i class="fas fa-university"></i>
+                                <span>Carta de saldo (si la posee)</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="requirement-card" data-aos="fade-up" data-aos-delay="200">
-                        <h3>Gobierno Especialistas</h3>
-                        <ul>
-                            <li>Cédula Panameña</li>
-                            <li>Proforma</li>
-                            <li>Ficha reciente o talonario</li>
-                            <li>Recibo de agua, luz o teléfono</li>
-                            <li>Carta de saldo (si la posee)</li>
-                        </ul>
+
+                    <div class="requirement-card featured" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card-header">
+                            <div class="sector-icon">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <h3>Gobierno Especialistas</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="requirement-item">
+                                <i class="fas fa-id-card"></i>
+                                <span>Cédula Panameña</span>
+                            </div>
+                            <div class="requirement-item">
+                                <i class="fas fa-file-invoice"></i>
+                                <span>Proforma</span>
+                            </div>
+                            <div class="requirement-item">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Ficha reciente o talonario</span>
+                            </div>
+                            <div class="requirement-item">
+                                <i class="fas fa-home"></i>
+                                <span>Recibo de agua, luz o teléfono</span>
+                            </div>
+                            <div class="requirement-item optional">
+                                <i class="fas fa-university"></i>
+                                <span>Carta de saldo (si la posee)</span>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="requirement-card" data-aos="fade-up" data-aos-delay="300">
-                        <h3>Gobierno Administrativo</h3>
-                        <ul>
-                            <li>Cédula Panameña</li>
-                            <li>Proforma</li>
-                            <li>Ficha reciente o talonario</li>
-                            <li>Recibo de agua, luz o teléfono</li>
-                            <li>Carta de saldo (si la posee)</li>
-                        </ul>
+                        <div class="card-header">
+                            <div class="sector-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h3>Gobierno Administrativo</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="requirement-item">
+                                <i class="fas fa-id-card"></i>
+                                <span>Cédula Panameña</span>
+                            </div>
+                            <div class="requirement-item">
+                                <i class="fas fa-file-invoice"></i>
+                                <span>Proforma</span>
+                            </div>
+                            <div class="requirement-item">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Ficha reciente o talonario</span>
+                            </div>
+                            <div class="requirement-item">
+                                <i class="fas fa-home"></i>
+                                <span>Recibo de agua, luz o teléfono</span>
+                            </div>
+                            <div class="requirement-item optional">
+                                <i class="fas fa-university"></i>
+                                <span>Carta de saldo (si la posee)</span>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="requirement-card" data-aos="fade-up" data-aos-delay="400">
-                        <h3>Jubilados</h3>
-                        <ul>
-                            <li>Cédula Panameña</li>
-                            <li>Talonario</li>
-                            <li>Recibo de agua, luz o teléfono</li>
-                        </ul>
+                        <div class="card-header">
+                            <div class="sector-icon">
+                                <i class="fas fa-user-clock"></i>
+                            </div>
+                            <h3>Jubilados</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="requirement-item">
+                                <i class="fas fa-id-card"></i>
+                                <span>Cédula Panameña</span>
+                            </div>
+                            <div class="requirement-item">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Talonario</span>
+                            </div>
+                            <div class="requirement-item">
+                                <i class="fas fa-home"></i>
+                                <span>Recibo de agua, luz o teléfono</span>
+                            </div>
+                        </div>
+                        <div class="simplicity-badge">
+                            <i class="fas fa-check-circle"></i>
+                            Proceso Simplificado
+                        </div>
                     </div>
                 </div>
             </div>
@@ -199,75 +346,100 @@
 
         <section class="testimonials">
             <div class="container">
-                <h2 data-aos="fade-up">Lo que dicen nuestros clientes</h2>
+                <div class="section-header" data-aos="fade-up">
+                    <h2>Lo que dicen nuestros clientes</h2>
+                    <p class="section-subtitle">Historias reales de éxito y satisfacción</p>
+                </div>
                 <div class="testimonial-slider-container">
                     <div class="testimonial-slider" id="testimonialSlider">
                         <div class="testimonial-slide">
                             <div class="testimonial-content">
-                                <div class="testimonial-rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </div>
-                                <p class="testimonial-text">"Gracias a Lulo pude conseguir mi préstamo personal en tiempo récord. El proceso fue muy sencillo y el asesoramiento fue excelente."</p>
-                                <div class="testimonial-author">
+                                <div class="testimonial-header">
                                     <div class="testimonial-avatar">
-                                        <i class="fas fa-user-circle fa-3x"></i>
+                                        <div class="avatar-image">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="verified-badge">
+                                            <i class="fas fa-check"></i>
+                                        </div>
                                     </div>
                                     <div class="testimonial-info">
                                         <h4>Carlos Mendoza</h4>
                                         <p>Préstamo para consolidación de deudas</p>
+                                        <div class="testimonial-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <span class="rating-text">5.0</span>
+                                        </div>
                                     </div>
+                                </div>
+                                <div class="testimonial-body">
+                                    <p class="testimonial-text">"Gracias a Lulo pude conseguir mi préstamo personal en tiempo récord. El proceso fue muy sencillo y el asesoramiento fue excelente."</p>
                                 </div>
                             </div>
                         </div>
                         <div class="testimonial-slide">
                             <div class="testimonial-content">
-                                <div class="testimonial-rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                </div>
-                                <p class="testimonial-text">"Pensé que sería complicado obtener un préstamo siendo jubilado, pero con Lulo fue muy fácil. Me conectaron con la entidad perfecta para mi situación."</p>
-                                <div class="testimonial-author">
+                                <div class="testimonial-header">
                                     <div class="testimonial-avatar">
-                                        <i class="fas fa-user-circle fa-3x"></i>
+                                        <div class="avatar-image">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="verified-badge">
+                                            <i class="fas fa-check"></i>
+                                        </div>
                                     </div>
                                     <div class="testimonial-info">
                                         <h4>María González</h4>
                                         <p>Préstamo para gastos médicos</p>
+                                        <div class="testimonial-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <span class="rating-text">5.0</span>
+                                        </div>
                                     </div>
+                                </div>
+                                <div class="testimonial-body">
+                                    <p class="testimonial-text">"Pensé que sería complicado obtener un préstamo siendo jubilado, pero con Lulo fue muy fácil. Me conectaron con la entidad perfecta para mi situación."</p>
                                 </div>
                             </div>
                         </div>
                         <div class="testimonial-slide">
                             <div class="testimonial-content">
-                                <div class="testimonial-rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star-half-alt"></i>
-                                </div>
-                                <p class="testimonial-text">"El acompañamiento durante todo el proceso fue excepcional. Me ahorraron mucho tiempo y estrés al no tener que ir de banco en banco."</p>
-                                <div class="testimonial-author">
+                                <div class="testimonial-header">
                                     <div class="testimonial-avatar">
-                                        <i class="fas fa-user-circle fa-3x"></i>
+                                        <div class="avatar-image">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="verified-badge">
+                                            <i class="fas fa-check"></i>
+                                        </div>
                                     </div>
                                     <div class="testimonial-info">
                                         <h4>Roberto Pérez</h4>
                                         <p>Préstamo para remodelación</p>
+                                        <div class="testimonial-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star-half-alt"></i>
+                                            <span class="rating-text">4.5</span>
+                                        </div>
                                     </div>
+                                </div>
+                                <div class="testimonial-body">
+                                    <p class="testimonial-text">"El acompañamiento durante todo el proceso fue excepcional. Me ahorraron mucho tiempo y estrés al no tener que ir de banco en banco."</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="testimonial-overlay left"></div>
-                    <div class="testimonial-overlay right"></div>
                 </div>
                 <div class="testimonial-controls">
                     <button id="prevTestimonial" aria-label="Testimonio anterior"><i class="fas fa-chevron-left"></i></button>
@@ -355,26 +527,58 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-logo">
-                    <img src="img/2025-logo-lulo.svg" alt="Lulo Logo">
+                <div class="footer-main">
+                    <div class="footer-brand">
+                        <div class="footer-logo">
+                            <img src="img/2025-logo-lulo.svg" alt="Lulo Logo">
+                        </div>
+                        <p class="footer-description">
+                            Conectamos personas con oportunidades financieras de manera simple, transparente y sin complicaciones.
+                        </p>
+                        <div class="social-media">
+                            <a href="https://instagram.com/lulopanama" target="_blank" aria-label="Instagram" class="social-link">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="https://facebook.com/lulopanama" target="_blank" aria-label="Facebook" class="social-link">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="https://tiktok.com/@lulopanama" target="_blank" aria-label="TikTok" class="social-link">
+                                <i class="fab fa-tiktok"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-links-section">
+                        <h4>Legal</h4>
+                        <div class="footer-links">
+                            <a href="/legal/terminos">Términos y Condiciones</a>
+                            <a href="/legal/privacidad">Política de Privacidad</a>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-contact">
+                        <h4>Contacto</h4>
+                        <div class="contact-info">
+                            <p><i class="fas fa-envelope"></i> hola@lulopanama.com</p>
+                            <p><i class="fas fa-map-marker-alt"></i> Ciudad de Panamá, PA</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="social-media">
-                    <a href="https://instagram.com/lulopanama" target="_blank" aria-label="Instagram">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="https://facebook.com/lulopanama" target="_blank" aria-label="Facebook">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="https://tiktok.com/@lulopanama" target="_blank" aria-label="TikTok">
-                        <i class="fab fa-tiktok"></i>
-                    </a>
-                </div>
-                <div class="footer-links">
-                    <a href="/legal/terminos">Términos y Condiciones</a>
-                    <a href="/legal/privacidad">Política de Privacidad</a>
-                </div>
-                <div class="copyright">
-                    <p>&copy; <span id="currentYear"></span> Lulo Panamá. Todos los derechos reservados.</p>
+                
+                <div class="footer-bottom">
+                    <div class="copyright">
+                        <p>&copy; <span id="currentYear"></span> Lulo Panamá. Todos los derechos reservados.</p>
+                    </div>
+                    <div class="footer-badges">
+                        <div class="security-badge">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Datos Seguros</span>
+                        </div>
+                        <div class="security-badge">
+                            <i class="fas fa-lock"></i>
+                            <span>SSL Certificado</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
