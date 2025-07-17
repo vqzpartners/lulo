@@ -148,8 +148,44 @@ setTimeout(() => {
   }
   setTimeout(() => {
     addBotMessage("¿Cuál es tu nombre?")
+    // Show suggestion pills only at the beginning
+    showSuggestionPills()
   }, 1000)
 }, 500)
+
+function showSuggestionPills() {
+  const suggestionPills = document.querySelector('.input-suggestions')
+  if (suggestionPills && step === 1) {
+    suggestionPills.style.display = 'flex'
+    
+    // Add click handlers for suggestion pills
+    document.querySelectorAll('.suggestion-pill').forEach(pill => {
+      pill.addEventListener('click', function() {
+        const text = this.textContent.trim()
+        if (text === '💰 Necesito un préstamo') {
+          addUserMessage('Necesito un préstamo')
+          hideSuggestionPills()
+          setTimeout(() => {
+            addBotMessage("¡Perfecto! Te ayudo con eso. ¿Cuál es tu nombre?")
+          }, 500)
+        } else if (text === '❓ ¿Cómo funciona?') {
+          addUserMessage('¿Cómo funciona?')
+          hideSuggestionPills()
+          setTimeout(() => {
+            addBotMessage("Te explico rápidamente: te ayudamos a pre-calificarte para préstamos con nuestros socios bancarios. Primero necesito algunos datos. ¿Cuál es tu nombre?")
+          }, 500)
+        }
+      })
+    })
+  }
+}
+
+function hideSuggestionPills() {
+  const suggestionPills = document.querySelector('.input-suggestions')
+  if (suggestionPills) {
+    suggestionPills.style.display = 'none'
+  }
+}
 
 function addBotMessage(message, options = null, includeReferralInfo = false) {
   const containerDiv = document.createElement("div")
@@ -263,7 +299,7 @@ function handleOption(option) {
   userInput.disabled = false
   sendButton.disabled = false
 
-  if (step === 3) {
+  if (step === 2) {
     // Sector selection
     userData.sector = option
     step++
@@ -274,14 +310,14 @@ function handleOption(option) {
       userInput.placeholder = "Ingresa el monto en USD"
       userInput.focus()
     }, 500)
-  } else if (step === 5) {
+  } else if (step === 4) {
     // Reason for loan
     userData.razonPrestamo = option
     step++
     setTimeout(() => {
       addBotMessage("¿Tienes buenas referencias?", ["Sí", "No"])
     }, 500)
-  } else if (step === 6) {
+  } else if (step === 5) {
     // References
     userData.referencias = option
     if (userData.sector === "Especialista del Gobierno" || userData.sector === "Administrativo del Gobierno") {
@@ -290,10 +326,10 @@ function handleOption(option) {
         addBotMessage("¿Tienes embargos?", ["Sí", "No"])
       }, 500)
     } else {
-      askForPhone()
+      askForEmail()
     }
   } else if (
-    step === 7 &&
+    step === 6 &&
     (userData.sector === "Especialista del Gobierno" || userData.sector === "Administrativo del Gobierno")
   ) {
     // Embargos for Gov
@@ -302,7 +338,7 @@ function handleOption(option) {
       showRejectionMessage()
       return
     }
-    askForPhone()
+    askForEmail()
   } else if (step === 9 && !referralData) {
     // Referred? (only if not from link)
     if (option === "Sí") {
@@ -319,6 +355,18 @@ function handleOption(option) {
       showSuccessMessage()
     }
   }
+}
+
+function askForEmail() {
+  step = 7
+  userInput.disabled = false
+  sendButton.disabled = false
+  setTimeout(() => {
+    addBotMessage("¿Cuál es tu correo electrónico?")
+    userInput.type = "email"
+    userInput.placeholder = "ejemplo@correo.com"
+    userInput.focus()
+  }, 500)
 }
 
 function askForPhone() {
@@ -446,22 +494,8 @@ function sendMessage() {
   if (step === 1) {
     // Name
     userData.nombre = message
+    hideSuggestionPills() // Hide suggestion pills after name input
     step = 2
-    setTimeout(() => {
-      addBotMessage("¿Cuál es tu correo electrónico?")
-      userInput.type = "email"
-      userInput.placeholder = "ejemplo@correo.com"
-      userInput.focus()
-    }, 500)
-  } else if (step === 2) {
-    // Email
-    if (!validateEmail(message)) {
-      addBotMessage("Por favor, ingresa un correo electrónico válido.")
-      userInput.focus()
-      return
-    }
-    userData.email = message
-    step = 3
     setTimeout(() => {
       addBotMessage("Elige el sector al que perteneces.", [
         "Especialista del Gobierno",
@@ -470,7 +504,10 @@ function sendMessage() {
         "Jubilado",
       ])
     }, 500)
-  } else if (step === 4) {
+  } else if (step === 2) {
+    // This step is now handled by handleOption for sector selection
+    return
+  } else if (step === 3) {
     // Salary
     const salary = Number.parseFloat(message)
     if (isNaN(salary) || salary <= 0) {
@@ -488,7 +525,7 @@ function sendMessage() {
       showRejectionMessage()
       return
     }
-    step = 5
+    step = 4
     userInput.type = "text"
     userInput.removeAttribute("inputmode")
     setTimeout(() => {
@@ -499,6 +536,15 @@ function sendMessage() {
         "Otros gastos",
       ])
     }, 500)
+  } else if (step === 7) {
+    // Email
+    if (!validateEmail(message)) {
+      addBotMessage("Por favor, ingresa un correo electrónico válido.")
+      userInput.focus()
+      return
+    }
+    userData.email = message
+    askForPhone()
   } else if (step === 8) {
     // Phone (already validated)
     userData.celular = message
