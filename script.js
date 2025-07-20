@@ -124,25 +124,43 @@ const botProfilePic = "img/logo-chatbot.jpg"
 const userProfilePic =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23808080'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E"
 
+// Updated function to get referral data from new URL structure /r/username
 function getReferralData() {
-  const urlParams = new URLSearchParams(window.location.search)
-  const referralCode = urlParams.get("r")
+  // Check for new format: /r/username
+  const path = window.location.pathname;
+  const referralMatch = path.match(/^\/r\/([a-zA-Z0-9]+)$/);
+  
+  if (referralMatch) {
+    const username = referralMatch[1];
+    const referrerName = username.charAt(0).toUpperCase() + username.slice(1).toLowerCase();
+    return {
+      code: username,
+      username: username,
+      name: referrerName
+    };
+  }
+
+  // Fallback: check for old format ?r= parameter for backwards compatibility
+  const urlParams = new URLSearchParams(window.location.search);
+  const referralCode = urlParams.get("r");
   if (referralCode) {
-    const nameMatch = referralCode.match(/^([a-zA-Z]+)/)
-    const referrerName = nameMatch ? nameMatch[0] : null
+    const nameMatch = referralCode.match(/^([a-zA-Z]+)/);
+    const referrerName = nameMatch ? nameMatch[0] : null;
     return {
       code: referralCode,
+      username: nameMatch ? nameMatch[0] : referralCode,
       name: referrerName ? referrerName.charAt(0).toUpperCase() + referrerName.slice(1).toLowerCase() : null,
-    }
+    };
   }
-  return null
+  
+  return null;
 }
 
 const referralData = getReferralData()
 
 setTimeout(() => {
   if (referralData && referralData.name) {
-    addBotMessage(`¡Hola! Veo que ${referralData.name} te refirió :D`)
+    addBotMessage(`¡Hola! Veo que ${referralData.name} te refirió 😊`)
   } else {
     addBotMessage("¡Hola! ¿Necesitas un préstamo?")
   }
@@ -565,7 +583,18 @@ function sendDataToWebhook() {
     userData.referido = referralData.code
   }
 
-  const webhookData = { ...userData, completedFlow: true, source: window.location.href, userAgent: navigator.userAgent }
+  const webhookData = { 
+    ...userData, 
+    completedFlow: true, 
+    source: window.location.href, 
+    userAgent: navigator.userAgent,
+    referralSource: referralData ? {
+      code: referralData.code,
+      username: referralData.username,
+      name: referralData.name
+    } : null
+  }
+  
   fetch(WEBHOOK_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -589,8 +618,11 @@ userInput.addEventListener("keypress", (e) => {
 document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   anchor.addEventListener("click", function (e) {
     e.preventDefault()
-    document.querySelector(this.getAttribute("href")).scrollIntoView({
-      behavior: "smooth",
-    })
+    const target = document.querySelector(this.getAttribute("href"))
+    if (target) {
+      target.scrollIntoView({
+        behavior: "smooth",
+      })
+    }
   })
 })
