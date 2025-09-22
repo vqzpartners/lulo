@@ -8,7 +8,6 @@ window.addEventListener("scroll", () => {
   }
 })
 
-// Initialize current year in footer
 document.getElementById("currentYear").textContent = new Date().getFullYear()
 
 // Testimonial slider functionality
