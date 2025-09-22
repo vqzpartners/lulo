@@ -151,19 +151,46 @@ section {
   box-shadow: var(--liquid-glass-shadow);
 }
 
-.logo img {
-  height: 60px;
+.logo {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.75px;
+  text-decoration: none;
   transition: all 0.3s ease;
+  color: var(--primary-color);
 }
 
-.header.scrolled .logo img {
-  height: 50px;
+.logo:hover {
+  color: var(--primary-color);
+  transform: scale(1.02);
+}
+
+/* Logo color changes based on background */
+.hero .logo {
+  color: var(--light-text);
+}
+
+.footer .logo {
+  color: var(--light-text);
+}
+
+.requirements .logo {
+  color: var(--light-text);
+}
+
+.trust-indicators .logo {
+  color: var(--light-text);
+}
+
+.header.scrolled .logo {
+  font-size: 2rem;
 }
 
 .nav-button {
   background: var(--liquid-glass);
   backdrop-filter: blur(20px);
-  color: var(--primary-color);
+  color: var(--light-text);
   padding: 12px 24px;
   border-radius: 30px;
   font-weight: 600;
@@ -270,7 +297,7 @@ section {
   border-radius: 24px;
   padding: 0;
   box-shadow: var(--liquid-glass-shadow);
-  color: var(--text-color);
+  color: var(--light-text);
   display: flex;
   flex-direction: column;
   transition: all 0.3s ease;
@@ -301,13 +328,14 @@ section {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  border: 3px solid rgba(255, 255, 255, 0.2);
+  border: 3px solid var(--light-text);
 }
 
 .chatbot-title h3 {
   font-size: 1.1rem;
   font-weight: 600;
   margin: 0;
+  color: var(--light-text);
 }
 
 .status-indicator {
@@ -393,7 +421,7 @@ section {
 .bot-message {
   background: var(--liquid-glass);
   backdrop-filter: blur(15px);
-  color: var(--text-color);
+  color: var(--light-text);
   border-bottom-left-radius: 6px;
   border: 1px solid var(--liquid-glass-border);
 }
@@ -420,6 +448,7 @@ section {
   transition: var(--transition);
   font-size: 0.9rem;
   border: 1px solid var(--liquid-glass-border);
+  color: var(--light-text);
 }
 
 .sector-option:hover {
@@ -461,13 +490,13 @@ section {
   outline: none;
   font-size: 0.95rem;
   background: transparent;
-  color: var(--text-color);
+  color: var(--light-text);
   font-family: "Inter", sans-serif;
   font-weight: 400;
 }
 
 .chatbot-input input::placeholder {
-  color: #9ca3af;
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 400;
 }
 
@@ -515,7 +544,7 @@ section {
 .suggestion-pill {
   background: var(--liquid-glass);
   backdrop-filter: blur(15px);
-  color: var(--primary-color);
+  color: var(--light-text);
   padding: 6px 12px;
   border-radius: 12px;
   font-size: 0.8rem;
@@ -1392,13 +1421,12 @@ section {
   margin-bottom: 24px;
 }
 
-.footer-logo img {
-  height: 100px;
-  transition: all 0.3s ease;
-  filter: brightness(1.1);
+.footer-logo .logo {
+  font-size: 4rem;
+  color: var(--light-text);
 }
 
-.footer-logo:hover img {
+.footer-logo .logo:hover {
   transform: scale(1.05);
 }
 
@@ -1775,8 +1803,8 @@ section {
     padding: 8px 20px;
   }
 
-  .logo img {
-    height: 45px;
+  .logo {
+    font-size: 2rem;
   }
 
   .nav-button {
@@ -1840,5 +1868,9 @@ section {
   .tab-button {
     min-width: auto;
     width: 100%;
+  }
+
+  .footer-logo .logo {
+    font-size: 3rem;
   }
 }
