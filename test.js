@@ -1,4 +1,4 @@
-// Header scroll effect
+// Header scroll effect and logo contrast detection
 window.addEventListener("scroll", () => {
   const header = document.getElementById("header")
   if (window.scrollY > 50) {
@@ -6,7 +6,37 @@ window.addEventListener("scroll", () => {
   } else {
     header.classList.remove("scrolled")
   }
+  
+  // Update logo color based on background contrast
+  updateLogoContrast()
 })
+
+// Function to detect background contrast and update logo color
+function updateLogoContrast() {
+  const logo = document.querySelector('.logo')
+  if (!logo) return
+  
+  const headerRect = document.getElementById('header').getBoundingClientRect()
+  const centerY = headerRect.top + headerRect.height / 2
+  
+  // Get the element behind the header at the center point
+  const elementBehind = document.elementFromPoint(window.innerWidth / 2, centerY + headerRect.height)
+  
+  if (!elementBehind) return
+  
+  // Check if we're over a dark section
+  const isDarkSection = elementBehind.closest('.hero, .requirements, .trust-indicators, .footer') !== null
+  
+  if (isDarkSection) {
+    logo.classList.remove('dark-logo')
+    logo.classList.add('light-logo')
+  } else {
+    logo.classList.remove('light-logo')
+    logo.classList.add('dark-logo')
+  }
+}
+
+
 
 document.getElementById("currentYear").textContent = new Date().getFullYear()
 
@@ -126,6 +156,7 @@ function initRequirementsTabs() {
 // Initialize requirements tabs when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   initRequirementsTabs();
+  updateLogoContrast(); // Initialize logo contrast detection
 });
 
 // Chatbot functionality
@@ -152,24 +183,8 @@ const botProfilePic = "https://cdn.lulopanama.com/lulo-logo-frontal.png"
 const userProfilePic =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23808080'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E"
 
-// Updated function to get referral data from new URL structure /@username4numbers
+// Function to get referral data from URL parameter ?r=name9434
 function getReferralData() {
-  // Check for new format: /@username4numbers (like @juan4934)
-  const path = window.location.pathname;
-  const referralMatch = path.match(/^\/@([a-zA-Z]+)\d{4}$/);
-  
-  if (referralMatch) {
-    const username = referralMatch[1]; // Extract just the name part before the numbers
-    const referrerName = username.charAt(0).toUpperCase() + username.slice(1).toLowerCase();
-    const fullCode = path.substring(2); // Remove the /@ to get the full code
-    return {
-      code: fullCode,
-      username: username,
-      name: referrerName
-    };
-  }
-
-  // Fallback: check for old format ?r= parameter for backwards compatibility
   const urlParams = new URLSearchParams(window.location.search);
   const referralCode = urlParams.get("r");
   if (referralCode) {
