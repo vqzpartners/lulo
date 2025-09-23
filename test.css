@@ -154,7 +154,7 @@ section {
 .logo {
   font-family: 'Montserrat', sans-serif;
   font-size: 2.5rem;
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: -0.75px;
   text-decoration: none;
   transition: all 0.3s ease;
@@ -162,25 +162,16 @@ section {
 }
 
 .logo:hover {
-  color: var(--primary-color);
   transform: scale(1.02);
 }
 
-/* Logo color changes based on background */
-.hero .logo {
+/* Logo color will be controlled by JavaScript based on contrast detection */
+.logo.light-logo {
   color: var(--light-text);
 }
 
-.footer .logo {
-  color: var(--light-text);
-}
-
-.requirements .logo {
-  color: var(--light-text);
-}
-
-.trust-indicators .logo {
-  color: var(--light-text);
+.logo.dark-logo {
+  color: var(--primary-color);
 }
 
 .header.scrolled .logo {
@@ -328,7 +319,7 @@ section {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  border: 3px solid var(--light-text);
+  border: 3px solid var(--primary-color);
 }
 
 .chatbot-title h3 {
@@ -406,6 +397,7 @@ section {
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
+  border: 2px solid var(--light-text);
 }
 
 .message {
@@ -490,13 +482,13 @@ section {
   outline: none;
   font-size: 0.95rem;
   background: transparent;
-  color: var(--light-text);
+  color: var(--text-color);
   font-family: "Inter", sans-serif;
   font-weight: 400;
 }
 
 .chatbot-input input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
+  color: #9ca3af;
   font-weight: 400;
 }
 
@@ -544,7 +536,7 @@ section {
 .suggestion-pill {
   background: var(--liquid-glass);
   backdrop-filter: blur(15px);
-  color: var(--light-text);
+  color: var(--text-color);
   padding: 6px 12px;
   border-radius: 12px;
   font-size: 0.8rem;
