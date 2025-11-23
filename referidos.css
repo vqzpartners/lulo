@@ -166,38 +166,54 @@ input:focus + .input-icon,
     color: #4b5563;
 }
 
-/* Checkbox */
+/* =========================================
+   CHECKBOX PERSONALIZADO
+   ========================================= */
+.terms-group {
+    display: flex;
+    flex-direction: column;
+}
+
 .checkbox-container {
     display: flex;
     align-items: center;
+    position: relative;
     cursor: pointer;
     font-size: 0.95rem;
     user-select: none;
+    padding-left: 32px; /* Espacio para el cuadro */
+    min-height: 24px;
 }
 
 .checkbox-container input {
+    position: absolute;
     opacity: 0;
     cursor: pointer;
     height: 0;
     width: 0;
 }
 
+/* El cuadro visible */
 .checkmark {
-    height: 20px;
-    width: 20px;
-    background-color: #eee;
-    border-radius: 4px;
-    margin-right: 12px;
-    position: relative;
-    transition: all 0.2s;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 22px;
+    width: 22px;
+    background-color: #fff;
+    border: 2px solid #d1d5db;
+    border-radius: 6px;
+    transition: all 0.2s ease;
 }
 
 .checkbox-container:hover input ~ .checkmark {
-    background-color: #ccc;
+    border-color: var(--primary-color);
 }
 
 .checkbox-container input:checked ~ .checkmark {
     background-color: var(--primary-color);
+    border-color: var(--primary-color);
 }
 
 .checkmark:after {
@@ -226,12 +242,13 @@ input:focus + .input-icon,
     font-weight: 600;
     font-size: inherit;
     padding: 0;
+    margin-left: 4px;
 }
 
 /* Submit Button */
 .submit-button {
     width: 100%;
-    background: var(--gradient-secondary); /* Naranja */
+    background: var(--gradient-secondary);
     color: white;
     padding: 16px;
     border: none;
@@ -252,9 +269,11 @@ input:focus + .input-icon,
     box-shadow: 0 15px 30px rgba(255, 87, 51, 0.4);
 }
 
-/* Modals */
+/* =========================================
+   MODALES (Centrados y Estilizados)
+   ========================================= */
 .modal {
-    display: none;
+    display: none; /* JS activa con display: flex */
     position: fixed;
     z-index: 2000;
     left: 0;
@@ -263,26 +282,29 @@ input:focus + .input-icon,
     height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(5px);
+    
+    /* Flex para centrado perfecto */
     align-items: center;
     justify-content: center;
+    padding: 20px;
+}
+
+/* Animación de entrada */
+@keyframes modalPop {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
 }
 
 .modal-content {
     background-color: #fff;
-    margin: 20px;
     width: 100%;
     max-width: 600px;
     border-radius: 20px;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     display: flex;
     flex-direction: column;
-    max-height: 85vh;
-    animation: modalSlideUp 0.3s ease-out;
-}
-
-@keyframes modalSlideUp {
-    from { opacity: 0; transform: translateY(50px); }
-    to { opacity: 1; transform: translateY(0); }
+    max-height: 85vh; /* Máxima altura de pantalla */
+    animation: modalPop 0.3s ease-out;
 }
 
 .modal-header {
@@ -310,15 +332,20 @@ input:focus + .input-icon,
 .close-modal:hover { color: var(--text-color); }
 
 .modal-body {
-    padding: 24px;
-    overflow-y: auto;
+    padding: 0; /* Sin padding para que el scroll llegue al borde */
+    overflow: hidden; /* Controla el hijo */
+    background: #f9fafb;
+    border-radius: 0 0 20px 20px; /* Si no hay footer, redondea abajo */
 }
 
+/* Scroll Area */
 .terms-scroll-container {
-    max-height: 400px;
+    padding: 30px;
+    max-height: 350px; /* Altura fija para scroll */
     overflow-y: auto;
-    padding-right: 10px;
+    background: #fff;
     color: #4b5563;
+    line-height: 1.6;
 }
 
 .terms-scroll-container h4, .terms-scroll-container h5 {
@@ -329,32 +356,60 @@ input:focus + .input-icon,
 
 .modal-footer {
     padding: 20px 24px;
+    background: #fff;
     border-top: 1px solid #e5e7eb;
     text-align: center;
+    border-radius: 0 0 20px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.scroll-hint {
+    font-size: 0.85rem;
+    color: #6b7280;
+    transition: all 0.3s;
 }
 
 .accept-button {
     background: var(--primary-color);
     color: white;
     border: none;
-    padding: 12px 30px;
-    border-radius: 30px;
+    padding: 14px 40px;
+    border-radius: 50px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 10px rgba(19, 48, 88, 0.2);
 }
 
 .accept-button:disabled {
     background: #d1d5db;
+    color: #9ca3af;
     cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.accept-button:not(:disabled):hover {
+    background: #1e4a77;
+    transform: translateY(-2px);
 }
 
 /* Success Modal Specifics */
 .success-modal-content {
+    background: #fff;
+    width: 100%;
     max-width: 450px;
+    border-radius: 24px;
+    padding: 40px;
     text-align: center;
     position: relative;
-    padding: 40px;
+    animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .close-success-modal {
@@ -384,13 +439,6 @@ input:focus + .input-icon,
     text-align: left;
 }
 
-.referral-link-box label {
-    font-size: 0.85rem;
-    color: #6b7280;
-    margin-bottom: 8px;
-    display: block;
-}
-
 .input-group {
     display: flex;
     gap: 8px;
@@ -400,6 +448,9 @@ input:focus + .input-icon,
     padding: 10px;
     font-size: 0.9rem;
     background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    width: 100%;
 }
 
 .input-group button {
@@ -413,14 +464,9 @@ input:focus + .input-icon,
     transition: background 0.3s;
 }
 
-.input-group button:hover {
-    background: #1e4a77;
-}
-
 .success-steps {
     text-align: left;
     margin-bottom: 24px;
-    font-size: 0.95rem;
     color: #4b5563;
     display: flex;
     flex-direction: column;
