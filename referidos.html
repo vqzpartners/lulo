@@ -18,8 +18,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@400&display=swap" rel="stylesheet">
     
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="referidos.css">
+    <link rel="stylesheet" href="styles.css"> <!-- Tu estilo global -->
+    <link rel="stylesheet" href="referidos.css"> <!-- Estilo específico corregido -->
 </head>
 <body>
     <!-- Header -->
@@ -27,7 +27,6 @@
         <div class="header-container">
             <!-- Logo inicia en blanco (light-logo) porque el fondo del hero es oscuro -->
             <a href="/" class="logo light-logo" id="headerLogo">lulo</a>
-            <!-- Sin botón de navegación aquí -->
         </div>
     </header>
 
@@ -90,8 +89,9 @@
                             <div class="error-message" id="reasonError"></div>
                         </div>
                         
+                        <!-- CHECKBOX LOGIC -->
                         <div class="form-group terms-group">
-                            <label class="checkbox-container">
+                            <label class="checkbox-container" id="mainCheckboxLabel">
                                 <input type="checkbox" id="terms" name="terms" required>
                                 <span class="checkmark"></span>
                                 <span class="terms-text">He leído y acepto los <button type="button" id="openTermsBtn" class="terms-link">Términos de Referidos</button></span>
@@ -118,7 +118,6 @@
                 <div class="footer-main">
                     <div class="footer-brand">
                         <div class="footer-logo">
-                            <!-- Logo del footer siempre blanco -->
                             <a href="/" class="logo footer-brand-logo" style="color: #fff;">lulo</a>
                         </div>
                         <p class="footer-description">
@@ -166,31 +165,43 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Términos de Referidos</h3>
-                <span class="close-modal">&times;</span>
+                <span class="close-modal" id="closeTermsX">&times;</span>
             </div>
-            <div class="modal-body" id="termsContent">
-                <div class="terms-scroll-container">
+            <div class="modal-body">
+                <div class="terms-scroll-container" id="termsContentScroll">
                     <h4>Política del Programa</h4>
                     <p><strong>Última actualización:</strong> <span id="termsDate"></span></p>
 
-                    <h5>1. Elegibilidad</h5>
-                    <p>Para participar en el programa de referidos de Lulo Panamá, debes ser mayor de 18 años y residir legalmente en la República de Panamá.</p>
+                    <h5>1. Introducción y Aceptación</h5>
+                    <p>Al participar en el programa de referidos de Lulo Panamá, usted acepta cumplir con los siguientes términos y condiciones. Lulo Panamá se reserva el derecho de modificar estos términos en cualquier momento.</p>
 
-                    <h5>2. Comisiones</h5>
-                    <p>Lulo Panamá pagará una comisión del 1% sobre el monto neto desembolsado del préstamo personal referido. El pago se realizará únicamente cuando el préstamo haya sido aprobado, firmado y desembolsado exitosamente.</p>
+                    <h5>2. Elegibilidad</h5>
+                    <p>Para participar en el programa de referidos, debe ser mayor de 18 años, residir legalmente en la República de Panamá y contar con un documento de identidad válido.</p>
 
-                    <h5>3. Proceso de Referencia</h5>
-                    <p>Debes utilizar tu enlace único de referido. No se contarán referencias manuales o posteriores a la solicitud del cliente.</p>
+                    <h5>3. Mecánica de Comisiones</h5>
+                    <p>Lulo Panamá pagará una comisión del 1% sobre el monto neto desembolsado del préstamo personal referido. El pago se realizará únicamente cuando el préstamo haya sido aprobado, firmado y efectivamente desembolsado.</p>
 
-                    <h5>4. Uso de Datos</h5>
-                    <p>Está estrictamente prohibido utilizar bases de datos compradas, robadas o recolectadas sin el consentimiento explícito de los titulares. Lulo Panamá tiene una política de tolerancia cero ante el spam.</p>
+                    <h5>4. Proceso de Referencia</h5>
+                    <p>El referido debe realizar su solicitud utilizando única y exclusivamente su enlace personalizado. No se aceptarán reclamos de referidos que hayan aplicado por otros canales.</p>
 
-                    <h5>5. Terminación</h5>
-                    <p>Nos reservamos el derecho de terminar tu participación en el programa si detectamos actividades fraudulentas o violación de estos términos.</p>
+                    <h5>5. Ética y Uso de Datos</h5>
+                    <p>Está estrictamente prohibido utilizar bases de datos compradas, robadas o recolectadas sin el consentimiento explícito. Lulo Panamá tiene una política de tolerancia cero ante el spam.</p>
+
+                    <h5>6. Pagos</h5>
+                    <p>Los pagos se coordinarán directamente con el socio referido una vez confirmado el desembolso. El socio es responsable de proporcionar la información bancaria correcta.</p>
+                    
+                    <h5>7. Terminación</h5>
+                    <p>Nos reservamos el derecho de terminar su participación en el programa si detectamos actividades fraudulentas.</p>
+                    
+                    <p><br><br><em>Desplázate hasta el final para habilitar el botón.</em></p>
+                    <p style="opacity: 0;">.</p> <!-- Espaciador para asegurar scroll -->
                 </div>
             </div>
             <div class="modal-footer">
-                <button id="acceptTermsBtn" class="accept-button" disabled>He leído y Acepto</button>
+                <span class="scroll-hint" id="scrollHint">Lee todo el texto para continuar</span>
+                <button id="acceptTermsBtn" class="accept-button" disabled>
+                    <i class="fas fa-check"></i> He leído y Acepto
+                </button>
             </div>
         </div>
     </div>
@@ -227,38 +238,100 @@
         </div>
     </div>
 
-    <!-- JS Logic -->
+    <!-- Scripts -->
     <script src="ref.js"></script>
     <script src="analytics.js"></script>
+    
+    <!-- UI Logic Script -->
     <script>
-        // Set Year & Date
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
-        document.getElementById('termsDate').textContent = new Date().toLocaleDateString('es-PA');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos
+            const termsModal = document.getElementById('termsModal');
+            const openTermsBtn = document.getElementById('openTermsBtn');
+            const closeTermsX = document.getElementById('closeTermsX');
+            const scrollContainer = document.getElementById('termsContentScroll');
+            const acceptBtn = document.getElementById('acceptTermsBtn');
+            const scrollHint = document.getElementById('scrollHint');
+            const mainCheckbox = document.getElementById('terms');
+            const mainCheckboxLabel = document.getElementById('mainCheckboxLabel');
+            const header = document.getElementById('header');
+            const logo = document.getElementById('headerLogo');
 
-        // Header & Logo Color Logic
-        const header = document.getElementById('header');
-        const logo = document.getElementById('headerLogo');
-
-        window.addEventListener('scroll', function() {
-            if (window.scrollY > 10) {
-                header.classList.add('scrolled');
-                // Fondo blanco -> Logo Azul (branding)
-                logo.classList.remove('light-logo');
-                logo.style.color = '#133058'; 
-            } else {
-                header.classList.remove('scrolled');
-                // Fondo transparente (sobre hero oscuro) -> Logo Blanco
-                logo.classList.add('light-logo');
-                logo.style.color = '#ffffff';
+            // --- HEADER & LOGO LOGIC ---
+            function updateHeader() {
+                if (window.scrollY > 10) {
+                    header.classList.add('scrolled');
+                    logo.classList.remove('light-logo');
+                    logo.style.color = '#133058'; 
+                } else {
+                    header.classList.remove('scrolled');
+                    logo.classList.add('light-logo');
+                    logo.style.color = '#ffffff';
+                }
             }
-        });
+            window.addEventListener('scroll', updateHeader);
+            updateHeader(); // Init
 
-        // Trigger inicial en caso de refresh con scroll
-        if (window.scrollY > 10) {
-            header.classList.add('scrolled');
-            logo.classList.remove('light-logo');
-            logo.style.color = '#133058';
-        }
+            // --- FECHAS ---
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+            if(document.getElementById('termsDate')) {
+                document.getElementById('termsDate').textContent = new Date().toLocaleDateString('es-PA');
+            }
+
+            // --- MODAL & CHECKBOX LOGIC ---
+            
+            function openModal() {
+                termsModal.style.display = 'flex'; // Flex para centrar
+            }
+
+            // 1. Abrir desde el enlace
+            openTermsBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openModal();
+            });
+
+            // 2. Bloquear clic directo en el checkbox y abrir modal
+            mainCheckboxLabel.addEventListener('click', function(e) {
+                if (mainCheckbox.checked) return; // Si ya está marcado, no hacer nada
+
+                // Si el clic no fue en el enlace (fue en la caja o texto)
+                if (e.target !== openTermsBtn) {
+                    e.preventDefault(); 
+                    openModal();
+                }
+            });
+
+            // 3. Cerrar Modal
+            closeTermsX.addEventListener('click', () => termsModal.style.display = 'none');
+            window.addEventListener('click', (e) => {
+                if (e.target === termsModal) termsModal.style.display = 'none';
+            });
+
+            // 4. Scroll Logic
+            scrollContainer.addEventListener('scroll', function() {
+                // Detectar final del scroll
+                const isAtBottom = (this.scrollHeight - this.scrollTop - this.clientHeight) < 10;
+                
+                if (isAtBottom) {
+                    acceptBtn.disabled = false;
+                    scrollHint.textContent = "¡Gracias! Ahora puedes aceptar.";
+                    scrollHint.style.color = "#10b981";
+                    scrollHint.style.fontWeight = "bold";
+                }
+            });
+
+            // 5. Aceptar Términos
+            acceptBtn.addEventListener('click', function() {
+                if (!this.disabled) {
+                    mainCheckbox.checked = true;
+                    termsModal.style.display = 'none';
+                    // Borrar error si existe
+                    const errorDiv = document.getElementById('termsError');
+                    if(errorDiv) errorDiv.textContent = '';
+                }
+            });
+        });
     </script>
 </body>
 </html>
