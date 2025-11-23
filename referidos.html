@@ -19,20 +19,15 @@
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="referidos.css"> <!-- Estilos específicos del formulario -->
+    <link rel="stylesheet" href="referidos.css">
 </head>
 <body>
-    <!-- Header (Igual a index.html) -->
+    <!-- Header -->
     <header class="header" id="header">
         <div class="header-container">
-            <a href="/" class="logo">lulo</a>
-            <nav class="nav">
-                <!-- Botón activo o deshabilitado visualmente ya que estamos aquí -->
-                <a href="/referidos" class="nav-button active-page">
-                    <i class="fas fa-coins"></i>
-                    <span>Programa de Referidos</span>
-                </a>
-            </nav>
+            <!-- Logo inicia en blanco (light-logo) porque el fondo del hero es oscuro -->
+            <a href="/" class="logo light-logo" id="headerLogo">lulo</a>
+            <!-- Sin botón de navegación aquí -->
         </div>
     </header>
 
@@ -60,10 +55,10 @@
                     <form id="referralForm" class="referral-form">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="name">Tu Nombre Completo</label>
+                                <label for="name">Tu Primer Nombre</label>
                                 <div class="input-icon-wrapper">
                                     <i class="fas fa-user input-icon"></i>
-                                    <input type="text" id="name" name="name" placeholder="Ej. Juan Pérez" required>
+                                    <input type="text" id="name" name="name" placeholder="Ej. Juan" required>
                                 </div>
                                 <div class="error-message" id="nameError"></div>
                             </div>
@@ -116,14 +111,15 @@
         </section>
     </main>
 
-    <!-- Footer (Igual a index.html) -->
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-main">
                     <div class="footer-brand">
                         <div class="footer-logo">
-                            <a href="/" class="logo footer-brand-logo">lulo</a>
+                            <!-- Logo del footer siempre blanco -->
+                            <a href="/" class="logo footer-brand-logo" style="color: #fff;">lulo</a>
                         </div>
                         <p class="footer-description">
                             Conectamos personas con oportunidades financieras de manera simple, transparente y sin complicaciones.
@@ -158,4 +154,111 @@
                     </div>
                     <div class="footer-badges">
                         <div class="security-badge"><i class="fas fa-shield-alt"></i><span>Datos Seguros</span></div>
-                        <div class="security-badge"
+                        <div class="security-badge"><i class="fas fa-lock"></i><span>SSL Certificado</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Terms Modal -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Términos de Referidos</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body" id="termsContent">
+                <div class="terms-scroll-container">
+                    <h4>Política del Programa</h4>
+                    <p><strong>Última actualización:</strong> <span id="termsDate"></span></p>
+
+                    <h5>1. Elegibilidad</h5>
+                    <p>Para participar en el programa de referidos de Lulo Panamá, debes ser mayor de 18 años y residir legalmente en la República de Panamá.</p>
+
+                    <h5>2. Comisiones</h5>
+                    <p>Lulo Panamá pagará una comisión del 1% sobre el monto neto desembolsado del préstamo personal referido. El pago se realizará únicamente cuando el préstamo haya sido aprobado, firmado y desembolsado exitosamente.</p>
+
+                    <h5>3. Proceso de Referencia</h5>
+                    <p>Debes utilizar tu enlace único de referido. No se contarán referencias manuales o posteriores a la solicitud del cliente.</p>
+
+                    <h5>4. Uso de Datos</h5>
+                    <p>Está estrictamente prohibido utilizar bases de datos compradas, robadas o recolectadas sin el consentimiento explícito de los titulares. Lulo Panamá tiene una política de tolerancia cero ante el spam.</p>
+
+                    <h5>5. Terminación</h5>
+                    <p>Nos reservamos el derecho de terminar tu participación en el programa si detectamos actividades fraudulentas o violación de estos términos.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="acceptTermsBtn" class="accept-button" disabled>He leído y Acepto</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+        <div class="modal-content success-modal-content">
+            <span class="close-success-modal">&times;</span>
+            <div class="success-body">
+                <div class="success-icon-wrapper">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h3>¡Registro Exitoso!</h3>
+                <p>Bienvenido al equipo de partners de Lulo.</p>
+                
+                <div class="referral-link-box">
+                    <label>Tu enlace personalizado:</label>
+                    <div class="input-group">
+                        <input type="text" id="referralLink" readonly>
+                        <button id="copyLinkBtn">
+                            <i class="far fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="success-steps">
+                    <div class="step">1. Comparte tu link</div>
+                    <div class="step">2. Tus referidos aplican</div>
+                    <div class="step">3. ¡Gana el 1% al desembolso!</div>
+                </div>
+                
+                <button class="close-button" id="closeSuccessBtn">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Logic -->
+    <script src="ref.js"></script>
+    <script src="analytics.js"></script>
+    <script>
+        // Set Year & Date
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        document.getElementById('termsDate').textContent = new Date().toLocaleDateString('es-PA');
+
+        // Header & Logo Color Logic
+        const header = document.getElementById('header');
+        const logo = document.getElementById('headerLogo');
+
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 10) {
+                header.classList.add('scrolled');
+                // Fondo blanco -> Logo Azul (branding)
+                logo.classList.remove('light-logo');
+                logo.style.color = '#133058'; 
+            } else {
+                header.classList.remove('scrolled');
+                // Fondo transparente (sobre hero oscuro) -> Logo Blanco
+                logo.classList.add('light-logo');
+                logo.style.color = '#ffffff';
+            }
+        });
+
+        // Trigger inicial en caso de refresh con scroll
+        if (window.scrollY > 10) {
+            header.classList.add('scrolled');
+            logo.classList.remove('light-logo');
+            logo.style.color = '#133058';
+        }
+    </script>
+</body>
+</html>
