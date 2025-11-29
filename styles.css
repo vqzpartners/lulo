@@ -1,4 +1,3 @@
-/* Global Styles */
 :root {
   --primary-color: #133058;
   --secondary-color: #ff5733;
@@ -565,6 +564,68 @@ section {
   margin-top: 12px;
   border-radius: 8px;
   border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+/* Modern Upsell Card */
+.referral-upsell-card {
+  background: var(--liquid-glass);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 12px;
+  border: 1px solid var(--liquid-glass-border);
+  text-align: center;
+  box-shadow: var(--liquid-glass-shadow);
+  color: var(--light-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.upsell-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--gradient-accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  margin-bottom: 4px;
+}
+
+.referral-upsell-card h4 {
+  margin: 0;
+  color: var(--accent-color);
+  font-size: 1.1rem;
+}
+
+.referral-upsell-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.95;
+  line-height: 1.5;
+}
+
+.upsell-btn {
+  margin-top: 8px;
+  background: var(--gradient-accent);
+  color: var(--primary-color);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.upsell-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
 }
 
 /* How It Works Section */
@@ -1617,7 +1678,9 @@ section {
 
   .chatbot-container {
     max-width: 95%;
-    height: 500px;
+    /* Adjusted height for better visibility on mobile */
+    height: 70vh;
+    max-height: 600px;
   }
 
   .chatbot-header {
@@ -1815,9 +1878,19 @@ section {
   .hero {
     padding: 130px 15px 60px;
   }
-
+  
+  /* Ensuring better layout for options on small screens */
   .chatbot-container {
-    height: 450px;
+    height: 75vh;
+  }
+  
+  .sector-options {
+    gap: 6px;
+  }
+
+  .sector-option {
+    padding: 10px 14px;
+    font-size: 0.85rem;
   }
 
   .step-content {
