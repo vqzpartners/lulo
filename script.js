@@ -204,6 +204,11 @@ const referralData = getReferralData()
 
 setTimeout(() => {
   if (referralData && referralData.name) {
+    // CAMBIO FOUNDER MODE: Si el nombre es Brandon (case insensitive), activar animación especial
+    if (referralData.name.toLowerCase() === 'brandon') {
+      document.querySelector('.chatbot-container').classList.add('founder-mode');
+    }
+    
     addBotMessage(`¡Hola! Gracias a la recomendación de ${referralData.name}, tienes prioridad en nuestro proceso de pre-calificación.`)
   } else {
     addBotMessage("¡Hola! ¿Necesitas un préstamo?")
