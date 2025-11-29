@@ -204,7 +204,8 @@ const referralData = getReferralData()
 
 setTimeout(() => {
   if (referralData && referralData.name) {
-    addBotMessage(`¡Hola! Veo que ${referralData.name} te refirió 😊`)
+    // CAMBIO 1: Mensaje de referido mejorado
+    addBotMessage(`¡Hola! Vengo de parte de ${referralData.name}. Gracias a su recomendación, tienes prioridad en nuestro proceso de pre-calificación.`)
   } else {
     addBotMessage("¡Hola! ¿Necesitas un préstamo?")
   }
@@ -345,10 +346,41 @@ function showRejectionMessage() {
   }
   userData.qualified = false
   addBotMessage(`Lo siento, en este momento no aplicas para un préstamo personal con nuestros socios porque ${reason}`)
+  
+  // CAMBIO 2: Upsell moderno cuando no califica y bloqueo del chat
   setTimeout(() => {
-    addBotMessage("¡Pero no te preocupes! Aún puedes beneficiarte con nosotros.", null, true)
+    // Inyectar HTML para la tarjeta moderna de referidos
+    const upsellHTML = `
+        <div class="referral-upsell-card">
+            <div class="upsell-icon"><i class="fas fa-gift"></i></div>
+            <h4>¡Aún puedes ganar dinero!</h4>
+            <p>Aunque no califiques para un préstamo ahora, puedes unirte a nuestro programa de referidos.</p>
+            <p>Gana el <strong>1%</strong> de cada préstamo aprobado que refieras.</p>
+            <button onclick="redirectToReferralProgram()" class="upsell-btn">Unirme al programa</button>
+        </div>
+    `;
+    
+    const containerDiv = document.createElement("div")
+    containerDiv.className = "message-container bot-container"
+    const avatarImg = document.createElement("img")
+    avatarImg.src = botProfilePic
+    avatarImg.alt = "Lulo"
+    avatarImg.className = "message-avatar"
+    containerDiv.appendChild(avatarImg)
+    
+    const messageDiv = document.createElement("div")
+    messageDiv.className = "message bot-message"
+    messageDiv.style.background = "transparent";
+    messageDiv.style.border = "none";
+    messageDiv.style.padding = "0";
+    messageDiv.innerHTML = upsellHTML;
+    
+    containerDiv.appendChild(messageDiv)
+    chatbotMessages.appendChild(containerDiv)
+    chatbotMessages.scrollTop = chatbotMessages.scrollHeight
+    
     disableChat()
-  }, 1000)
+  }, 1500)
 }
 
 function redirectToReferralProgram() {
@@ -524,8 +556,10 @@ userInput.addEventListener("input", function (e) {
 function showSuccessMessage() {
   userData.qualified = true
   addBotMessage("¡Gracias por completar el formulario! Nos pondremos en contacto contigo pronto.")
+  
+  // CAMBIO 2 (Si califica): No mostrar upsell, sino mensaje de revisar correo
   setTimeout(() => {
-    addBotMessage("¿Sabías que puedes ganar dinero refiriendo a tus amigos y familiares?", null, true)
+    addBotMessage("📧 Por favor revisa tu correo electrónico inmediatamente (busca también en spam), te hemos enviado los pasos finales para tu desembolso.")
     disableChat()
   }, 1500)
 }
