@@ -204,7 +204,6 @@ const referralData = getReferralData()
 
 setTimeout(() => {
   if (referralData && referralData.name) {
-    // CAMBIO: Mensaje ajustado sin "Veo que"
     addBotMessage(`¡Hola! Gracias a la recomendación de ${referralData.name}, tienes prioridad en nuestro proceso de pre-calificación.`)
   } else {
     addBotMessage("¡Hola! ¿Necesitas un préstamo?")
@@ -347,7 +346,6 @@ function showRejectionMessage() {
   userData.qualified = false
   addBotMessage(`Lo siento, en este momento no aplicas para un préstamo personal con nuestros socios porque ${reason}`)
   
-  // LOGICA UPSELL: Se muestra SÓLO si no califica
   setTimeout(() => {
     // Inyectar HTML para la tarjeta moderna de referidos
     const upsellHTML = `
@@ -557,7 +555,6 @@ function showSuccessMessage() {
   userData.qualified = true
   addBotMessage("¡Gracias por completar el formulario! Nos pondremos en contacto contigo pronto.")
   
-  // SI CALIFICA: Mensaje claro para revisar correo, sin upsell.
   setTimeout(() => {
     addBotMessage("📧 Por favor revisa tu correo electrónico inmediatamente (busca también en spam), te hemos enviado los pasos finales para tu desembolso.")
     disableChat()
