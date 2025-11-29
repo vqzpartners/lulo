@@ -301,6 +301,22 @@ section {
   background: rgba(255, 255, 255, 0.2);
 }
 
+/* Founder Mode Animation */
+@keyframes founder-glow {
+  0% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); border-color: #ff0000; }
+  20% { box-shadow: 0 0 20px rgba(255, 255, 0, 0.5); border-color: #ffff00; }
+  40% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.5); border-color: #00ff00; }
+  60% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.5); border-color: #00ffff; }
+  80% { box-shadow: 0 0 20px rgba(0, 0, 255, 0.5); border-color: #0000ff; }
+  100% { box-shadow: 0 0 20px rgba(255, 0, 255, 0.5); border-color: #ff00ff; }
+}
+
+.founder-mode {
+    animation: founder-glow 4s linear infinite alternate;
+    position: relative;
+    z-index: 10;
+}
+
 .chatbot-header {
   background: var(--gradient-primary);
   color: var(--light-text);
