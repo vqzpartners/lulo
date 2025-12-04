@@ -706,19 +706,27 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   })
 })
 
-// --- Christmas Lights Function ---
+// --- Christmas Lights Function (Attached to Header) ---
 function createChristmasLights() {
+    // 1. Target the Header
+    const header = document.getElementById('header');
+    if (!header) return;
+
+    // Check if lights already exist to prevent duplicates
+    if (header.querySelector('.christmas-lights-container')) return;
+
     const lightsContainer = document.createElement('ul');
     lightsContainer.className = 'christmas-lights-container';
     
-    // Insert at the very start of the body
-    document.body.prepend(lightsContainer);
+    // 2. Insert INSIDE the header
+    header.appendChild(lightsContainer);
 
-    // Calculate bulbs based on width
+    // 3. Calculate bulbs (Optimized for performance)
     const updateBulbs = () => {
-        lightsContainer.innerHTML = ''; // Clear existing
-        const windowWidth = window.innerWidth;
-        const bulbCount = Math.floor(windowWidth / 30) + 5; // +5 for buffer
+        lightsContainer.innerHTML = ''; 
+        const width = header.offsetWidth;
+        // Increased divider to 60 (fewer bulbs)
+        const bulbCount = Math.floor(width / 60) + 2; 
         
         for (let i = 0; i < bulbCount; i++) {
             const bulb = document.createElement('li');
@@ -729,6 +737,10 @@ function createChristmasLights() {
     // Initial run
     updateBulbs();
 
-    // Recalculate on resize
-    window.addEventListener('resize', updateBulbs);
+    // Recalculate on resize with a debounce (performance)
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(updateBulbs, 100);
+    });
 }
