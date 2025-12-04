@@ -1913,7 +1913,6 @@ section {
     padding: 130px 15px 60px;
   }
   
-  /* Ensuring better layout for options on small screens */
   .chatbot-container {
     height: 75vh;
   }
@@ -1972,15 +1971,20 @@ section {
   .footer-logo .logo {
     font-size: 3rem;
   }
-  /* --- Christmas Lights Decoration --- */
+} /* <--- THIS WAS MISSING! It closes the mobile section */
+
+
+/* =========================================
+   CHRISTMAS LIGHTS (Now outside the media query)
+   ========================================= */
 .christmas-lights-container {
     position: fixed;
-    top: -12px; /* Pulls the wire up slightly so it looks attached to the browser edge */
+    top: -12px;
     left: 0;
     width: 100%;
     height: 50px;
-    z-index: 99999; /* Ensures it sits on top of the navbar */
-    pointer-events: none; /* CRITICAL: Allows you to click links/buttons BEHIND the lights */
+    z-index: 99999;
+    pointer-events: none;
     display: flex;
     justify-content: space-between;
     overflow: hidden;
@@ -1991,12 +1995,12 @@ section {
 .christmas-lights-container li {
     list-style: none;
     flex: 1;
-    min-width: 40px; /* Adjust spacing between bulbs */
+    min-width: 40px;
     height: 25px;
-    border-bottom: 2px solid #222; /* The wire */
+    border-bottom: 2px solid #222;
     border-radius: 50%;
     position: relative;
-    margin: 0 -15px; /* Creates the curve overlap */
+    margin: 0 -15px;
     animation: swing 3s infinite ease-in-out;
 }
 
@@ -2014,7 +2018,7 @@ section {
     animation: glow 2s infinite alternate;
 }
 
-/* The Socket (Black top part of bulb) */
+/* The Socket */
 .christmas-lights-container li::after {
     content: '';
     position: absolute;
@@ -2027,25 +2031,21 @@ section {
     border-radius: 3px;
 }
 
-/* --- Colors (Matching your screenshot) --- */
-/* Red */
+/* Colors */
 .christmas-lights-container li:nth-child(4n+1)::before {
     background-color: #ff0033;
     box-shadow: 0 2px 20px 5px #ff0033;
 }
-/* Lime Green */
 .christmas-lights-container li:nth-child(4n+2)::before {
     background-color: #abff00;
     box-shadow: 0 2px 20px 5px #abff00;
     animation-delay: 0.5s;
 }
-/* Cyan/Teal */
 .christmas-lights-container li:nth-child(4n+3)::before {
     background-color: #00ffbf;
     box-shadow: 0 2px 20px 5px #00ffbf;
     animation-delay: 1s;
 }
-/* Yellow/Green */
 .christmas-lights-container li:nth-child(4n+4)::before {
     background-color: #ccff00;
     box-shadow: 0 2px 20px 5px #ccff00;
@@ -2061,5 +2061,4 @@ section {
 @keyframes glow {
     0% { opacity: 0.8; transform: translateX(-50%) scale(1); }
     100% { opacity: 1; transform: translateX(-50%) scale(1.1); }
-}
 }
