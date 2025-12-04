@@ -36,8 +36,6 @@ function updateLogoContrast() {
   }
 }
 
-
-
 document.getElementById("currentYear").textContent = new Date().getFullYear()
 
 // Testimonial slider functionality
@@ -153,10 +151,11 @@ function initRequirementsTabs() {
   });
 }
 
-// Initialize requirements tabs when DOM is loaded
+// Initialize requirements tabs and Xmas lights when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   initRequirementsTabs();
   updateLogoContrast(); // Initialize logo contrast detection
+  createChristmasLights(); // Initialize Christmas Lights
 });
 
 // Chatbot functionality
@@ -706,3 +705,30 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     }
   })
 })
+
+// --- Christmas Lights Function ---
+function createChristmasLights() {
+    const lightsContainer = document.createElement('ul');
+    lightsContainer.className = 'christmas-lights-container';
+    
+    // Insert at the very start of the body
+    document.body.prepend(lightsContainer);
+
+    // Calculate bulbs based on width
+    const updateBulbs = () => {
+        lightsContainer.innerHTML = ''; // Clear existing
+        const windowWidth = window.innerWidth;
+        const bulbCount = Math.floor(windowWidth / 30) + 5; // +5 for buffer
+        
+        for (let i = 0; i < bulbCount; i++) {
+            const bulb = document.createElement('li');
+            lightsContainer.appendChild(bulb);
+        }
+    };
+
+    // Initial run
+    updateBulbs();
+
+    // Recalculate on resize
+    window.addEventListener('resize', updateBulbs);
+}
