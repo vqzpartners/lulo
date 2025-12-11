@@ -2,496 +2,437 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Firma de APCs - Lulo Panamá</title>
     
-    <!-- --- SOCIAL PREVIEWS & METADATA --- -->
-    <meta name="description" content="Firma tus documentos APC fácilmente desde tu celular sin descargar aplicaciones.">
-    <meta name="author" content="Lulo Panamá">
+    <!-- META TAGS -->
+    <meta name="description" content="Herramienta digital para firmar documentos APC.">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <!-- Favicon -->
     <link rel="icon" href="https://cdn.lulopanama.com/favicon.png" type="image/png">
-    <link rel="shortcut icon" href="https://cdn.lulopanama.com/favicon.png" type="image/png">
 
-    <!-- Open Graph / Facebook / WhatsApp -->
+    <!-- Social Previews -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://lulopanama.com/">
     <meta property="og:title" content="Firma de APCs - Lulo Panamá">
-    <meta property="og:description" content="Firma tus documentos APC fácilmente desde tu celular sin descargar aplicaciones.">
     <meta property="og:image" content="https://cdn.lulopanama.com/lulo-firma-banner.jpg">
-
-    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Firma de APCs - Lulo Panamá">
-    <meta name="twitter:description" content="Firma tus documentos APC fácilmente desde tu celular sin descargar aplicaciones.">
     <meta name="twitter:image" content="https://cdn.lulopanama.com/lulo-firma-banner.jpg">
 
-    <!-- --- FUENTES E ICONOS --- -->
+    <!-- Fuentes e Iconos -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <!-- Evitar indexación en motores de búsqueda (Solicitado) -->
     <meta name="robots" content="noindex, nofollow">
 
     <style>
-        /* --- ESTILOS GLOBALES --- */
+        /* --- ESTILOS APP NATIVA --- */
         :root {
             --primary-color: #133058;
             --secondary-color: #ff5733;
-            --text-color: #1a1a1a;
-            --background-color: #f0f4f8;
-            --border-radius: 24px;
-            --transition: all 0.3s ease;
-            --gradient-primary: linear-gradient(135deg, #133058 0%, #1e4a77 100%);
-            --gradient-secondary: linear-gradient(135deg, #ff5733 0%, #ff7849 100%);
-            --liquid-glass: rgba(255, 255, 255, 0.95);
-            --liquid-glass-border: rgba(255, 255, 255, 0.6);
-            --shadow-medium: 0 12px 40px rgba(19, 48, 88, 0.10);
+            --bg-color: #ffffff;
+            --input-bg: #f3f4f6;
+            --border-color: #e5e7eb;
+            --text-color: #111827;
+            --subtext-color: #6b7280;
+            --radius: 16px;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
         body {
             font-family: "Inter", sans-serif;
-            background-color: var(--background-color);
-            /* Fondo claro y limpio */
-            background-image: 
-                radial-gradient(at 10% 10%, rgba(255, 87, 51, 0.05) 0, transparent 50%), 
-                radial-gradient(at 90% 90%, rgba(19, 48, 88, 0.05) 0, transparent 50%);
+            background-color: var(--bg-color);
+            color: var(--text-color);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            color: var(--text-color);
-            overflow-x: hidden;
         }
 
+        /* Contenedor principal sin tarjeta */
         .app-container {
             flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px 10px;
-            position: relative;
-            z-index: 10;
-        }
-
-        /* --- WIZARD CARD --- */
-        .wizard-card {
-            background: var(--liquid-glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--liquid-glass-border);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-medium);
             width: 100%;
-            max-width: 650px;
-            padding: 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            transition: var(--transition);
-        }
-
-        .wizard-header h2 {
-            color: var(--primary-color);
-            margin-bottom: 10px;
-            font-size: 1.5rem;
-        }
-        .wizard-header p {
-            color: #555;
-            margin-bottom: 20px;
-            line-height: 1.5;
-            font-size: 0.95rem;
-        }
-
-        /* --- PROGRESS BAR --- */
-        .progress-container {
-            width: 100%;
-            background: rgba(0,0,0,0.05);
-            height: 6px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            overflow: hidden;
-        }
-        .progress-bar {
-            height: 100%;
-            background: var(--gradient-secondary);
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        /* --- STEPS --- */
-        .step-content {
-            display: none;
-            animation: fadeIn 0.4s ease;
-            width: 100%;
-        }
-        .step-content.active {
+            max-width: 600px; /* Ancho máximo para desktop */
+            margin: 0 auto;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 15px;
+            justify-content: flex-start; /* Alineado arriba */
         }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- HEADER & PROGRESS --- */
+        .app-header {
+            margin-bottom: 25px;
+            text-align: center;
+            padding-top: 10px;
+        }
+        
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: #f3f4f6;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), #2563eb);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        h2 { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin-bottom: 8px; }
+        p { color: var(--subtext-color); line-height: 1.5; font-size: 0.95rem; }
+
+        /* --- STEPS --- */
+        .step-content { display: none; width: 100%; animation: fadeUp 0.3s ease; }
+        .step-content.active { display: flex; flex-direction: column; gap: 20px; }
+        
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- INPUTS / CANVAS --- */
+        .canvas-container {
+            width: 100%;
+        }
+        
+        .canvas-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            color: var(--text-color);
+        }
+
+        .canvas-wrapper {
+            background: var(--input-bg);
+            border: 2px dashed #d1d5db;
+            border-radius: var(--radius);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            min-height: 180px; /* Altura cómoda */
+            transition: border-color 0.3s;
+        }
+
+        .canvas-wrapper.confirmed {
+            border: 2px solid #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        /* Icono de check al confirmar */
+        .check-icon {
+            position: absolute; top: 10px; right: 10px;
+            background: #10b981; color: white;
+            width: 24px; height: 24px; border-radius: 50%;
+            display: none; align-items: center; justify-content: center;
+            font-size: 12px; pointer-events: none;
+        }
+        .canvas-wrapper.confirmed .check-icon { display: flex; }
+
+        canvas { width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+
+        /* --- DATE SPLIT --- */
+        .date-split-row { display: flex; gap: 10px; }
+        .date-col { display: flex; flex-direction: column; flex: 1; }
+        .date-canvas-sm { height: 110px; min-height: 110px; }
 
         /* --- DOC GRID --- */
         .doc-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 10px;
-            width: 100%;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(2, 1fr); /* 2 columnas móvil */
+            gap: 12px;
         }
         .doc-btn {
             background: white;
-            border: 2px solid transparent;
-            border-radius: 15px;
-            padding: 15px 5px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            font-weight: 600;
-            color: var(--primary-color);
-            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            min-height: 90px;
-            font-size: 0.9rem;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
-        .doc-btn i { font-size: 1.4rem; color: #cbd5e1; }
+        .doc-btn i { font-size: 1.5rem; color: #9ca3af; }
+        .doc-btn span { font-weight: 600; font-size: 0.9rem; }
+        
         .doc-btn.selected {
             border-color: var(--secondary-color);
-            background: #fff5f2;
-            transform: scale(1.02);
-            box-shadow: 0 8px 20px rgba(255, 87, 51, 0.15);
+            background: #fff5f0;
+            box-shadow: 0 4px 12px rgba(255, 87, 51, 0.15);
         }
         .doc-btn.selected i { color: var(--secondary-color); }
 
-        /* --- CANVAS AREAS --- */
-        .canvas-wrapper {
-            background: white;
-            border: 2px dashed #cbd5e1;
-            border-radius: 15px;
-            width: 100%;
-            padding: 10px;
-            position: relative;
+        /* --- BUTTONS --- */
+        .btn-container {
+            margin-top: 10px;
             display: flex;
+            gap: 12px;
             justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            min-height: 160px;
-        }
-
-        /* --- FECHA DIVIDIDA --- */
-        .date-split-container {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            justify-content: space-between;
-        }
-        .date-box {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .date-box label {
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: #666;
-        }
-        .date-canvas-wrapper {
-            background: white;
-            border: 2px dashed #cbd5e1;
-            border-radius: 12px;
-            height: 100px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .canvas-wrapper canvas, .date-canvas-wrapper canvas {
-            width: 100%;
-            height: 100%;
-            touch-action: none;
-            cursor: crosshair;
-        }
-
-        .confirmed {
-            border: 2px solid #10b981 !important;
-            background: rgba(16, 185, 129, 0.05);
-        }
-
-        /* --- BOTONES --- */
-        .action-btn {
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            padding: 14px 24px;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: 0 4px 15px rgba(19, 48, 88, 0.2);
-            width: 100%;
-            max-width: 280px;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(19, 48, 88, 0.3); }
-        .action-btn.secondary {
-            background: white;
-            color: var(--text-color);
-            border: 1px solid #cbd5e1;
-            box-shadow: none;
-        }
-        .action-btn.secondary:hover { background: #f8fafc; border-color: #94a3b8; }
-        .action-btn:disabled {
-            background: #e2e8f0;
-            color: #94a3b8;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-            justify-content: center;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        /* --- PREVIEW --- */
-        #final-preview-container { max-width: 1000px; padding: 10px; }
-        .final-canvas-container {
-            width: 100%;
-            overflow: auto;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
-            background: #f8fafc;
-            margin-bottom: 20px;
-            max-height: 65vh;
         }
         
-        .queue-indicator {
-            background: rgba(19, 48, 88, 0.1);
-            color: var(--primary-color);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+        .btn {
+            padding: 14px 24px;
+            border-radius: 50px;
             font-weight: 600;
-            margin-bottom: 8px;
-            display: inline-block;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.1s;
+            flex: 1;
+            max-width: 300px;
+        }
+        .btn:active { transform: scale(0.98); }
+        
+        .btn-primary { background: var(--primary-color); color: white; box-shadow: 0 4px 10px rgba(19,48,88,0.2); }
+        .btn-secondary { background: white; color: var(--text-color); border: 1px solid #d1d5db; }
+        .btn-download { background: var(--secondary-color); color: white; width: 100%; box-shadow: 0 4px 10px rgba(255,87,51,0.3); }
+        .btn:disabled { background: #e5e7eb; color: #9ca3af; box-shadow: none; pointer-events: none; }
+
+        /* --- PREVIEW SECTION --- */
+        .preview-canvas-container {
+            width: 100%;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: var(--radius);
+            overflow: auto;
+            max-height: 60vh;
+            margin-bottom: 20px;
         }
 
-        .alert-box {
-            background-color: #fff8e1;
-            border-left: 4px solid #ffd700;
-            padding: 10px;
-            margin-bottom: 15px;
-            font-size: 0.85rem;
-            text-align: left;
+        .instruction-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 12px;
             border-radius: 4px;
-            color: #555;
-        }
-        .alert-box strong { color: #333; }
-
-        .footer-links {
-            text-align: center;
-            padding: 20px;
-            color: #475569; /* Gris oscuro para contraste */
+            margin-bottom: 20px;
             font-size: 0.85rem;
+            color: #1e3a8a;
+            text-align: left;
+        }
+
+        /* --- COMPLETION SCREEN --- */
+        #completion-view {
+            text-align: center;
+            padding: 40px 20px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .success-icon {
+            width: 80px; height: 80px;
+            background: #ecfdf5; color: #10b981;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; margin: 0 auto 20px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        /* --- FOOTER --- */
+        footer {
             margin-top: auto;
+            text-align: center;
+            padding: 30px 20px;
+            font-size: 0.8rem;
+            color: #6b7280;
+            border-top: 1px solid #f3f4f6;
         }
-        .footer-links a {
-            color: var(--primary-color);
-            text-decoration: none;
-            margin: 0 10px;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-        .footer-links a:hover { text-decoration: underline; color: var(--secondary-color); }
+        footer a { color: var(--primary-color); text-decoration: none; font-weight: 600; }
 
         .hidden { display: none !important; }
 
-        /* --- MEDIA QUERIES PARA MÓVIL --- */
-        @media (max-width: 768px) {
-            .wizard-card { 
-                padding: 20px; 
-                width: 100%; 
-                border-radius: 0; 
-                min-height: 100vh; 
-                display: flex; 
-                flex-direction: column; 
-                justify-content: center; 
-                box-shadow: none;
-            }
-            .canvas-wrapper { min-height: 280px; }
-            .date-split-container { flex-direction: column; gap: 15px; }
-            .date-box { width: 100% !important; flex: none !important; }
-            .date-canvas-wrapper { height: 120px; }
-            .wizard-header h2 { font-size: 1.3rem; }
+        /* Ajustes Desktop para que no se vea tan ancho */
+        @media (min-width: 768px) {
+            .doc-grid { grid-template-columns: repeat(3, 1fr); }
+            body { background-color: #f9fafb; }
+            .app-container { background: white; margin-top: 20px; margin-bottom: 20px; border-radius: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
         }
     </style>
 </head>
 <body>
 
-    <main class="app-container">
+    <div class="app-container">
         
-        <!-- WIZARD CARD -->
-        <div id="wizard-card" class="wizard-card">
-            
-            <div class="progress-container">
-                <div id="progress-bar" class="progress-bar"></div>
+        <!-- HEADER & PROGRESS -->
+        <div class="app-header" id="app-header">
+            <h2>Lulo Firmas</h2>
+            <div class="progress-bar-bg">
+                <div id="progress-bar" class="progress-bar-fill"></div>
             </div>
-
-            <!-- Paso 1: Selección Múltiple -->
-            <div id="step-1" class="step-content active">
-                <div class="wizard-header">
-                    <h2>Selección de Documentos</h2>
-                    <p>Selecciona los bancos a firmar (puedes elegir varios).</p>
-                </div>
-                <div id="document-options" class="doc-grid"></div>
-                <button id="step-1-next" class="action-btn" disabled>Continuar <i class="fas fa-arrow-right"></i></button>
-            </div>
-
-            <!-- Paso 2: Nombre -->
-            <div id="step-2" class="step-content">
-                <div class="wizard-header">
-                    <h2>Tu Nombre</h2>
-                    <p>Escribe tu nombre completo en el recuadro.</p>
-                </div>
-                <div class="canvas-wrapper">
-                    <canvas id="nameCanvasEl" data-logical-width="360" data-logical-height="150"></canvas>
-                </div>
-                <div class="btn-group">
-                    <button class="action-btn secondary" id="clearNameBtn">Borrar</button>
-                    <button class="action-btn" id="confirmNameBtn">Confirmar</button>
-                </div>
-            </div>
-
-            <!-- Paso 3: Cédula -->
-            <div id="step-3" class="step-content">
-                <div class="wizard-header">
-                    <h2>Tu Cédula</h2>
-                    <p>Escribe tu número de cédula.</p>
-                </div>
-                <div class="canvas-wrapper">
-                    <canvas id="cedulaCanvasEl" data-logical-width="360" data-logical-height="150"></canvas>
-                </div>
-                <div class="btn-group">
-                    <button class="action-btn secondary" id="clearCedulaBtn">Borrar</button>
-                    <button class="action-btn" id="confirmCedulaBtn">Confirmar</button>
-                </div>
-            </div>
-
-             <!-- Paso 4: Fecha (DIVIDIDA) -->
-             <div id="step-4" class="step-content">
-                <div class="wizard-header">
-                    <h2>La Fecha</h2>
-                    <p>Escribe los datos por separado para ajustar el formato "1 de Enero de 2025".</p>
-                </div>
-                
-                <div class="date-split-container">
-                    <div class="date-box" style="flex: 0.8;">
-                        <label>Día (Ej: 15)</label>
-                        <div class="date-canvas-wrapper">
-                            <canvas id="dayCanvasEl" data-logical-width="100" data-logical-height="100"></canvas>
-                        </div>
-                    </div>
-                    <div class="date-box" style="flex: 2;">
-                        <label>Mes (Ej: Enero)</label>
-                        <div class="date-canvas-wrapper">
-                            <canvas id="monthCanvasEl" data-logical-width="250" data-logical-height="100"></canvas>
-                        </div>
-                    </div>
-                    <div class="date-box" style="flex: 1.2;">
-                        <label>Año (Ej: 2025)</label>
-                        <div class="date-canvas-wrapper">
-                            <canvas id="yearCanvasEl" data-logical-width="150" data-logical-height="100"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="btn-group">
-                    <button class="action-btn secondary" id="clearDateBtn">Borrar Todo</button>
-                    <button class="action-btn" id="confirmDateBtn">Confirmar</button>
-                </div>
-            </div>
-
-            <!-- Paso 5: Firma -->
-            <div id="step-5" class="step-content">
-                <div class="wizard-header">
-                    <h2>Tu Firma</h2>
-                    <p>Dibuja tu firma tal cual aparece en tu cédula.</p>
-                </div>
-                <div class="canvas-wrapper">
-                    <canvas id="signaturePadEl" data-logical-width="360" data-logical-height="200"></canvas>
-                </div>
-                <div class="btn-group">
-                    <button class="action-btn secondary" id="clearSignatureBtn">Borrar</button>
-                    <button class="action-btn" id="confirmSignatureBtn">Finalizar</button>
-                </div>
-            </div>
-
         </div>
 
-        <!-- FINAL PREVIEW -->
-        <div id="final-preview-card" class="wizard-card hidden" style="max-width: 1000px; height: auto; min-height: auto;">
-            <div class="wizard-header">
-                <div id="queue-status" class="queue-indicator">Documento 1 de X</div>
-                <h2 id="preview-title">Revisando Documento</h2>
-                
-                <div class="alert-box">
-                    <strong> Instrucciones:</strong>
-                    <ul style="margin: 5px 0 0 20px; line-height: 1.4;">
-                        <li>Arrastra el <strong>Día, Mes y Año</strong> a los espacios vacíos (___ de ___ de ___).</li>
-                        <li><strong>¿No hay campo de fecha?</strong> Arrastra la fecha y colócala <strong>debajo de tu cédula</strong>.</li>
-                        <li>Usa el cuadrado azul en la esquina de cada elemento para cambiar su tamaño.</li>
-                    </ul>
-                </div>
+        <!-- --- PASOS --- -->
+
+        <!-- Paso 1: Selección -->
+        <div id="step-1" class="step-content active">
+            <div style="text-align:center; margin-bottom:10px;">
+                <p>Selecciona los bancos a firmar hoy:</p>
+            </div>
+            <div id="document-options" class="doc-grid"></div>
+            <div class="btn-container">
+                <button id="step-1-next" class="btn btn-primary" disabled>
+                    Continuar <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Paso 2: Nombre -->
+        <div id="step-2" class="step-content">
+            <div style="text-align:center;"><p>Escribe tu <strong>Nombre Completo</strong>:</p></div>
+            <div class="canvas-wrapper">
+                <div class="check-icon"><i class="fas fa-check"></i></div>
+                <canvas id="nameCanvasEl" data-logical-width="360" data-logical-height="150"></canvas>
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-secondary" id="clearNameBtn">Borrar</button>
+                <button class="btn btn-primary" id="confirmNameBtn">Confirmar</button>
+            </div>
+        </div>
+
+        <!-- Paso 3: Cédula -->
+        <div id="step-3" class="step-content">
+            <div style="text-align:center;"><p>Escribe tu <strong>Cédula</strong>:</p></div>
+            <div class="canvas-wrapper">
+                <div class="check-icon"><i class="fas fa-check"></i></div>
+                <canvas id="cedulaCanvasEl" data-logical-width="360" data-logical-height="150"></canvas>
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-secondary" id="clearCedulaBtn">Borrar</button>
+                <button class="btn btn-primary" id="confirmCedulaBtn">Confirmar</button>
+            </div>
+        </div>
+
+         <!-- Paso 4: Fecha Dividida -->
+         <div id="step-4" class="step-content">
+            <div style="text-align:center; margin-bottom:10px;">
+                <p>Escribe la fecha por separado para ajustarla:</p>
             </div>
             
-            <div class="final-canvas-container">
+            <div class="date-split-row">
+                <div class="date-col" style="flex: 0.8;">
+                    <span class="canvas-label">Día</span>
+                    <div class="canvas-wrapper date-canvas-sm">
+                        <div class="check-icon"><i class="fas fa-check"></i></div>
+                        <canvas id="dayCanvasEl" data-logical-width="100" data-logical-height="100"></canvas>
+                    </div>
+                </div>
+                <div class="date-col" style="flex: 1.5;">
+                    <span class="canvas-label">Mes</span>
+                    <div class="canvas-wrapper date-canvas-sm">
+                        <div class="check-icon"><i class="fas fa-check"></i></div>
+                        <canvas id="monthCanvasEl" data-logical-width="200" data-logical-height="100"></canvas>
+                    </div>
+                </div>
+                <div class="date-col" style="flex: 1.2;">
+                    <span class="canvas-label">Año</span>
+                    <div class="canvas-wrapper date-canvas-sm">
+                        <div class="check-icon"><i class="fas fa-check"></i></div>
+                        <canvas id="yearCanvasEl" data-logical-width="150" data-logical-height="100"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-container">
+                <button class="btn btn-secondary" id="clearDateBtn">Borrar</button>
+                <button class="btn btn-primary" id="confirmDateBtn">Confirmar</button>
+            </div>
+        </div>
+
+        <!-- Paso 5: Firma -->
+        <div id="step-5" class="step-content">
+            <div style="text-align:center;"><p>Dibuja tu <strong>Firma</strong> (igual a la cédula):</p></div>
+            <div class="canvas-wrapper" style="min-height:220px;">
+                <div class="check-icon"><i class="fas fa-check"></i></div>
+                <canvas id="signaturePadEl" data-logical-width="360" data-logical-height="200"></canvas>
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-secondary" id="clearSignatureBtn">Borrar</button>
+                <button class="btn btn-primary" id="confirmSignatureBtn">Finalizar</button>
+            </div>
+        </div>
+
+        <!-- VISTA DE REVISIÓN Y DESCARGA -->
+        <div id="final-preview-view" class="step-content hidden">
+            <div style="text-align:center; margin-bottom:15px;">
+                <span id="queue-status" style="background:#e0f2fe; color:#0369a1; padding:4px 12px; border-radius:12px; font-size:0.8rem; font-weight:600;">Doc 1/1</span>
+                <h3 id="preview-title" style="margin-top:10px; color:var(--text-color);">Revisando...</h3>
+            </div>
+
+            <div class="instruction-box">
+                <i class="fas fa-info-circle"></i> <strong>Instrucciones:</strong>
+                <ul style="margin: 5px 0 0 20px;">
+                    <li>Arrastra <strong>Día, Mes y Año</strong> a sus líneas.</li>
+                    <li>Si no hay fecha, ponla <strong>debajo de la cédula</strong>.</li>
+                    <li>Usa el cuadro azul en la esquina para cambiar tamaño.</li>
+                </ul>
+            </div>
+            
+            <div class="preview-canvas-container">
                 <canvas id="mainDocumentCanvas"></canvas>
             </div>
 
-            <div class="btn-group">
-                <button class="action-btn" id="exportDocumentBtn" style="background: var(--gradient-secondary);">
-                    <i class="fas fa-download"></i> Descargar
+            <button class="btn btn-download" id="exportDocumentBtn">
+                <i class="fas fa-download"></i> Descargar Documento
+            </button>
+            
+            <div class="btn-container">
+                <button class="btn btn-primary" id="nextDocBtn" style="display:none; width:100%;">
+                    Siguiente Documento <i class="fas fa-arrow-right"></i>
                 </button>
                 
-                <button class="action-btn" id="nextDocBtn" style="background: var(--gradient-primary); display:none;">
-                    Siguiente <i class="fas fa-arrow-right"></i>
-                </button>
-                
-                <button class="action-btn secondary" id="finishAllBtn" style="display:none;" onclick="location.reload()">
-                    <i class="fas fa-check"></i> Terminar
+                <button class="btn btn-secondary" id="finishAllBtn" style="display:none; width:100%;">
+                    Terminar Proceso
                 </button>
             </div>
         </div>
 
-    </main>
+        <!-- PANTALLA DE COMPLETADO -->
+        <div id="completion-view" class="hidden">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h2>¡Proceso Terminado!</h2>
+            <p style="font-size:1rem; margin-bottom:30px;">
+                Has firmado todos los documentos correctamente. <br><br>
+                <strong>Por favor, envíale los archivos descargados a tu asesor asignado por WhatsApp o Email.</strong>
+            </p>
+            <button class="btn btn-primary" onclick="location.reload()">
+                <i class="fas fa-redo"></i> Empezar otra vez
+            </button>
+        </div>
 
-    <footer class="footer-links">
-        <a href="https://lulopanama.com/legal/terminos" target="_blank">Términos y Condiciones</a> | 
-        <a href="https://lulopanama.com/legal/privacidad" target="_blank">Política de Privacidad</a>
-        <br><br>
-        &copy; 2024 Lulo Panamá.
-    </footer>
+        <footer>
+            <a href="https://lulopanama.com/legal/terminos" target="_blank">Términos</a> | 
+            <a href="https://lulopanama.com/legal/privacidad" target="_blank">Privacidad</a>
+            <br><br>
+            &copy; <span id="year"></span> Lulo Panamá.
+        </footer>
 
-    <!-- LÓGICA JAVASCRIPT -->
+    </div>
+
+    <!-- JAVASCRIPT -->
     <script>
+        // Actualizar año footer automáticamente
+        document.getElementById('year').textContent = new Date().getFullYear();
+
         const dpr = window.devicePixelRatio || 1;
-        const RESIZE_HANDLE_LOGICAL_SIZE = 25; 
-        const RESIZE_HANDLE_CLICK_EXTENSION = 15;
+        const RESIZE_HANDLE_SIZE = 25; 
         const MIN_ELEMENT_DIM = 20;
 
         const documentConfigurations = [
@@ -510,8 +451,7 @@
             documentSettings: {}, activeElementId: null,
             dragState: { isDragging: false, elementId: null, offsetX: 0, offsetY: 0 },
             resizeState: { isResizing: false, elementId: null, startX: 0, startY: 0, initialElement: {} },
-            backgroundImage: null,
-            isBlinking: false // Nuevo estado para la animación
+            backgroundImage: null, isBlinking: false
         };
 
         const nameCanvasEl = document.getElementById('nameCanvasEl');
@@ -534,7 +474,7 @@
             year: {isDrawing: false, canvasElement: yearCanvasEl},
         };
 
-        // --- FUNCIONES CORE ---
+        // --- NAVEGACIÓN ---
         function updateProgressBar() {
             const percentage = ((appState.currentStep - 1) / appState.totalSteps) * 100;
             document.getElementById('progress-bar').style.width = percentage + '%';
@@ -548,7 +488,7 @@
                 currentStepEl.classList.add('active');
                 appState.currentStep = stepNumber;
                 updateProgressBar();
-
+                // Inicializar Canvas con delay
                 setTimeout(() => {
                     if(stepNumber === 2) setupDrawingCanvas(nameCanvasEl, 'name');
                     if(stepNumber === 3) setupDrawingCanvas(cedulaCanvasEl, 'cedula');
@@ -558,17 +498,23 @@
                         setupDrawingCanvas(yearCanvasEl, 'year');
                     }
                     if(stepNumber === 5) setupDrawingCanvas(signaturePadEl, 'signature');
-                }, 150);
+                }, 100);
             } else if (stepNumber > 5) {
                 startReviewProcess();
             }
         }
 
         function startReviewProcess() {
-            document.getElementById('wizard-card').classList.add('hidden');
-            document.getElementById('final-preview-card').classList.remove('hidden');
+            // Ocultar header de progreso para la vista final
+            document.getElementById('app-header').style.display = 'none';
+            document.getElementById('final-preview-view').classList.add('active');
             appState.currentQueueIndex = 0;
             loadNextInQueue();
+        }
+
+        function finishProcess() {
+            document.getElementById('final-preview-view').classList.remove('active');
+            document.getElementById('completion-view').classList.remove('hidden');
         }
 
         function loadNextInQueue() {
@@ -601,11 +547,13 @@
             loadNextInQueue();
         });
 
-        // --- DRAWING ENGINE ---
+        document.getElementById('finishAllBtn').addEventListener('click', finishProcess);
+
+        // --- CANVAS LOGIC ---
         function configureDrawingContext(ctx, width, height, clear = true) {
             ctx.resetTransform();
             ctx.scale(dpr, dpr);
-            ctx.strokeStyle = '#000000';
+            ctx.strokeStyle = '#111827';
             ctx.lineWidth = 3; 
             ctx.lineCap = 'round'; ctx.lineJoin = 'round';
             if (clear) ctx.clearRect(0, 0, width, height);
@@ -615,11 +563,11 @@
             const parent = canvasEl.parentElement;
             const rect = parent.getBoundingClientRect();
             const logicalWidth = rect.width;
-            
             let logicalHeight = parseInt(canvasEl.dataset.logicalHeight) || 150;
-            if(window.innerWidth < 768 && stateKey !== 'day' && stateKey !== 'year') {
-                if (stateKey === 'month') logicalHeight = 120;
-                else logicalHeight = 250; 
+            
+            // Altura dinámica móvil para mayor comodidad
+            if(window.innerWidth < 768 && stateKey !== 'day' && stateKey !== 'year' && stateKey !== 'month') {
+                logicalHeight = 220; 
             }
 
             canvasEl.style.width = '100%';
@@ -702,7 +650,7 @@
             tempImage.onload = () => {
                 appState[imageCacheKey] = tempImage;
                 canvasEl.parentElement.classList.add('confirmed');
-                setTimeout(() => { showStep(appState.currentStep + 1); }, 300);
+                setTimeout(() => { showStep(appState.currentStep + 1); }, 400);
             }
             tempImage.src = ctx.canvas.toDataURL('image/png');
         }
@@ -715,7 +663,7 @@
                     dayCanvasEl.parentElement.classList.add('confirmed');
                     monthCanvasEl.parentElement.classList.add('confirmed');
                     yearCanvasEl.parentElement.classList.add('confirmed');
-                    setTimeout(() => { showStep(appState.currentStep + 1); }, 300);
+                    setTimeout(() => { showStep(appState.currentStep + 1); }, 400);
                 }
             };
             const imgDay = new Image(); imgDay.onload = () => { appState.dayImageCache = imgDay; checkNext(); };
@@ -730,48 +678,38 @@
             clearPad(dayCtx, dayCanvasEl); clearPad(monthCtx, monthCanvasEl); clearPad(yearCtx, yearCanvasEl);
         }
 
+        // --- INIT & LOGIC ---
+
         function initDocumentGrid() {
             const container = document.getElementById('document-options');
             const nextBtn = document.getElementById('step-1-next');
             
-            // 1. Manejo de Parámetros URL (?d=bac,banesco)
             const params = new URLSearchParams(window.location.search);
-            const dParam = params.get('d'); // devuelve "bac,banesco"
+            const dParam = params.get('d');
             const preselectedCodes = dParam ? dParam.split(',').map(s => s.trim().toLowerCase()) : [];
 
             documentConfigurations.forEach(doc => {
                 const btn = document.createElement('div');
                 btn.className = 'doc-btn';
                 btn.innerHTML = `<i class="fas ${doc.icon || 'fa-file-alt'}"></i><span>${doc.displayName}</span>`;
-                
-                // Función toggle
                 btn.onclick = () => {
                     const index = appState.selectedDocsQueue.findIndex(d => d.path === doc.path);
                     if (index === -1) { appState.selectedDocsQueue.push(doc); btn.classList.add('selected'); } 
                     else { appState.selectedDocsQueue.splice(index, 1); btn.classList.remove('selected'); }
                     nextBtn.disabled = appState.selectedDocsQueue.length === 0;
                 };
-
-                // Preselección automática
                 if(preselectedCodes.includes(doc.shortName.toLowerCase())) {
                     appState.selectedDocsQueue.push(doc);
                     btn.classList.add('selected');
                 }
-
                 container.appendChild(btn);
             });
-
-            // Si hay documentos preseleccionados, habilitar el botón
-            if(appState.selectedDocsQueue.length > 0) {
-                nextBtn.disabled = false;
-            }
-
+            if(appState.selectedDocsQueue.length > 0) nextBtn.disabled = false;
             nextBtn.onclick = () => showStep(2);
         }
 
         function initializeDefaultDocumentSettings() {
-            const elW = 180; const elH = 45;
-            const sigW = 190; const sigH = 70;
+            const elW = 180; const elH = 45; const sigW = 190; const sigH = 70;
             const dayW = 40; const monthW = 100; const yearW = 50;
             
             documentConfigurations.forEach(docConfig => {
@@ -815,14 +753,9 @@
                 configureDrawingContext(mainCtx, displayWidth, displayHeight, false);
                 mainCtx.imageSmoothingEnabled = true;
                 
-                // --- INICIO ANIMACIÓN PARPADEO ---
                 appState.isBlinking = true;
                 redrawMainCanvas();
-                
-                setTimeout(() => {
-                    appState.isBlinking = false;
-                    redrawMainCanvas();
-                }, 1500); // 1.5 segundos de parpadeo
+                setTimeout(() => { appState.isBlinking = false; redrawMainCanvas(); }, 1500);
             };
             appState.backgroundImage.src = docUrl;
         }
@@ -849,18 +782,12 @@
                 const imageToDraw = appState[imgKey];
                 if (imageToDraw) {
                     mainCtx.drawImage(imageToDraw, element.x, element.y, element.width, element.height);
-                    
-                    // Lógica para dibujar bordes (Selección O Animación)
                     const showBorder = (appState.activeElementId === element.id && !isExporting) || (appState.isBlinking && !isExporting);
-                    
                     if (showBorder) {
-                        mainCtx.strokeStyle = '#ff5733'; // Naranja Lulo
-                        mainCtx.lineWidth = 2;
+                        mainCtx.strokeStyle = '#ff5733'; mainCtx.lineWidth = 2;
                         mainCtx.strokeRect(element.x, element.y, element.width, element.height);
-                        
-                        // Handle solo si está seleccionado (no durante parpadeo general)
                         if (appState.activeElementId === element.id) {
-                            const handleSize = RESIZE_HANDLE_LOGICAL_SIZE;
+                            const handleSize = RESIZE_HANDLE_SIZE;
                             mainCtx.fillStyle = '#ff5733';
                             mainCtx.fillRect(element.x + element.width - handleSize/2, element.y + element.height - handleSize/2, handleSize, handleSize);
                         }
@@ -872,7 +799,7 @@
         function getElementById(docUrl, elementId) { return appState.documentSettings[docUrl].elements.find(el => el.id === elementId); }
         function isPointInElement(x, y, el) { return x >= el.x && x <= el.x + el.width && y >= el.y && y <= el.y + el.height; }
         function isPointInResizeHandle(x, y, el) {
-            const padding = RESIZE_HANDLE_CLICK_EXTENSION;
+            const padding = 15;
             const right = el.x + el.width; const bottom = el.y + el.height;
             return x >= right - padding && x <= right + padding + 15 && y >= bottom - padding && y <= bottom + padding + 15;
         }
@@ -890,7 +817,6 @@
             const coords = getCanvasCoords(e);
             const settings = appState.documentSettings[appState.currentDocumentUrl];
             if(!settings) return;
-
             let clickedResize = false; let foundId = null;
             if(appState.activeElementId) {
                 const activeEl = getElementById(appState.currentDocumentUrl, appState.activeElementId);
@@ -939,8 +865,12 @@
             appState.activeElementId = null; 
             redrawMainCanvas(true);
             const link = document.createElement('a');
-            const currentDocName = appState.selectedDocsQueue[appState.currentQueueIndex].shortName;
-            link.download = `APC_${currentDocName}_Firmado.jpg`;
+            const currentDocShort = appState.selectedDocsQueue[appState.currentQueueIndex].shortName;
+            
+            // NOMBRE DE ARCHIVO: bac-12345-firmado.jpg
+            const randomNum = Math.floor(Math.random() * 90000) + 10000;
+            link.download = `${currentDocShort}-${randomNum}-firmado.jpg`;
+            
             link.href = mainCanvas.toDataURL('image/jpeg', 0.9);
             document.body.appendChild(link);
             link.click();
@@ -957,13 +887,10 @@
 
             document.getElementById('confirmNameBtn').onclick = () => confirmStep(nameCtx, 'nameImageCache', nameCanvasEl);
             document.getElementById('clearNameBtn').onclick = () => clearPad(nameCtx, nameCanvasEl);
-
             document.getElementById('confirmCedulaBtn').onclick = () => confirmStep(cedulaCtx, 'cedulaImageCache', cedulaCanvasEl);
             document.getElementById('clearCedulaBtn').onclick = () => clearPad(cedulaCtx, cedulaCanvasEl);
-
             document.getElementById('confirmDateBtn').onclick = confirmDateStep;
             document.getElementById('clearDateBtn').onclick = clearDateStep;
-
             document.getElementById('confirmSignatureBtn').onclick = () => confirmStep(sigCtx, 'signatureImageCache', signaturePadEl);
             document.getElementById('clearSignatureBtn').onclick = () => clearPad(sigCtx, signaturePadEl);
 
