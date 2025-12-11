@@ -7,28 +7,23 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <meta name="robots" content="noindex, nofollow">
 
     <style>
-        /* --- TUS ESTILOS PROPORCIONADOS --- */
+        /* --- ESTILOS GLOBALES --- */
         :root {
             --primary-color: #133058;
             --secondary-color: #ff5733;
             --accent-color: #ffd700;
             --text-color: #1a1a1a;
-            --light-text: #fff;
             --background-color: #fafbfc;
-            --card-background: #ffffff;
-            --border-radius: 24px; /* Ajustado para móviles */
+            --border-radius: 24px;
             --transition: all 0.3s ease;
             --gradient-primary: linear-gradient(135deg, #133058 0%, #1e4a77 100%);
             --gradient-secondary: linear-gradient(135deg, #ff5733 0%, #ff7849 100%);
-            --gradient-accent: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            --glass-bg: rgba(255, 255, 255, 0.15);
-            --glass-border: rgba(255, 255, 255, 0.25);
-            --liquid-glass: rgba(255, 255, 255, 0.85); /* Más opaco para legibilidad */
+            --liquid-glass: rgba(255, 255, 255, 0.90);
             --liquid-glass-border: rgba(255, 255, 255, 0.5);
-            --liquid-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
             --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
 
@@ -47,79 +42,17 @@
             overflow-x: hidden;
         }
 
-        /* Header Style */
-        .header-container {
-            width: 95%;
-            max-width: 1200px;
-            margin: 20px auto 0;
-            border-radius: 50px;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--liquid-glass-border);
-            box-shadow: var(--liquid-glass-shadow);
-            position: relative;
-            z-index: 100;
-        }
-
-        .logo {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        /* Christmas Lights */
-        .christmas-lights-container {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            height: 40px;
-            z-index: -1;
-            pointer-events: none;
-            display: flex;
-            justify-content: center;
-            padding: 0 40px; 
-            margin-top: -6px; 
-        }
-        .christmas-lights-container li {
-            list-style: none; flex: 1; min-width: 50px; max-width: 70px; height: 20px;
-            border-bottom: 2px solid #222; border-radius: 50%; position: relative; margin: 0 -10px;
-            animation: swing 3s infinite ease-in-out;
-        }
-        .christmas-lights-container li::before {
-            content: ''; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%);
-            width: 12px; height: 12px; border-radius: 50%; background: #fff;
-            animation: glow 3s infinite alternate;
-        }
-        .christmas-lights-container li::after {
-            content: ''; position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%);
-            width: 8px; height: 6px; background: #222; border-radius: 2px;
-        }
-        .christmas-lights-container li:nth-child(4n+1)::before { background-color: #ff0033; box-shadow: 0 2px 10px 2px rgba(255, 0, 51, 0.5); }
-        .christmas-lights-container li:nth-child(4n+2)::before { background-color: #abff00; box-shadow: 0 2px 10px 2px rgba(171, 255, 0, 0.5); animation-delay: 0.5s; }
-        .christmas-lights-container li:nth-child(4n+3)::before { background-color: #00ffbf; box-shadow: 0 2px 10px 2px rgba(0, 255, 191, 0.5); animation-delay: 1s; }
-        .christmas-lights-container li:nth-child(4n+4)::before { background-color: #ccff00; box-shadow: 0 2px 10px 2px rgba(204, 255, 0, 0.5); animation-delay: 1.5s; }
-        @keyframes swing { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
-        @keyframes glow { 0% { opacity: 0.7; } 100% { opacity: 1; } }
-
-        /* Main App Container */
         .app-container {
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 40px 20px;
+            padding: 20px 10px;
             position: relative;
             z-index: 10;
         }
 
-        /* Wizard Card (The Modal) */
+        /* --- WIZARD CARD --- */
         .wizard-card {
             background: var(--liquid-glass);
             backdrop-filter: blur(30px);
@@ -127,7 +60,7 @@
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-medium);
             width: 100%;
-            max-width: 600px;
+            max-width: 650px;
             padding: 40px;
             text-align: center;
             position: relative;
@@ -138,19 +71,22 @@
         .wizard-header h2 {
             color: var(--primary-color);
             margin-bottom: 10px;
+            font-size: 1.5rem;
         }
         .wizard-header p {
-            color: #666;
-            margin-bottom: 30px;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            font-size: 0.95rem;
         }
 
-        /* Progress Bar */
+        /* --- PROGRESS BAR --- */
         .progress-container {
             width: 100%;
             background: rgba(0,0,0,0.1);
             height: 6px;
             border-radius: 10px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             overflow: hidden;
         }
         .progress-bar {
@@ -160,48 +96,55 @@
             transition: width 0.5s ease;
         }
 
-        /* Steps Logic */
+        /* --- STEPS --- */
         .step-content {
-            display: none; /* Hidden by default */
-            animation: fadeIn 0.5s ease;
+            display: none;
+            animation: fadeIn 0.4s ease;
+            width: 100%;
         }
         .step-content.active {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Document Selection Grid */
+        /* --- DOC GRID --- */
         .doc-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
             width: 100%;
+            margin-bottom: 20px;
         }
         .doc-btn {
             background: white;
             border: 2px solid transparent;
             border-radius: 15px;
-            padding: 20px 10px;
+            padding: 15px 5px;
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             font-weight: 600;
             color: var(--primary-color);
             transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 90px;
+            font-size: 0.9rem;
         }
-        .doc-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-        }
+        .doc-btn i { font-size: 1.4rem; color: #ccc; }
         .doc-btn.selected {
             border-color: var(--secondary-color);
             background: #fff5f2;
-            transform: scale(1.05);
+            transform: scale(1.02);
         }
+        .doc-btn.selected i { color: var(--secondary-color); }
 
-        /* Canvas Areas inside Wizard */
+        /* --- CANVAS AREAS --- */
         .canvas-wrapper {
             background: white;
             border: 2px dashed #ccc;
@@ -212,40 +155,54 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 150px;
             overflow: hidden;
-        }
-        .canvas-wrapper canvas {
-            max-width: 100%;
-            cursor: crosshair;
-            touch-action: none;
-        }
-        .canvas-wrapper.confirmed {
-            border: 2px solid #10b981;
-            background: rgba(16, 185, 129, 0.05);
-        }
-        .canvas-wrapper.confirmed::after {
-            content: '✓';
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #10b981;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
+            min-height: 160px; /* Base height Desktop */
         }
 
-        /* Buttons */
+        /* --- FECHA DIVIDIDA --- */
+        .date-split-container {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            justify-content: space-between;
+        }
+        .date-box {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .date-box label {
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #666;
+        }
+        .date-canvas-wrapper {
+            background: white;
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            height: 100px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .canvas-wrapper canvas, .date-canvas-wrapper canvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            cursor: crosshair;
+        }
+
+        .confirmed {
+            border: 2px solid #10b981 !important;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        /* --- BOTONES --- */
         .action-btn {
             background: var(--gradient-primary);
             color: white;
             border: none;
-            padding: 15px 30px;
+            padding: 14px 24px;
             border-radius: 50px;
             font-size: 1rem;
             font-weight: 600;
@@ -253,42 +210,37 @@
             transition: var(--transition);
             box-shadow: 0 4px 15px rgba(19, 48, 88, 0.3);
             width: 100%;
-            max-width: 300px;
+            max-width: 280px;
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
-        }
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(19, 48, 88, 0.4);
+            gap: 8px;
         }
         .action-btn.secondary {
             background: white;
             color: var(--text-color);
             border: 1px solid #ccc;
+            box-shadow: none;
         }
         .action-btn:disabled {
             background: #ccc;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
+            opacity: 0.7;
         }
 
         .btn-group {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             width: 100%;
             justify-content: center;
-            margin-top: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
         }
 
-        /* Final Preview Canvas */
-        #final-preview-container {
-            /* This one needs to be big */
-            max-width: 1000px;
-            padding: 20px;
-        }
+        /* --- PREVIEW --- */
+        #final-preview-container { max-width: 1000px; padding: 10px; }
         .final-canvas-container {
             width: 100%;
             overflow: auto;
@@ -296,39 +248,68 @@
             box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
             background: #eee;
             margin-bottom: 20px;
-            max-height: 70vh;
+            max-height: 65vh;
         }
-        #mainDocumentCanvas {
-            display: block;
-            margin: 0 auto;
-            background: white;
+        
+        .queue-indicator {
+            background: rgba(19, 48, 88, 0.1);
+            color: var(--primary-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: inline-block;
         }
 
-        /* Helpers */
-        .helper-text {
-            font-size: 0.9rem;
-            color: #666;
-            margin-top: 5px;
+        .footer-links {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.8rem;
+            margin-top: auto;
         }
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: 600;
+        }
+        .footer-links a:hover { text-decoration: underline; color: var(--accent-color); }
+
         .hidden { display: none !important; }
 
+        /* --- MEDIA QUERIES PARA MÓVIL --- */
         @media (max-width: 768px) {
-            .wizard-card { padding: 25px; width: 95%; }
-            .header-container { width: 90%; flex-direction: column; gap: 10px; }
-            .logo { font-size: 1.5rem; }
+            .wizard-card { 
+                padding: 20px; 
+                width: 100%; 
+                border-radius: 0; 
+                min-height: 100vh; 
+                display: flex; 
+                flex-direction: column; 
+                justify-content: center; 
+            }
+            .canvas-wrapper {
+                /* ÁREA AGRANDADA PARA MÓVIL */
+                min-height: 280px; 
+            }
+            
+            /* Ajuste de Fechas en Móvil */
+            .date-split-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .date-box { width: 100% !important; flex: none !important; }
+            .date-canvas-wrapper {
+                height: 120px; /* Altura cómoda para escribir fecha con dedo */
+            }
+
+            .wizard-header h2 { font-size: 1.3rem; }
         }
     </style>
 </head>
 <body>
-
-    <!-- Header con Luces -->
-    <header class="header-container">
-        <a href="#" class="logo">Lulo <span style="color:var(--secondary-color)">Panamá</span></a>
-        <ul class="christmas-lights-container">
-            <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
-            <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
-        </ul>
-    </header>
 
     <main class="app-container">
         
@@ -339,31 +320,28 @@
                 <div id="progress-bar" class="progress-bar"></div>
             </div>
 
-            <!-- Paso 1: Selección de Documento -->
+            <!-- Paso 1: Selección Múltiple -->
             <div id="step-1" class="step-content active">
                 <div class="wizard-header">
-                    <h2>Vamos a empezar</h2>
-                    <p>¿Qué documento necesitas firmar hoy?</p>
+                    <h2>Selección de Documentos</h2>
+                    <p>Selecciona los bancos a firmar (puedes elegir varios).</p>
                 </div>
-                <div id="document-options" class="doc-grid">
-                    <!-- Botones generados por JS -->
-                </div>
-                <!-- El botón de siguiente aparece cuando se selecciona uno -->
+                <div id="document-options" class="doc-grid"></div>
                 <button id="step-1-next" class="action-btn" disabled>Continuar <i class="fas fa-arrow-right"></i></button>
             </div>
 
             <!-- Paso 2: Nombre -->
             <div id="step-2" class="step-content">
                 <div class="wizard-header">
-                    <h2>Escribe tu Nombre</h2>
-                    <p>Usa tu dedo o mouse para escribir tu nombre completo.</p>
+                    <h2>Tu Nombre</h2>
+                    <p>Escribe tu nombre completo en el recuadro.</p>
                 </div>
                 <div class="canvas-wrapper">
-                    <canvas id="nameCanvasEl" data-logical-width="360" data-logical-height="100"></canvas>
+                    <canvas id="nameCanvasEl" data-logical-width="360" data-logical-height="150"></canvas>
                 </div>
                 <div class="btn-group">
                     <button class="action-btn secondary" id="clearNameBtn">Borrar</button>
-                    <button class="action-btn" id="confirmNameBtn">Confirmar y Seguir</button>
+                    <button class="action-btn" id="confirmNameBtn">Confirmar</button>
                 </div>
             </div>
 
@@ -371,29 +349,52 @@
             <div id="step-3" class="step-content">
                 <div class="wizard-header">
                     <h2>Tu Cédula</h2>
-                    <p>Escribe tu número de cédula manuscrito.</p>
+                    <p>Escribe tu número de cédula.</p>
                 </div>
                 <div class="canvas-wrapper">
-                    <canvas id="cedulaCanvasEl" data-logical-width="360" data-logical-height="100"></canvas>
+                    <canvas id="cedulaCanvasEl" data-logical-width="360" data-logical-height="150"></canvas>
                 </div>
                 <div class="btn-group">
                     <button class="action-btn secondary" id="clearCedulaBtn">Borrar</button>
-                    <button class="action-btn" id="confirmCedulaBtn">Confirmar y Seguir</button>
+                    <button class="action-btn" id="confirmCedulaBtn">Confirmar</button>
                 </div>
             </div>
 
-             <!-- Paso 4: Fecha -->
+             <!-- Paso 4: Fecha (DIVIDIDA) -->
              <div id="step-4" class="step-content">
                 <div class="wizard-header">
                     <h2>La Fecha</h2>
-                    <p>Escribe la fecha de hoy.</p>
+                    <p>Escribe los datos por separado para ajustar el formato "1 de Enero de 2025".</p>
                 </div>
-                <div class="canvas-wrapper">
-                    <canvas id="dateCanvasEl" data-logical-width="360" data-logical-height="80"></canvas>
+                
+                <div class="date-split-container">
+                    <!-- Día -->
+                    <div class="date-box" style="flex: 0.8;">
+                        <label>Día (Ej: 15)</label>
+                        <div class="date-canvas-wrapper">
+                            <canvas id="dayCanvasEl" data-logical-width="100" data-logical-height="100"></canvas>
+                        </div>
+                    </div>
+                    <!-- Mes: MÁS ANCHO PARA ESCRIBIR TEXTO -->
+                    <div class="date-box" style="flex: 2;">
+                        <label>Mes (Ej: Enero)</label>
+                        <div class="date-canvas-wrapper">
+                            <!-- logical width aumentado -->
+                            <canvas id="monthCanvasEl" data-logical-width="250" data-logical-height="100"></canvas>
+                        </div>
+                    </div>
+                    <!-- Año -->
+                    <div class="date-box" style="flex: 1.2;">
+                        <label>Año (Ej: 2025)</label>
+                        <div class="date-canvas-wrapper">
+                            <canvas id="yearCanvasEl" data-logical-width="150" data-logical-height="100"></canvas>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="btn-group">
-                    <button class="action-btn secondary" id="clearDateBtn">Borrar</button>
-                    <button class="action-btn" id="confirmDateBtn">Confirmar y Seguir</button>
+                    <button class="action-btn secondary" id="clearDateBtn">Borrar Todo</button>
+                    <button class="action-btn" id="confirmDateBtn">Confirmar</button>
                 </div>
             </div>
 
@@ -404,7 +405,7 @@
                     <p>Dibuja tu firma tal cual aparece en tu cédula.</p>
                 </div>
                 <div class="canvas-wrapper">
-                    <canvas id="signaturePadEl" data-logical-width="360" data-logical-height="120"></canvas>
+                    <canvas id="signaturePadEl" data-logical-width="360" data-logical-height="200"></canvas>
                 </div>
                 <div class="btn-group">
                     <button class="action-btn secondary" id="clearSignatureBtn">Borrar</button>
@@ -414,11 +415,15 @@
 
         </div>
 
-        <!-- FINAL PREVIEW (Hidden initially, replaces wizard) -->
-        <div id="final-preview-card" class="wizard-card hidden" style="max-width: 1000px;">
+        <!-- FINAL PREVIEW -->
+        <div id="final-preview-card" class="wizard-card hidden" style="max-width: 1000px; height: auto; min-height: auto;">
             <div class="wizard-header">
-                <h2>¡Todo Listo!</h2>
-                <p>Arrastra tus datos a la posición correcta sobre el documento. Si necesitas cambiar el tamaño, selecciona el elemento y arrastra la esquina.</p>
+                <div id="queue-status" class="queue-indicator">Documento 1 de X</div>
+                <h2 id="preview-title">Revisando Documento</h2>
+                <p style="font-size: 0.9rem;">
+                    Arrastra el <strong>Día</strong>, <strong>Mes</strong> y <strong>Año</strong> a los espacios vacíos del documento (<small>___ de ___ de ___</small>).
+                    <br>Usa la esquina azul para cambiar el tamaño si es necesario.
+                </p>
             </div>
             
             <div class="final-canvas-container">
@@ -426,127 +431,148 @@
             </div>
 
             <div class="btn-group">
-                <button class="action-btn secondary" onclick="location.reload()">Empezar de nuevo</button>
                 <button class="action-btn" id="exportDocumentBtn" style="background: var(--gradient-secondary);">
-                    Descargar Documento Firmado
+                    <i class="fas fa-download"></i> Descargar
                 </button>
-            </div>
-             <!-- Hidden controls for resizing logic compatibility -->
-            <div id="elementSizingControls" style="display:none;">
-                <input type="number" id="elementWidth">
-                <input type="number" id="elementHeight">
+                
+                <button class="action-btn" id="nextDocBtn" style="background: var(--gradient-primary); display:none;">
+                    Siguiente <i class="fas fa-arrow-right"></i>
+                </button>
+                
+                <button class="action-btn secondary" id="finishAllBtn" style="display:none;" onclick="location.reload()">
+                    <i class="fas fa-check"></i> Terminar
+                </button>
             </div>
         </div>
 
     </main>
 
-    <footer style="text-align:center; padding: 20px; color: #666; font-size: 0.8rem;">
-        &copy; 2024 Lulo Panamá. Todos los derechos reservados.
+    <footer class="footer-links">
+        <a href="https://lulopanama.com/legal/terminos" target="_blank">Términos y Condiciones</a> | 
+        <a href="https://lulopanama.com/legal/privacidad" target="_blank">Política de Privacidad</a>
+        <br><br>
+        &copy; 2024 Lulo Panamá.
     </footer>
 
     <!-- LÓGICA JAVASCRIPT -->
     <script>
-        // --- CONSTANTES Y CONFIGURACIÓN ---
         const dpr = window.devicePixelRatio || 1;
-        const RESIZE_HANDLE_LOGICAL_SIZE = 15; // Un poco más grande para dedo
-        const RESIZE_HANDLE_CLICK_EXTENSION = 10;
+        const RESIZE_HANDLE_LOGICAL_SIZE = 25; 
+        const RESIZE_HANDLE_CLICK_EXTENSION = 15;
         const MIN_ELEMENT_DIM = 20;
 
         const documentConfigurations = [
-            { path: "https://lulopanama.com/apc/apc-multi-actual.jpg", shortName: "multi", displayName: "Multibank" },
-            { path: "https://lulopanama.com/apc/apc-bac-actual.jpg", shortName: "bac", displayName: "BAC Credomatic" },
-            { path: "https://lulopanama.com/apc/apc-banistmo-actual.jpg", shortName: "banistmo", displayName: "Banistmo" },
-            { path: "https://lulopanama.com/apc/apc-stgeorge-actual.jpg", shortName: "stgeorge", displayName: "St. George" },
-            { path: "https://lulopanama.com/apc/apc-banesco-actual.jpg", shortName: "banesco", displayName: "Banesco" },
-            { path: "https://lulopanama.com/apc/apc-global-actual.jpg", shortName: "global", displayName: "Global Bank" }
+            { path: "https://lulopanama.com/apc/apc-multi-actual.jpg", shortName: "multi", displayName: "Multibank", icon: "fa-landmark" },
+            { path: "https://lulopanama.com/apc/apc-bac-actual.jpg", shortName: "bac", displayName: "BAC", icon: "fa-credit-card" },
+            { path: "https://lulopanama.com/apc/apc-banistmo-actual.jpg", shortName: "banistmo", displayName: "Banistmo", icon: "fa-university" },
+            { path: "https://lulopanama.com/apc/apc-stgeorge-actual.jpg", shortName: "stgeorge", displayName: "St. George", icon: "fa-shield-alt" },
+            { path: "https://lulopanama.com/apc/apc-banesco-actual.jpg", shortName: "banesco", displayName: "Banesco", icon: "fa-coins" },
+            { path: "https://lulopanama.com/apc/apc-global-actual.jpg", shortName: "global", displayName: "Global Bank", icon: "fa-globe-americas" }
         ];
 
-        // --- ESTADO DE LA APLICACIÓN ---
         const appState = {
-            currentStep: 1,
-            totalSteps: 5,
-            currentDocumentUrl: null,
-            nameImageCache: null, cedulaImageCache: null, dateImageCache: null, signatureImageCache: null,
-            documentSettings: {}, 
-            activeElementId: null,
+            currentStep: 1, totalSteps: 5, selectedDocsQueue: [], currentQueueIndex: 0, currentDocumentUrl: null,
+            nameImageCache: null, cedulaImageCache: null, signatureImageCache: null,
+            dayImageCache: null, monthImageCache: null, yearImageCache: null,
+            documentSettings: {}, activeElementId: null,
             dragState: { isDragging: false, elementId: null, offsetX: 0, offsetY: 0 },
-            resizeState: {
-                isResizing: false, elementId: null,
-                startX: 0, startY: 0,
-                initialElement: { x:0, y:0, width: 0, height: 0, aspectRatio: 1 }
-            },
-            backgroundImage: null,
-            resizeTimeout: null
+            resizeState: { isResizing: false, elementId: null, startX: 0, startY: 0, initialElement: {} },
+            backgroundImage: null
         };
 
-        // --- REFERENCIAS DOM ---
-        const wizardCard = document.getElementById('wizard-card');
-        const finalPreviewCard = document.getElementById('final-preview-card');
-        const progressBar = document.getElementById('progress-bar');
-        
-        // Canvas Elements
         const nameCanvasEl = document.getElementById('nameCanvasEl');
         const cedulaCanvasEl = document.getElementById('cedulaCanvasEl');
-        const dateCanvasEl = document.getElementById('dateCanvasEl');
         const signaturePadEl = document.getElementById('signaturePadEl');
+        const dayCanvasEl = document.getElementById('dayCanvasEl');
+        const monthCanvasEl = document.getElementById('monthCanvasEl');
+        const yearCanvasEl = document.getElementById('yearCanvasEl');
         const mainCanvas = document.getElementById('mainDocumentCanvas');
         let mainCtx = mainCanvas.getContext('2d');
 
-        // Contextos
-        let nameCtx, cedulaCtx, dateCtx, sigCtx;
+        let nameCtx, cedulaCtx, sigCtx, dayCtx, monthCtx, yearCtx;
 
         let drawingStates = {
-            name: {isDrawing: false, lastX:0, lastY:0, canvasElement: nameCanvasEl},
-            cedula: {isDrawing: false, lastX:0, lastY:0, canvasElement: cedulaCanvasEl},
-            date: {isDrawing: false, lastX:0, lastY:0, canvasElement: dateCanvasEl},
-            signature: {isDrawing: false, lastX:0, lastY:0, canvasElement: signaturePadEl}
+            name: {isDrawing: false, canvasElement: nameCanvasEl},
+            cedula: {isDrawing: false, canvasElement: cedulaCanvasEl},
+            signature: {isDrawing: false, canvasElement: signaturePadEl},
+            day: {isDrawing: false, canvasElement: dayCanvasEl},
+            month: {isDrawing: false, canvasElement: monthCanvasEl},
+            year: {isDrawing: false, canvasElement: yearCanvasEl},
         };
 
-        // --- LÓGICA DE NAVEGACIÓN (WIZARD) ---
-
+        // --- FUNCIONES CORE ---
         function updateProgressBar() {
             const percentage = ((appState.currentStep - 1) / appState.totalSteps) * 100;
-            progressBar.style.width = percentage + '%';
+            document.getElementById('progress-bar').style.width = percentage + '%';
         }
 
         function showStep(stepNumber) {
-            // Ocultar todos los pasos
             document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
-            
-            // Mostrar paso actual
             const currentStepEl = document.getElementById(`step-${stepNumber}`);
+            
             if(currentStepEl) {
                 currentStepEl.classList.add('active');
                 appState.currentStep = stepNumber;
                 updateProgressBar();
 
-                // Inicializar Canvas específico si es un paso de dibujo
-                // Usamos setTimeout para asegurar que el div ya es visible y tiene ancho
                 setTimeout(() => {
                     if(stepNumber === 2) setupDrawingCanvas(nameCanvasEl, 'name');
                     if(stepNumber === 3) setupDrawingCanvas(cedulaCanvasEl, 'cedula');
-                    if(stepNumber === 4) setupDrawingCanvas(dateCanvasEl, 'date');
+                    if(stepNumber === 4) {
+                        setupDrawingCanvas(dayCanvasEl, 'day');
+                        setupDrawingCanvas(monthCanvasEl, 'month');
+                        setupDrawingCanvas(yearCanvasEl, 'year');
+                    }
                     if(stepNumber === 5) setupDrawingCanvas(signaturePadEl, 'signature');
-                }, 100);
+                }, 150); // Ligero aumento de delay para móviles lentos
             } else if (stepNumber > 5) {
-                // Fin del wizard, mostrar preview
-                showFinalPreview();
+                startReviewProcess();
             }
         }
 
-        function showFinalPreview() {
-            wizardCard.classList.add('hidden');
-            finalPreviewCard.classList.remove('hidden');
-            loadDocument(appState.currentDocumentUrl); // Cargar documento y elementos
+        function startReviewProcess() {
+            document.getElementById('wizard-card').classList.add('hidden');
+            document.getElementById('final-preview-card').classList.remove('hidden');
+            appState.currentQueueIndex = 0;
+            loadNextInQueue();
         }
 
-        // --- LÓGICA DE DIBUJO (CORE PRESERVADO) ---
+        function loadNextInQueue() {
+            const docConfig = appState.selectedDocsQueue[appState.currentQueueIndex];
+            appState.currentDocumentUrl = docConfig.path;
+            
+            document.getElementById('queue-status').textContent = `Documento ${appState.currentQueueIndex + 1} de ${appState.selectedDocsQueue.length}`;
+            document.getElementById('preview-title').textContent = `${docConfig.displayName}`;
+            
+            const nextBtn = document.getElementById('nextDocBtn');
+            const finishBtn = document.getElementById('finishAllBtn');
+            const downloadBtn = document.getElementById('exportDocumentBtn');
+            
+            downloadBtn.innerHTML = `<i class="fas fa-download"></i> Descargar`;
+            downloadBtn.style.opacity = "1";
+            
+            if (appState.currentQueueIndex < appState.selectedDocsQueue.length - 1) {
+                nextBtn.style.display = 'inline-flex';
+                finishBtn.style.display = 'none';
+            } else {
+                nextBtn.style.display = 'none';
+                finishBtn.style.display = 'inline-flex';
+            }
 
+            loadDocumentImage(docConfig.path);
+        }
+
+        document.getElementById('nextDocBtn').addEventListener('click', () => {
+            appState.currentQueueIndex++;
+            loadNextInQueue();
+        });
+
+        // --- DRAWING ENGINE ---
         function configureDrawingContext(ctx, width, height, clear = true) {
             ctx.resetTransform();
             ctx.scale(dpr, dpr);
             ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 3; // Ligeramente más grueso para verse mejor
+            ctx.lineWidth = 3; 
             ctx.lineCap = 'round'; ctx.lineJoin = 'round';
             if (clear) ctx.clearRect(0, 0, width, height);
         }
@@ -554,14 +580,16 @@
         function setupDrawingCanvas(canvasEl, stateKey) {
             const parent = canvasEl.parentElement;
             const rect = parent.getBoundingClientRect();
+            const logicalWidth = rect.width;
             
-            // Lógica de tamaño
-            const logicalWidth = rect.width; // Usar el ancho del contenedor padre
-            const logicalHeight = parseInt(canvasEl.dataset.logicalHeight) || 100;
-            
-            // Evitar redimensionar si ya está configurado correctamente y es visible
-            // Pero como es un wizard, forzamos reajuste para asegurar.
-            
+            // Lógica de altura para móvil (más grande)
+            let logicalHeight = parseInt(canvasEl.dataset.logicalHeight) || 150;
+            if(window.innerWidth < 768 && stateKey !== 'day' && stateKey !== 'year') {
+                // Si es nombre, cedula, firma o MES en móvil, damos más altura
+                if (stateKey === 'month') logicalHeight = 120;
+                else logicalHeight = 250; 
+            }
+
             canvasEl.style.width = '100%';
             canvasEl.style.height = logicalHeight + 'px';
             canvasEl.width = logicalWidth * dpr;
@@ -570,31 +598,28 @@
             const ctx = canvasEl.getContext('2d');
             configureDrawingContext(ctx, logicalWidth, logicalHeight);
 
-            // Listeners (Solo adjuntar una vez)
             if (!canvasEl.dataset.listenersAttached) {
                 const opts = { passive: false };
                 const start = (e) => startDrawing(e, ctx, stateKey);
                 const move = (e) => draw(e, ctx, stateKey);
                 const stop = () => stopDrawing(stateKey);
-
                 canvasEl.addEventListener('mousedown', start);
                 canvasEl.addEventListener('mousemove', move);
                 canvasEl.addEventListener('mouseup', stop);
                 canvasEl.addEventListener('mouseleave', stop);
-                
                 canvasEl.addEventListener('touchstart', start, opts);
                 canvasEl.addEventListener('touchmove', move, opts);
                 canvasEl.addEventListener('touchend', stop);
-                
                 canvasEl.dataset.listenersAttached = 'true';
             }
             drawingStates[stateKey].canvasElement = canvasEl;
             
-            // Guardar referencia global del contexto
             if(stateKey === 'name') nameCtx = ctx;
             if(stateKey === 'cedula') cedulaCtx = ctx;
-            if(stateKey === 'date') dateCtx = ctx;
             if(stateKey === 'signature') sigCtx = ctx;
+            if(stateKey === 'day') dayCtx = ctx;
+            if(stateKey === 'month') monthCtx = ctx;
+            if(stateKey === 'year') yearCtx = ctx;
 
             return ctx;
         }
@@ -607,7 +632,6 @@
             } else if (event.clientX !== undefined) {
                 clientX = event.clientX; clientY = event.clientY;
             } else { return null; }
-
             return {
                 x: (clientX - rect.left) * (canvasEl.width / dpr / rect.width),
                 y: (clientY - rect.top) * (canvasEl.height / dpr / rect.height)
@@ -620,7 +644,6 @@
             const coords = getPadCoordinates(padState.canvasElement, e);
             if (!coords) return;
             ctx.beginPath(); ctx.moveTo(coords.x, coords.y);
-            padState.lastX = coords.x; padState.lastY = coords.y;
             if(e.cancelable) e.preventDefault();
         }
 
@@ -630,103 +653,114 @@
             const coords = getPadCoordinates(padState.canvasElement, e);
             if (!coords) return;
             ctx.lineTo(coords.x, coords.y); ctx.stroke();
-            padState.lastX = coords.x; padState.lastY = coords.y;
             if(e.cancelable) e.preventDefault();
         }
 
-        function stopDrawing(stateKey) {
-            drawingStates[stateKey].isDrawing = false;
-        }
-
-        function clearPad(ctx, canvasEl, stateKey) {
+        function stopDrawing(stateKey) { drawingStates[stateKey].isDrawing = false; }
+        
+        function clearPad(ctx, canvasEl) {
             if(!ctx) return;
-            const w = canvasEl.width / dpr;
-            const h = canvasEl.height / dpr;
-            ctx.clearRect(0,0,w,h);
-            ctx.beginPath();
+            const w = canvasEl.width / dpr; const h = canvasEl.height / dpr;
+            ctx.clearRect(0,0,w,h); ctx.beginPath();
             canvasEl.parentElement.classList.remove('confirmed');
         }
 
         function confirmStep(ctx, imageCacheKey, canvasEl) {
-            // Guardar imagen en memoria
             const tempImage = new Image();
             tempImage.onload = () => {
                 appState[imageCacheKey] = tempImage;
                 canvasEl.parentElement.classList.add('confirmed');
-                // Avanzar paso después de breve delay visual
-                setTimeout(() => {
-                    showStep(appState.currentStep + 1);
-                }, 300);
+                setTimeout(() => { showStep(appState.currentStep + 1); }, 300);
             }
             tempImage.src = ctx.canvas.toDataURL('image/png');
         }
 
-
-        // --- CARGA DE DOCUMENTO Y CANVAS FINAL ---
+        function confirmDateStep() {
+            let loaded = 0;
+            const checkNext = () => {
+                loaded++;
+                if(loaded === 3) {
+                    dayCanvasEl.parentElement.classList.add('confirmed');
+                    monthCanvasEl.parentElement.classList.add('confirmed');
+                    yearCanvasEl.parentElement.classList.add('confirmed');
+                    setTimeout(() => { showStep(appState.currentStep + 1); }, 300);
+                }
+            };
+            const imgDay = new Image(); imgDay.onload = () => { appState.dayImageCache = imgDay; checkNext(); };
+            imgDay.src = dayCtx.canvas.toDataURL('image/png');
+            const imgMonth = new Image(); imgMonth.onload = () => { appState.monthImageCache = imgMonth; checkNext(); };
+            imgMonth.src = monthCtx.canvas.toDataURL('image/png');
+            const imgYear = new Image(); imgYear.onload = () => { appState.yearImageCache = imgYear; checkNext(); };
+            imgYear.src = yearCtx.canvas.toDataURL('image/png');
+        }
+        
+        function clearDateStep() {
+            clearPad(dayCtx, dayCanvasEl); clearPad(monthCtx, monthCanvasEl); clearPad(yearCtx, yearCanvasEl);
+        }
 
         function initDocumentGrid() {
             const container = document.getElementById('document-options');
             const nextBtn = document.getElementById('step-1-next');
-            
             documentConfigurations.forEach(doc => {
                 const btn = document.createElement('div');
                 btn.className = 'doc-btn';
-                btn.textContent = doc.displayName;
+                btn.innerHTML = `<i class="fas ${doc.icon || 'fa-file-alt'}"></i><span>${doc.displayName}</span>`;
                 btn.onclick = () => {
-                    // Remover clase selected de otros
-                    document.querySelectorAll('.doc-btn').forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    appState.currentDocumentUrl = doc.path;
-                    nextBtn.disabled = false;
+                    const index = appState.selectedDocsQueue.findIndex(d => d.path === doc.path);
+                    if (index === -1) { appState.selectedDocsQueue.push(doc); btn.classList.add('selected'); } 
+                    else { appState.selectedDocsQueue.splice(index, 1); btn.classList.remove('selected'); }
+                    nextBtn.disabled = appState.selectedDocsQueue.length === 0;
                 };
                 container.appendChild(btn);
             });
-
             nextBtn.onclick = () => showStep(2);
         }
 
         function initializeDefaultDocumentSettings() {
-            const defaultElementWidth = 180; const defaultElementHeight = 45;
-            const defaultDateHeight = 35; const defaultSigWidth = 190; const defaultSigHeight = 70;
+            const elW = 180; const elH = 45;
+            const sigW = 190; const sigH = 70;
+            // Tamaños por defecto para la fecha
+            const dayW = 40; const monthW = 100; const yearW = 50;
+            
             documentConfigurations.forEach(docConfig => {
-                const docPath = docConfig.path;
-                if (!appState.documentSettings[docPath]) {
-                    appState.documentSettings[docPath] = {
+                if (!appState.documentSettings[docConfig.path]) {
+                    appState.documentSettings[docConfig.path] = {
                         elements: [
-                            { id: 'name', type: 'image', x: 50, y: 50, width: defaultElementWidth, height: defaultElementHeight },
-                            { id: 'cedula', type: 'image', x: 50, y: 105, width: defaultElementWidth, height: defaultElementHeight },
-                            { id: 'date', type: 'image', x: 50, y: 160, width: defaultElementWidth * 0.8, height: defaultDateHeight },
-                            { id: 'signature', type: 'image', x: 50, y: 205, width: defaultSigWidth, height: defaultSigHeight }
+                            { id: 'name', type: 'image', x: 50, y: 50, width: elW, height: elH },
+                            { id: 'cedula', type: 'image', x: 50, y: 105, width: elW, height: elH },
+                            // Elementos de fecha separados
+                            { id: 'day', type: 'image', x: 50, y: 160, width: dayW, height: 35 },
+                            { id: 'month', type: 'image', x: 100, y: 160, width: monthW, height: 35 },
+                            { id: 'year', type: 'image', x: 210, y: 160, width: yearW, height: 35 },
+                            { id: 'signature', type: 'image', x: 50, y: 220, width: sigW, height: sigH }
                         ]};
                 }});
         }
 
-        function loadDocument(docUrl) {
+        function loadDocumentImage(docUrl) {
             appState.backgroundImage = new Image();
-            appState.backgroundImage.crossOrigin = "anonymous"; // Importante para exportar
+            appState.backgroundImage.crossOrigin = "anonymous";
+            appState.activeElementId = null;
+
+            const container = mainCanvas.parentElement;
+            const logicalWidth = container.clientWidth || 300;
+            const logicalHeight = logicalWidth * 1.3;
             
-            // Texto de carga
-            const logicalWidth = mainCanvas.parentElement.clientWidth || 300;
-            const logicalHeight = logicalWidth * 1.3; // Ratio aprox
             mainCanvas.style.width = logicalWidth + 'px';
             mainCanvas.style.height = logicalHeight + 'px';
             mainCanvas.width = logicalWidth * dpr;
             mainCanvas.height = logicalHeight * dpr;
             configureDrawingContext(mainCtx, logicalWidth, logicalHeight);
-            mainCtx.fillText("Cargando documento...", logicalWidth/2, logicalHeight/2);
+            mainCtx.fillText("Cargando...", logicalWidth/2, logicalHeight/2);
 
             appState.backgroundImage.onload = () => {
-                const container = mainCanvas.parentElement;
                 const imageAspectRatio = appState.backgroundImage.naturalWidth / appState.backgroundImage.naturalHeight;
-                
                 let displayWidth = container.clientWidth;
                 let displayHeight = displayWidth / imageAspectRatio;
-
                 mainCanvas.style.width = displayWidth + 'px';
                 mainCanvas.style.height = displayHeight + 'px';
                 mainCanvas.width = displayWidth * dpr;
                 mainCanvas.height = displayHeight * dpr;
-
                 configureDrawingContext(mainCtx, displayWidth, displayHeight, false);
                 mainCtx.imageSmoothingEnabled = true;
                 redrawMainCanvas();
@@ -736,75 +770,52 @@
 
         function redrawMainCanvas(isExporting = false) {
             if (!mainCtx || !appState.backgroundImage) return;
-            
             const logicalWidth = mainCanvas.width / dpr;
             const logicalHeight = mainCanvas.height / dpr;
-
-            // Limpiar y dibujar fondo
             mainCtx.clearRect(0, 0, logicalWidth, logicalHeight);
             mainCtx.drawImage(appState.backgroundImage, 0, 0, logicalWidth, logicalHeight);
 
-            const currentDocSettings = appState.documentSettings[appState.currentDocumentUrl];
-            if (!currentDocSettings) return;
+            const settings = appState.documentSettings[appState.currentDocumentUrl];
+            if (!settings) return;
 
-            // Dibujar elementos (Firma, nombre, etc)
-            currentDocSettings.elements.forEach(element => {
-                const imageToDraw = appState[element.id + 'ImageCache'];
+            settings.elements.forEach(element => {
+                let imgKey = null;
+                if(element.id === 'name') imgKey = 'nameImageCache';
+                else if(element.id === 'cedula') imgKey = 'cedulaImageCache';
+                else if(element.id === 'signature') imgKey = 'signatureImageCache';
+                else if(element.id === 'day') imgKey = 'dayImageCache';
+                else if(element.id === 'month') imgKey = 'monthImageCache';
+                else if(element.id === 'year') imgKey = 'yearImageCache';
+
+                const imageToDraw = appState[imgKey];
                 if (imageToDraw) {
                     mainCtx.drawImage(imageToDraw, element.x, element.y, element.width, element.height);
-                    
-                    // Dibujar borde de selección si está activo y no estamos exportando
                     if (appState.activeElementId === element.id && !isExporting) {
-                        mainCtx.strokeStyle = '#0069d9';
+                        mainCtx.strokeStyle = '#ff5733';
                         mainCtx.lineWidth = 2;
                         mainCtx.strokeRect(element.x, element.y, element.width, element.height);
-
-                        // Dibujar manejador de tamaño
                         const handleSize = RESIZE_HANDLE_LOGICAL_SIZE;
-                        mainCtx.fillStyle = '#0069d9';
-                        mainCtx.fillRect(
-                            element.x + element.width - handleSize/2, 
-                            element.y + element.height - handleSize/2, 
-                            handleSize, handleSize
-                        );
+                        mainCtx.fillStyle = '#ff5733';
+                        mainCtx.fillRect(element.x + element.width - handleSize/2, element.y + element.height - handleSize/2, handleSize, handleSize);
                     }
                 }
             });
         }
 
-        // --- INTERACCIÓN CON EL CANVAS FINAL (Drag & Drop) ---
-
-        function getElementById(docUrl, elementId) {
-            return appState.documentSettings[docUrl].elements.find(el => el.id === elementId);
-        }
-
-        function isPointInElement(x, y, el) {
-            return x >= el.x && x <= el.x + el.width && y >= el.y && y <= el.y + el.height;
-        }
-
+        function getElementById(docUrl, elementId) { return appState.documentSettings[docUrl].elements.find(el => el.id === elementId); }
+        function isPointInElement(x, y, el) { return x >= el.x && x <= el.x + el.width && y >= el.y && y <= el.y + el.height; }
         function isPointInResizeHandle(x, y, el) {
             const padding = RESIZE_HANDLE_CLICK_EXTENSION;
-            const right = el.x + el.width;
-            const bottom = el.y + el.height;
-            return x >= right - padding && x <= right + padding + 10 &&
-                   y >= bottom - padding && y <= bottom + padding + 10;
+            const right = el.x + el.width; const bottom = el.y + el.height;
+            return x >= right - padding && x <= right + padding + 15 && y >= bottom - padding && y <= bottom + padding + 15;
         }
-
         function getCanvasCoords(e) {
             const rect = mainCanvas.getBoundingClientRect();
             let cx, cy;
-            if(e.touches && e.touches.length > 0) {
-                cx = e.touches[0].clientX; cy = e.touches[0].clientY;
-            } else {
-                cx = e.clientX; cy = e.clientY;
-            }
-            // Convertir a coordenadas lógicas del canvas (teniendo en cuenta escala CSS vs Atributo)
+            if(e.touches && e.touches.length > 0) { cx = e.touches[0].clientX; cy = e.touches[0].clientY; } else { cx = e.clientX; cy = e.clientY; }
             const scaleX = mainCanvas.width / dpr / rect.width;
             const scaleY = mainCanvas.height / dpr / rect.height;
-            return {
-                x: (cx - rect.left) * scaleX,
-                y: (cy - rect.top) * scaleY
-            };
+            return { x: (cx - rect.left) * scaleX, y: (cy - rect.top) * scaleY };
         }
 
         function handleMainStart(e) {
@@ -813,47 +824,23 @@
             const settings = appState.documentSettings[appState.currentDocumentUrl];
             if(!settings) return;
 
-            let clickedResize = false;
-            let foundId = null;
-
-            // Chequear si clicó en el resize handle del elemento activo
+            let clickedResize = false; let foundId = null;
             if(appState.activeElementId) {
                 const activeEl = getElementById(appState.currentDocumentUrl, appState.activeElementId);
-                if(isPointInResizeHandle(coords.x, coords.y, activeEl)) {
-                    clickedResize = true;
-                    foundId = appState.activeElementId;
-                }
+                if(isPointInResizeHandle(coords.x, coords.y, activeEl)) { clickedResize = true; foundId = appState.activeElementId; }
             }
-
-            // Si no fue resize, buscar si clicó en un elemento
             if(!clickedResize) {
-                // Iterar al revés para seleccionar el de más arriba
                 for(let i = settings.elements.length - 1; i >= 0; i--) {
-                    if(isPointInElement(coords.x, coords.y, settings.elements[i])) {
-                        foundId = settings.elements[i].id;
-                        break;
-                    }
+                    if(isPointInElement(coords.x, coords.y, settings.elements[i])) { foundId = settings.elements[i].id; break; }
                 }
             }
-
             appState.activeElementId = foundId;
-
             if(foundId) {
                 const el = getElementById(appState.currentDocumentUrl, foundId);
                 if(clickedResize) {
-                    appState.resizeState = {
-                        isResizing: true,
-                        elementId: foundId,
-                        startX: coords.x,
-                        initialElement: { ...el, aspectRatio: el.width / el.height }
-                    };
+                    appState.resizeState = { isResizing: true, elementId: foundId, startX: coords.x, initialElement: { ...el, aspectRatio: el.width / el.height } };
                 } else {
-                    appState.dragState = {
-                        isDragging: true,
-                        elementId: foundId,
-                        offsetX: coords.x - el.x,
-                        offsetY: coords.y - el.y
-                    };
+                    appState.dragState = { isDragging: true, elementId: foundId, offsetX: coords.x - el.x, offsetY: coords.y - el.y };
                 }
             }
             redrawMainCanvas();
@@ -862,17 +849,13 @@
         function handleMainMove(e) {
             if(e.cancelable) e.preventDefault();
             const coords = getCanvasCoords(e);
-            
             if(appState.resizeState.isResizing) {
                 const el = getElementById(appState.currentDocumentUrl, appState.resizeState.elementId);
                 const dx = coords.x - appState.resizeState.startX;
                 const initial = appState.resizeState.initialElement;
-                
                 let newW = Math.max(MIN_ELEMENT_DIM, initial.width + dx);
                 let newH = newW / initial.aspectRatio;
-
-                el.width = newW;
-                el.height = newH;
+                el.width = newW; el.height = newH;
                 redrawMainCanvas();
             } else if(appState.dragState.isDragging) {
                 const el = getElementById(appState.currentDocumentUrl, appState.dragState.elementId);
@@ -882,50 +865,41 @@
             }
         }
 
-        function handleMainEnd() {
-            appState.resizeState.isResizing = false;
-            appState.dragState.isDragging = false;
-        }
+        function handleMainEnd() { appState.resizeState.isResizing = false; appState.dragState.isDragging = false; }
 
-        // --- EXPORTAR ---
-        document.getElementById('exportDocumentBtn').addEventListener('click', () => {
-            // Deseleccionar para que no salga el borde azul
+        document.getElementById('exportDocumentBtn').addEventListener('click', function() {
             const savedId = appState.activeElementId;
-            appState.activeElementId = null;
+            appState.activeElementId = null; 
             redrawMainCanvas(true);
-
             const link = document.createElement('a');
-            link.download = `Lulo_Firmado_${new Date().getTime()}.jpg`;
+            const currentDocName = appState.selectedDocsQueue[appState.currentQueueIndex].shortName;
+            link.download = `APC_${currentDocName}_Firmado.jpg`;
             link.href = mainCanvas.toDataURL('image/jpeg', 0.9);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-
-            // Restaurar estado
             appState.activeElementId = savedId;
             redrawMainCanvas();
+            this.innerHTML = `<i class="fas fa-check"></i> Descargado`;
+            this.style.opacity = "0.7";
         });
 
-
-        // --- INICIALIZACIÓN ---
-        function init() {
+        window.onload = function() {
             initDocumentGrid();
             initializeDefaultDocumentSettings();
 
-            // Event Listeners botones pasos
             document.getElementById('confirmNameBtn').onclick = () => confirmStep(nameCtx, 'nameImageCache', nameCanvasEl);
-            document.getElementById('clearNameBtn').onclick = () => clearPad(nameCtx, nameCanvasEl, 'name');
+            document.getElementById('clearNameBtn').onclick = () => clearPad(nameCtx, nameCanvasEl);
 
             document.getElementById('confirmCedulaBtn').onclick = () => confirmStep(cedulaCtx, 'cedulaImageCache', cedulaCanvasEl);
-            document.getElementById('clearCedulaBtn').onclick = () => clearPad(cedulaCtx, cedulaCanvasEl, 'cedula');
+            document.getElementById('clearCedulaBtn').onclick = () => clearPad(cedulaCtx, cedulaCanvasEl);
 
-            document.getElementById('confirmDateBtn').onclick = () => confirmStep(dateCtx, 'dateImageCache', dateCanvasEl);
-            document.getElementById('clearDateBtn').onclick = () => clearPad(dateCtx, dateCanvasEl, 'date');
+            document.getElementById('confirmDateBtn').onclick = confirmDateStep;
+            document.getElementById('clearDateBtn').onclick = clearDateStep;
 
             document.getElementById('confirmSignatureBtn').onclick = () => confirmStep(sigCtx, 'signatureImageCache', signaturePadEl);
-            document.getElementById('clearSignatureBtn').onclick = () => clearPad(sigCtx, signaturePadEl, 'signature');
+            document.getElementById('clearSignatureBtn').onclick = () => clearPad(sigCtx, signaturePadEl);
 
-            // Event Listeners Main Canvas (Touch & Mouse)
             const opts = { passive: false };
             mainCanvas.addEventListener('mousedown', handleMainStart);
             mainCanvas.addEventListener('mousemove', handleMainMove);
@@ -933,11 +907,7 @@
             mainCanvas.addEventListener('touchstart', handleMainStart, opts);
             mainCanvas.addEventListener('touchmove', handleMainMove, opts);
             mainCanvas.addEventListener('touchend', handleMainEnd);
-        }
-
-        // Arrancar
-        window.onload = init;
-
+        };
     </script>
 </body>
 </html>
