@@ -15,26 +15,26 @@
         :root {
             --primary-color: #133058;
             --secondary-color: #ff5733;
-            --accent-color: #ffd700;
             --text-color: #1a1a1a;
-            --background-color: #fafbfc;
+            --background-color: #f0f4f8;
             --border-radius: 24px;
             --transition: all 0.3s ease;
             --gradient-primary: linear-gradient(135deg, #133058 0%, #1e4a77 100%);
             --gradient-secondary: linear-gradient(135deg, #ff5733 0%, #ff7849 100%);
-            --liquid-glass: rgba(255, 255, 255, 0.90);
-            --liquid-glass-border: rgba(255, 255, 255, 0.5);
-            --shadow-medium: 0 12px 40px rgba(0, 0, 0, 0.15);
+            --liquid-glass: rgba(255, 255, 255, 0.95);
+            --liquid-glass-border: rgba(255, 255, 255, 0.6);
+            --shadow-medium: 0 12px 40px rgba(19, 48, 88, 0.10);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body {
             font-family: "Inter", sans-serif;
-            background: var(--background-color);
-            background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
-            background-size: cover;
-            background-attachment: fixed;
+            background-color: var(--background-color);
+            /* Fondo claro y limpio */
+            background-image: 
+                radial-gradient(at 10% 10%, rgba(255, 87, 51, 0.05) 0, transparent 50%), 
+                radial-gradient(at 90% 90%, rgba(19, 48, 88, 0.05) 0, transparent 50%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -55,7 +55,7 @@
         /* --- WIZARD CARD --- */
         .wizard-card {
             background: var(--liquid-glass);
-            backdrop-filter: blur(30px);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--liquid-glass-border);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-medium);
@@ -76,14 +76,14 @@
         .wizard-header p {
             color: #555;
             margin-bottom: 20px;
-            line-height: 1.4;
+            line-height: 1.5;
             font-size: 0.95rem;
         }
 
         /* --- PROGRESS BAR --- */
         .progress-container {
             width: 100%;
-            background: rgba(0,0,0,0.1);
+            background: rgba(0,0,0,0.05);
             height: 6px;
             border-radius: 10px;
             margin-bottom: 25px;
@@ -124,7 +124,7 @@
             border-radius: 15px;
             padding: 15px 5px;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             font-weight: 600;
             color: var(--primary-color);
             transition: var(--transition);
@@ -136,18 +136,19 @@
             min-height: 90px;
             font-size: 0.9rem;
         }
-        .doc-btn i { font-size: 1.4rem; color: #ccc; }
+        .doc-btn i { font-size: 1.4rem; color: #cbd5e1; }
         .doc-btn.selected {
             border-color: var(--secondary-color);
             background: #fff5f2;
             transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(255, 87, 51, 0.15);
         }
         .doc-btn.selected i { color: var(--secondary-color); }
 
         /* --- CANVAS AREAS --- */
         .canvas-wrapper {
             background: white;
-            border: 2px dashed #ccc;
+            border: 2px dashed #cbd5e1;
             border-radius: 15px;
             width: 100%;
             padding: 10px;
@@ -156,7 +157,7 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
-            min-height: 160px; /* Base height Desktop */
+            min-height: 160px;
         }
 
         /* --- FECHA DIVIDIDA --- */
@@ -178,7 +179,7 @@
         }
         .date-canvas-wrapper {
             background: white;
-            border: 2px dashed #ccc;
+            border: 2px dashed #cbd5e1;
             border-radius: 12px;
             height: 100px;
             position: relative;
@@ -208,7 +209,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
-            box-shadow: 0 4px 15px rgba(19, 48, 88, 0.3);
+            box-shadow: 0 4px 15px rgba(19, 48, 88, 0.2);
             width: 100%;
             max-width: 280px;
             display: inline-flex;
@@ -216,18 +217,20 @@
             align-items: center;
             gap: 8px;
         }
+        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(19, 48, 88, 0.3); }
         .action-btn.secondary {
             background: white;
             color: var(--text-color);
-            border: 1px solid #ccc;
+            border: 1px solid #cbd5e1;
             box-shadow: none;
         }
+        .action-btn.secondary:hover { background: #f8fafc; border-color: #94a3b8; }
         .action-btn:disabled {
-            background: #ccc;
+            background: #e2e8f0;
+            color: #94a3b8;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
-            opacity: 0.7;
         }
 
         .btn-group {
@@ -244,9 +247,10 @@
         .final-canvas-container {
             width: 100%;
             overflow: auto;
-            border-radius: 8px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
-            background: #eee;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+            background: #f8fafc;
             margin-bottom: 20px;
             max-height: 65vh;
         }
@@ -262,20 +266,33 @@
             display: inline-block;
         }
 
+        .alert-box {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffd700;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            text-align: left;
+            border-radius: 4px;
+            color: #555;
+        }
+        .alert-box strong { color: #333; }
+
         .footer-links {
             text-align: center;
             padding: 20px;
-            color: rgba(255,255,255,0.7);
-            font-size: 0.8rem;
+            color: #475569; /* Gris oscuro para contraste */
+            font-size: 0.85rem;
             margin-top: auto;
         }
         .footer-links a {
-            color: white;
+            color: var(--primary-color);
             text-decoration: none;
             margin: 0 10px;
             font-weight: 600;
+            transition: var(--transition);
         }
-        .footer-links a:hover { text-decoration: underline; color: var(--accent-color); }
+        .footer-links a:hover { text-decoration: underline; color: var(--secondary-color); }
 
         .hidden { display: none !important; }
 
@@ -289,22 +306,12 @@
                 display: flex; 
                 flex-direction: column; 
                 justify-content: center; 
+                box-shadow: none;
             }
-            .canvas-wrapper {
-                /* ÁREA AGRANDADA PARA MÓVIL */
-                min-height: 280px; 
-            }
-            
-            /* Ajuste de Fechas en Móvil */
-            .date-split-container {
-                flex-direction: column;
-                gap: 15px;
-            }
+            .canvas-wrapper { min-height: 280px; }
+            .date-split-container { flex-direction: column; gap: 15px; }
             .date-box { width: 100% !important; flex: none !important; }
-            .date-canvas-wrapper {
-                height: 120px; /* Altura cómoda para escribir fecha con dedo */
-            }
-
+            .date-canvas-wrapper { height: 120px; }
             .wizard-header h2 { font-size: 1.3rem; }
         }
     </style>
@@ -368,22 +375,18 @@
                 </div>
                 
                 <div class="date-split-container">
-                    <!-- Día -->
                     <div class="date-box" style="flex: 0.8;">
                         <label>Día (Ej: 15)</label>
                         <div class="date-canvas-wrapper">
                             <canvas id="dayCanvasEl" data-logical-width="100" data-logical-height="100"></canvas>
                         </div>
                     </div>
-                    <!-- Mes: MÁS ANCHO PARA ESCRIBIR TEXTO -->
                     <div class="date-box" style="flex: 2;">
                         <label>Mes (Ej: Enero)</label>
                         <div class="date-canvas-wrapper">
-                            <!-- logical width aumentado -->
                             <canvas id="monthCanvasEl" data-logical-width="250" data-logical-height="100"></canvas>
                         </div>
                     </div>
-                    <!-- Año -->
                     <div class="date-box" style="flex: 1.2;">
                         <label>Año (Ej: 2025)</label>
                         <div class="date-canvas-wrapper">
@@ -420,10 +423,15 @@
             <div class="wizard-header">
                 <div id="queue-status" class="queue-indicator">Documento 1 de X</div>
                 <h2 id="preview-title">Revisando Documento</h2>
-                <p style="font-size: 0.9rem;">
-                    Arrastra el <strong>Día</strong>, <strong>Mes</strong> y <strong>Año</strong> a los espacios vacíos del documento (<small>___ de ___ de ___</small>).
-                    <br>Usa la esquina azul para cambiar el tamaño si es necesario.
-                </p>
+                
+                <div class="alert-box">
+                    <strong> Instrucciones:</strong>
+                    <ul style="margin: 5px 0 0 20px; line-height: 1.4;">
+                        <li>Arrastra el <strong>Día, Mes y Año</strong> a los espacios vacíos (___ de ___ de ___).</li>
+                        <li><strong>¿No hay campo de fecha?</strong> Arrastra la fecha y colócala <strong>debajo de tu cédula</strong>.</li>
+                        <li>Usa el cuadrado azul en la esquina de cada elemento para cambiar su tamaño.</li>
+                    </ul>
+                </div>
             </div>
             
             <div class="final-canvas-container">
@@ -477,7 +485,8 @@
             documentSettings: {}, activeElementId: null,
             dragState: { isDragging: false, elementId: null, offsetX: 0, offsetY: 0 },
             resizeState: { isResizing: false, elementId: null, startX: 0, startY: 0, initialElement: {} },
-            backgroundImage: null
+            backgroundImage: null,
+            isBlinking: false // Nuevo estado para la animación
         };
 
         const nameCanvasEl = document.getElementById('nameCanvasEl');
@@ -524,7 +533,7 @@
                         setupDrawingCanvas(yearCanvasEl, 'year');
                     }
                     if(stepNumber === 5) setupDrawingCanvas(signaturePadEl, 'signature');
-                }, 150); // Ligero aumento de delay para móviles lentos
+                }, 150);
             } else if (stepNumber > 5) {
                 startReviewProcess();
             }
@@ -582,10 +591,8 @@
             const rect = parent.getBoundingClientRect();
             const logicalWidth = rect.width;
             
-            // Lógica de altura para móvil (más grande)
             let logicalHeight = parseInt(canvasEl.dataset.logicalHeight) || 150;
             if(window.innerWidth < 768 && stateKey !== 'day' && stateKey !== 'year') {
-                // Si es nombre, cedula, firma o MES en móvil, damos más altura
                 if (stateKey === 'month') logicalHeight = 120;
                 else logicalHeight = 250; 
             }
@@ -651,263 +658,3 @@
             const padState = drawingStates[stateKey];
             if (!padState.isDrawing) return;
             const coords = getPadCoordinates(padState.canvasElement, e);
-            if (!coords) return;
-            ctx.lineTo(coords.x, coords.y); ctx.stroke();
-            if(e.cancelable) e.preventDefault();
-        }
-
-        function stopDrawing(stateKey) { drawingStates[stateKey].isDrawing = false; }
-        
-        function clearPad(ctx, canvasEl) {
-            if(!ctx) return;
-            const w = canvasEl.width / dpr; const h = canvasEl.height / dpr;
-            ctx.clearRect(0,0,w,h); ctx.beginPath();
-            canvasEl.parentElement.classList.remove('confirmed');
-        }
-
-        function confirmStep(ctx, imageCacheKey, canvasEl) {
-            const tempImage = new Image();
-            tempImage.onload = () => {
-                appState[imageCacheKey] = tempImage;
-                canvasEl.parentElement.classList.add('confirmed');
-                setTimeout(() => { showStep(appState.currentStep + 1); }, 300);
-            }
-            tempImage.src = ctx.canvas.toDataURL('image/png');
-        }
-
-        function confirmDateStep() {
-            let loaded = 0;
-            const checkNext = () => {
-                loaded++;
-                if(loaded === 3) {
-                    dayCanvasEl.parentElement.classList.add('confirmed');
-                    monthCanvasEl.parentElement.classList.add('confirmed');
-                    yearCanvasEl.parentElement.classList.add('confirmed');
-                    setTimeout(() => { showStep(appState.currentStep + 1); }, 300);
-                }
-            };
-            const imgDay = new Image(); imgDay.onload = () => { appState.dayImageCache = imgDay; checkNext(); };
-            imgDay.src = dayCtx.canvas.toDataURL('image/png');
-            const imgMonth = new Image(); imgMonth.onload = () => { appState.monthImageCache = imgMonth; checkNext(); };
-            imgMonth.src = monthCtx.canvas.toDataURL('image/png');
-            const imgYear = new Image(); imgYear.onload = () => { appState.yearImageCache = imgYear; checkNext(); };
-            imgYear.src = yearCtx.canvas.toDataURL('image/png');
-        }
-        
-        function clearDateStep() {
-            clearPad(dayCtx, dayCanvasEl); clearPad(monthCtx, monthCanvasEl); clearPad(yearCtx, yearCanvasEl);
-        }
-
-        function initDocumentGrid() {
-            const container = document.getElementById('document-options');
-            const nextBtn = document.getElementById('step-1-next');
-            documentConfigurations.forEach(doc => {
-                const btn = document.createElement('div');
-                btn.className = 'doc-btn';
-                btn.innerHTML = `<i class="fas ${doc.icon || 'fa-file-alt'}"></i><span>${doc.displayName}</span>`;
-                btn.onclick = () => {
-                    const index = appState.selectedDocsQueue.findIndex(d => d.path === doc.path);
-                    if (index === -1) { appState.selectedDocsQueue.push(doc); btn.classList.add('selected'); } 
-                    else { appState.selectedDocsQueue.splice(index, 1); btn.classList.remove('selected'); }
-                    nextBtn.disabled = appState.selectedDocsQueue.length === 0;
-                };
-                container.appendChild(btn);
-            });
-            nextBtn.onclick = () => showStep(2);
-        }
-
-        function initializeDefaultDocumentSettings() {
-            const elW = 180; const elH = 45;
-            const sigW = 190; const sigH = 70;
-            // Tamaños por defecto para la fecha
-            const dayW = 40; const monthW = 100; const yearW = 50;
-            
-            documentConfigurations.forEach(docConfig => {
-                if (!appState.documentSettings[docConfig.path]) {
-                    appState.documentSettings[docConfig.path] = {
-                        elements: [
-                            { id: 'name', type: 'image', x: 50, y: 50, width: elW, height: elH },
-                            { id: 'cedula', type: 'image', x: 50, y: 105, width: elW, height: elH },
-                            // Elementos de fecha separados
-                            { id: 'day', type: 'image', x: 50, y: 160, width: dayW, height: 35 },
-                            { id: 'month', type: 'image', x: 100, y: 160, width: monthW, height: 35 },
-                            { id: 'year', type: 'image', x: 210, y: 160, width: yearW, height: 35 },
-                            { id: 'signature', type: 'image', x: 50, y: 220, width: sigW, height: sigH }
-                        ]};
-                }});
-        }
-
-        function loadDocumentImage(docUrl) {
-            appState.backgroundImage = new Image();
-            appState.backgroundImage.crossOrigin = "anonymous";
-            appState.activeElementId = null;
-
-            const container = mainCanvas.parentElement;
-            const logicalWidth = container.clientWidth || 300;
-            const logicalHeight = logicalWidth * 1.3;
-            
-            mainCanvas.style.width = logicalWidth + 'px';
-            mainCanvas.style.height = logicalHeight + 'px';
-            mainCanvas.width = logicalWidth * dpr;
-            mainCanvas.height = logicalHeight * dpr;
-            configureDrawingContext(mainCtx, logicalWidth, logicalHeight);
-            mainCtx.fillText("Cargando...", logicalWidth/2, logicalHeight/2);
-
-            appState.backgroundImage.onload = () => {
-                const imageAspectRatio = appState.backgroundImage.naturalWidth / appState.backgroundImage.naturalHeight;
-                let displayWidth = container.clientWidth;
-                let displayHeight = displayWidth / imageAspectRatio;
-                mainCanvas.style.width = displayWidth + 'px';
-                mainCanvas.style.height = displayHeight + 'px';
-                mainCanvas.width = displayWidth * dpr;
-                mainCanvas.height = displayHeight * dpr;
-                configureDrawingContext(mainCtx, displayWidth, displayHeight, false);
-                mainCtx.imageSmoothingEnabled = true;
-                redrawMainCanvas();
-            };
-            appState.backgroundImage.src = docUrl;
-        }
-
-        function redrawMainCanvas(isExporting = false) {
-            if (!mainCtx || !appState.backgroundImage) return;
-            const logicalWidth = mainCanvas.width / dpr;
-            const logicalHeight = mainCanvas.height / dpr;
-            mainCtx.clearRect(0, 0, logicalWidth, logicalHeight);
-            mainCtx.drawImage(appState.backgroundImage, 0, 0, logicalWidth, logicalHeight);
-
-            const settings = appState.documentSettings[appState.currentDocumentUrl];
-            if (!settings) return;
-
-            settings.elements.forEach(element => {
-                let imgKey = null;
-                if(element.id === 'name') imgKey = 'nameImageCache';
-                else if(element.id === 'cedula') imgKey = 'cedulaImageCache';
-                else if(element.id === 'signature') imgKey = 'signatureImageCache';
-                else if(element.id === 'day') imgKey = 'dayImageCache';
-                else if(element.id === 'month') imgKey = 'monthImageCache';
-                else if(element.id === 'year') imgKey = 'yearImageCache';
-
-                const imageToDraw = appState[imgKey];
-                if (imageToDraw) {
-                    mainCtx.drawImage(imageToDraw, element.x, element.y, element.width, element.height);
-                    if (appState.activeElementId === element.id && !isExporting) {
-                        mainCtx.strokeStyle = '#ff5733';
-                        mainCtx.lineWidth = 2;
-                        mainCtx.strokeRect(element.x, element.y, element.width, element.height);
-                        const handleSize = RESIZE_HANDLE_LOGICAL_SIZE;
-                        mainCtx.fillStyle = '#ff5733';
-                        mainCtx.fillRect(element.x + element.width - handleSize/2, element.y + element.height - handleSize/2, handleSize, handleSize);
-                    }
-                }
-            });
-        }
-
-        function getElementById(docUrl, elementId) { return appState.documentSettings[docUrl].elements.find(el => el.id === elementId); }
-        function isPointInElement(x, y, el) { return x >= el.x && x <= el.x + el.width && y >= el.y && y <= el.y + el.height; }
-        function isPointInResizeHandle(x, y, el) {
-            const padding = RESIZE_HANDLE_CLICK_EXTENSION;
-            const right = el.x + el.width; const bottom = el.y + el.height;
-            return x >= right - padding && x <= right + padding + 15 && y >= bottom - padding && y <= bottom + padding + 15;
-        }
-        function getCanvasCoords(e) {
-            const rect = mainCanvas.getBoundingClientRect();
-            let cx, cy;
-            if(e.touches && e.touches.length > 0) { cx = e.touches[0].clientX; cy = e.touches[0].clientY; } else { cx = e.clientX; cy = e.clientY; }
-            const scaleX = mainCanvas.width / dpr / rect.width;
-            const scaleY = mainCanvas.height / dpr / rect.height;
-            return { x: (cx - rect.left) * scaleX, y: (cy - rect.top) * scaleY };
-        }
-
-        function handleMainStart(e) {
-            if(e.cancelable) e.preventDefault();
-            const coords = getCanvasCoords(e);
-            const settings = appState.documentSettings[appState.currentDocumentUrl];
-            if(!settings) return;
-
-            let clickedResize = false; let foundId = null;
-            if(appState.activeElementId) {
-                const activeEl = getElementById(appState.currentDocumentUrl, appState.activeElementId);
-                if(isPointInResizeHandle(coords.x, coords.y, activeEl)) { clickedResize = true; foundId = appState.activeElementId; }
-            }
-            if(!clickedResize) {
-                for(let i = settings.elements.length - 1; i >= 0; i--) {
-                    if(isPointInElement(coords.x, coords.y, settings.elements[i])) { foundId = settings.elements[i].id; break; }
-                }
-            }
-            appState.activeElementId = foundId;
-            if(foundId) {
-                const el = getElementById(appState.currentDocumentUrl, foundId);
-                if(clickedResize) {
-                    appState.resizeState = { isResizing: true, elementId: foundId, startX: coords.x, initialElement: { ...el, aspectRatio: el.width / el.height } };
-                } else {
-                    appState.dragState = { isDragging: true, elementId: foundId, offsetX: coords.x - el.x, offsetY: coords.y - el.y };
-                }
-            }
-            redrawMainCanvas();
-        }
-
-        function handleMainMove(e) {
-            if(e.cancelable) e.preventDefault();
-            const coords = getCanvasCoords(e);
-            if(appState.resizeState.isResizing) {
-                const el = getElementById(appState.currentDocumentUrl, appState.resizeState.elementId);
-                const dx = coords.x - appState.resizeState.startX;
-                const initial = appState.resizeState.initialElement;
-                let newW = Math.max(MIN_ELEMENT_DIM, initial.width + dx);
-                let newH = newW / initial.aspectRatio;
-                el.width = newW; el.height = newH;
-                redrawMainCanvas();
-            } else if(appState.dragState.isDragging) {
-                const el = getElementById(appState.currentDocumentUrl, appState.dragState.elementId);
-                el.x = coords.x - appState.dragState.offsetX;
-                el.y = coords.y - appState.dragState.offsetY;
-                redrawMainCanvas();
-            }
-        }
-
-        function handleMainEnd() { appState.resizeState.isResizing = false; appState.dragState.isDragging = false; }
-
-        document.getElementById('exportDocumentBtn').addEventListener('click', function() {
-            const savedId = appState.activeElementId;
-            appState.activeElementId = null; 
-            redrawMainCanvas(true);
-            const link = document.createElement('a');
-            const currentDocName = appState.selectedDocsQueue[appState.currentQueueIndex].shortName;
-            link.download = `APC_${currentDocName}_Firmado.jpg`;
-            link.href = mainCanvas.toDataURL('image/jpeg', 0.9);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            appState.activeElementId = savedId;
-            redrawMainCanvas();
-            this.innerHTML = `<i class="fas fa-check"></i> Descargado`;
-            this.style.opacity = "0.7";
-        });
-
-        window.onload = function() {
-            initDocumentGrid();
-            initializeDefaultDocumentSettings();
-
-            document.getElementById('confirmNameBtn').onclick = () => confirmStep(nameCtx, 'nameImageCache', nameCanvasEl);
-            document.getElementById('clearNameBtn').onclick = () => clearPad(nameCtx, nameCanvasEl);
-
-            document.getElementById('confirmCedulaBtn').onclick = () => confirmStep(cedulaCtx, 'cedulaImageCache', cedulaCanvasEl);
-            document.getElementById('clearCedulaBtn').onclick = () => clearPad(cedulaCtx, cedulaCanvasEl);
-
-            document.getElementById('confirmDateBtn').onclick = confirmDateStep;
-            document.getElementById('clearDateBtn').onclick = clearDateStep;
-
-            document.getElementById('confirmSignatureBtn').onclick = () => confirmStep(sigCtx, 'signatureImageCache', signaturePadEl);
-            document.getElementById('clearSignatureBtn').onclick = () => clearPad(sigCtx, signaturePadEl);
-
-            const opts = { passive: false };
-            mainCanvas.addEventListener('mousedown', handleMainStart);
-            mainCanvas.addEventListener('mousemove', handleMainMove);
-            mainCanvas.addEventListener('mouseup', handleMainEnd);
-            mainCanvas.addEventListener('touchstart', handleMainStart, opts);
-            mainCanvas.addEventListener('touchmove', handleMainMove, opts);
-            mainCanvas.addEventListener('touchend', handleMainEnd);
-        };
-    </script>
-</body>
-</html>
