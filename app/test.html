@@ -53,16 +53,15 @@
             flex-direction: column;
         }
 
-        /* Contenedor principal sin tarjeta */
         .app-container {
             flex: 1;
             width: 100%;
-            max-width: 600px; /* Ancho máximo para desktop */
+            max-width: 600px;
             margin: 0 auto;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* Alineado arriba */
+            justify-content: flex-start;
         }
 
         /* --- HEADER & PROGRESS --- */
@@ -98,10 +97,6 @@
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- INPUTS / CANVAS --- */
-        .canvas-container {
-            width: 100%;
-        }
-        
         .canvas-label {
             font-size: 0.9rem;
             font-weight: 600;
@@ -117,7 +112,7 @@
             width: 100%;
             position: relative;
             overflow: hidden;
-            min-height: 180px; /* Altura cómoda */
+            min-height: 180px;
             transition: border-color 0.3s;
         }
 
@@ -126,7 +121,6 @@
             background: rgba(16, 185, 129, 0.05);
         }
 
-        /* Icono de check al confirmar */
         .check-icon {
             position: absolute; top: 10px; right: 10px;
             background: #10b981; color: white;
@@ -146,7 +140,7 @@
         /* --- DOC GRID --- */
         .doc-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 columnas móvil */
+            grid-template-columns: repeat(2, 1fr);
             gap: 12px;
         }
         .doc-btn {
@@ -212,6 +206,11 @@
             overflow: auto;
             max-height: 60vh;
             margin-bottom: 20px;
+            /* IMPORTANTE: Altura mínima para asegurar que se vea */
+            min-height: 300px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .instruction-box {
@@ -257,7 +256,6 @@
 
         .hidden { display: none !important; }
 
-        /* Ajustes Desktop para que no se vea tan ancho */
         @media (min-width: 768px) {
             .doc-grid { grid-template-columns: repeat(3, 1fr); }
             body { background-color: #f9fafb; }
@@ -428,7 +426,6 @@
 
     <!-- JAVASCRIPT -->
     <script>
-        // Actualizar año footer automáticamente
         document.getElementById('year').textContent = new Date().getFullYear();
 
         const dpr = window.devicePixelRatio || 1;
@@ -437,11 +434,11 @@
 
         const documentConfigurations = [
             { path: "https://lulopanama.com/apc/apc-multi-actual.jpg", shortName: "multi", displayName: "Multibank", icon: "fa-landmark" },
-            { path: "https://lulopanama.com/apc/apc-bac-actual.jpg", shortName: "bac", displayName: "BAC", icon: "fa-landmark" },
-            { path: "https://lulopanama.com/apc/apc-banistmo-actual.jpg", shortName: "banistmo", displayName: "Banistmo", icon: "fa-landmark" },
-            { path: "https://lulopanama.com/apc/apc-stgeorge-actual.jpg", shortName: "stgeorge", displayName: "St. George", icon: "fa-landmark" },
-            { path: "https://lulopanama.com/apc/apc-banesco-actual.jpg", shortName: "banesco", displayName: "Banesco", icon: "fa-landmark" },
-            { path: "https://lulopanama.com/apc/apc-global-actual.jpg", shortName: "global", displayName: "Global Bank", icon: "fa-landmark" }
+            { path: "https://lulopanama.com/apc/apc-bac-actual.jpg", shortName: "bac", displayName: "BAC", icon: "fa-credit-card" },
+            { path: "https://lulopanama.com/apc/apc-banistmo-actual.jpg", shortName: "banistmo", displayName: "Banistmo", icon: "fa-university" },
+            { path: "https://lulopanama.com/apc/apc-stgeorge-actual.jpg", shortName: "stgeorge", displayName: "St. George", icon: "fa-shield-alt" },
+            { path: "https://lulopanama.com/apc/apc-banesco-actual.jpg", shortName: "banesco", displayName: "Banesco", icon: "fa-coins" },
+            { path: "https://lulopanama.com/apc/apc-global-actual.jpg", shortName: "global", displayName: "Global Bank", icon: "fa-globe-americas" }
         ];
 
         const appState = {
@@ -505,16 +502,26 @@
         }
 
         function startReviewProcess() {
-            // Ocultar header de progreso para la vista final
+            // Eliminar header y mostrar preview
             document.getElementById('app-header').style.display = 'none';
-            document.getElementById('final-preview-view').classList.add('active');
+            
+            // CORRECCIÓN CRÍTICA: Remover hidden y añadir active
+            const previewEl = document.getElementById('final-preview-view');
+            previewEl.classList.remove('hidden');
+            previewEl.classList.add('active');
+
             appState.currentQueueIndex = 0;
             loadNextInQueue();
         }
 
         function finishProcess() {
-            document.getElementById('final-preview-view').classList.remove('active');
-            document.getElementById('completion-view').classList.remove('hidden');
+            // Ocultar preview y mostrar completado
+            const previewEl = document.getElementById('final-preview-view');
+            previewEl.classList.remove('active');
+            previewEl.classList.add('hidden'); // Asegurar que se oculte
+
+            const completionEl = document.getElementById('completion-view');
+            completionEl.classList.remove('hidden');
         }
 
         function loadNextInQueue() {
@@ -528,8 +535,9 @@
             const finishBtn = document.getElementById('finishAllBtn');
             const downloadBtn = document.getElementById('exportDocumentBtn');
             
-            downloadBtn.innerHTML = `<i class="fas fa-download"></i> Descargar`;
+            downloadBtn.innerHTML = `<i class="fas fa-download"></i> Descargar Documento`;
             downloadBtn.style.opacity = "1";
+            downloadBtn.style.pointerEvents = "auto";
             
             if (appState.currentQueueIndex < appState.selectedDocsQueue.length - 1) {
                 nextBtn.style.display = 'inline-flex';
@@ -565,7 +573,6 @@
             const logicalWidth = rect.width;
             let logicalHeight = parseInt(canvasEl.dataset.logicalHeight) || 150;
             
-            // Altura dinámica móvil para mayor comodidad
             if(window.innerWidth < 768 && stateKey !== 'day' && stateKey !== 'year' && stateKey !== 'month') {
                 logicalHeight = 220; 
             }
@@ -740,7 +747,10 @@
             mainCanvas.width = logicalWidth * dpr;
             mainCanvas.height = logicalHeight * dpr;
             configureDrawingContext(mainCtx, logicalWidth, logicalHeight);
-            mainCtx.fillText("Cargando...", logicalWidth/2, logicalHeight/2);
+            mainCtx.fillStyle = "#9ca3af";
+            mainCtx.font = "16px Inter";
+            mainCtx.textAlign = "center";
+            mainCtx.fillText("Cargando documento...", logicalWidth/2, logicalHeight/2);
 
             appState.backgroundImage.onload = () => {
                 const imageAspectRatio = appState.backgroundImage.naturalWidth / appState.backgroundImage.naturalHeight;
@@ -756,6 +766,9 @@
                 appState.isBlinking = true;
                 redrawMainCanvas();
                 setTimeout(() => { appState.isBlinking = false; redrawMainCanvas(); }, 1500);
+            };
+            appState.backgroundImage.onerror = () => {
+                alert("Error cargando la imagen. Intenta recargar la página.");
             };
             appState.backgroundImage.src = docUrl;
         }
@@ -864,6 +877,7 @@
             const savedId = appState.activeElementId;
             appState.activeElementId = null; 
             redrawMainCanvas(true);
+            
             const link = document.createElement('a');
             const currentDocShort = appState.selectedDocsQueue[appState.currentQueueIndex].shortName;
             
@@ -875,10 +889,12 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            
             appState.activeElementId = savedId;
             redrawMainCanvas();
             this.innerHTML = `<i class="fas fa-check"></i> Descargado`;
             this.style.opacity = "0.7";
+            this.style.pointerEvents = "none";
         });
 
         window.onload = function() {
