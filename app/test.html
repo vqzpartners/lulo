@@ -87,12 +87,12 @@
             transition: width 0.4s ease;
         }
 
-        /* Cambio de Logo solicitado */
+        /* Logo Montserrat */
         h2 { 
             font-family: 'Montserrat', sans-serif; 
             font-weight: 400; 
             letter-spacing: -0.75px;
-            font-size: 1.8rem; /* Ajustado ligeramente para el nuevo font */
+            font-size: 1.8rem;
             color: var(--primary-color); 
             margin-bottom: 8px; 
         }
@@ -141,10 +141,10 @@
 
         canvas { width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
 
-        /* --- DATE SPLIT (MODIFICADO VERTICALMENTE) --- */
+        /* --- DATE SPLIT (VERTICAL) --- */
         .date-split-row { 
             display: flex; 
-            flex-direction: column; /* Alineación vertical */
+            flex-direction: column;
             gap: 20px; 
         }
         .date-col { 
@@ -191,7 +191,7 @@
         .btn-container {
             margin-top: 10px;
             display: flex;
-            flex-wrap: wrap; /* Para que se ajusten si es necesario */
+            flex-wrap: wrap;
             gap: 12px;
             justify-content: center;
         }
@@ -209,7 +209,7 @@
             gap: 8px;
             transition: transform 0.1s;
             flex: 1;
-            min-width: 140px; /* Ancho mínimo para que no se aplasten */
+            min-width: 140px;
             max-width: 300px;
         }
         .btn:active { transform: scale(0.98); }
@@ -217,7 +217,8 @@
         .btn-primary { background: var(--primary-color); color: white; box-shadow: 0 4px 10px rgba(19,48,88,0.2); }
         .btn-secondary { background: white; color: var(--text-color); border: 1px solid #d1d5db; }
         .btn-download { background: var(--secondary-color); color: white; box-shadow: 0 4px 10px rgba(255,87,51,0.3); }
-        .btn:disabled { background: #e5e7eb; color: #9ca3af; box-shadow: none; pointer-events: none; }
+        /* Estilos de deshabilitado */
+        .btn:disabled { background: #e5e7eb; color: #9ca3af; box-shadow: none; pointer-events: none; opacity: 0.6; }
 
         /* --- PREVIEW SECTION --- */
         .preview-canvas-container {
@@ -228,7 +229,6 @@
             overflow: auto;
             max-height: 60vh;
             margin-bottom: 20px;
-            /* IMPORTANTE: Altura mínima para asegurar que se vea */
             min-height: 300px; 
             display: flex;
             align-items: center;
@@ -345,7 +345,6 @@
             </div>
             
             <div class="date-split-row">
-                <!-- Se cambió a 360 el logical width para que ocupen todo el ancho y se vea bien -->
                 <div class="date-col">
                     <span class="canvas-label">Día</span>
                     <div class="canvas-wrapper date-canvas-sm">
@@ -408,17 +407,16 @@
                 <canvas id="mainDocumentCanvas"></canvas>
             </div>
 
-            <!-- Botones alineados juntos -->
             <div class="btn-container">
                 <button class="btn btn-download" id="exportDocumentBtn">
                     <i class="fas fa-download"></i> Descargar Documento
                 </button>
 
-                <button class="btn btn-primary" id="nextDocBtn" style="display:none;">
+                <button class="btn btn-primary" id="nextDocBtn" style="display:none;" disabled>
                     Siguiente Documento <i class="fas fa-arrow-right"></i>
                 </button>
                 
-                <button class="btn btn-secondary" id="finishAllBtn" style="display:none;">
+                <button class="btn btn-secondary" id="finishAllBtn" style="display:none;" disabled>
                     Terminar Proceso
                 </button>
             </div>
@@ -529,7 +527,6 @@
             // Eliminar header y mostrar preview
             document.getElementById('app-header').style.display = 'none';
             
-            // CORRECCIÓN CRÍTICA: Remover hidden y añadir active
             const previewEl = document.getElementById('final-preview-view');
             previewEl.classList.remove('hidden');
             previewEl.classList.add('active');
@@ -563,6 +560,10 @@
             downloadBtn.style.opacity = "1";
             downloadBtn.style.pointerEvents = "auto";
             
+            // --- NUEVA LÓGICA: BLOQUEAR BOTONES INICIALMENTE ---
+            nextBtn.disabled = true;
+            finishBtn.disabled = true;
+
             if (appState.currentQueueIndex < appState.selectedDocsQueue.length - 1) {
                 nextBtn.style.display = 'inline-flex';
                 finishBtn.style.display = 'none';
@@ -747,12 +748,16 @@
                 if (!appState.documentSettings[docConfig.path]) {
                     appState.documentSettings[docConfig.path] = {
                         elements: [
-                            { id: 'name', type: 'image', x: 50, y: 50, width: elW, height: elH },
-                            { id: 'cedula', type: 'image', x: 50, y: 105, width: elW, height: elH },
-                            { id: 'day', type: 'image', x: 50, y: 160, width: dayW, height: 35 },
-                            { id: 'month', type: 'image', x: 100, y: 160, width: monthW, height: 35 },
-                            { id: 'year', type: 'image', x: 210, y: 160, width: yearW, height: 35 },
-                            { id: 'signature', type: 'image', x: 50, y: 220, width: sigW, height: sigH }
+                            // 1. FECHA (Arriba)
+                            { id: 'day', type: 'image', x: 50, y: 50, width: dayW, height: 35 },
+                            { id: 'month', type: 'image', x: 100, y: 50, width: monthW, height: 35 },
+                            { id: 'year', type: 'image', x: 210, y: 50, width: yearW, height: 35 },
+                            // 2. FIRMA (Debajo de fecha)
+                            { id: 'signature', type: 'image', x: 50, y: 100, width: sigW, height: sigH },
+                            // 3. NOMBRE (Debajo de firma)
+                            { id: 'name', type: 'image', x: 50, y: 190, width: elW, height: elH },
+                            // 4. CÉDULA (Abajo del todo)
+                            { id: 'cedula', type: 'image', x: 50, y: 245, width: elW, height: elH },
                         ]};
                 }});
         }
@@ -919,6 +924,10 @@
             this.innerHTML = `<i class="fas fa-check"></i> Descargado`;
             this.style.opacity = "0.7";
             this.style.pointerEvents = "none";
+
+            // --- DESBLOQUEAR BOTONES TRAS DESCARGA ---
+            document.getElementById('nextDocBtn').disabled = false;
+            document.getElementById('finishAllBtn').disabled = false;
         });
 
         window.onload = function() {
