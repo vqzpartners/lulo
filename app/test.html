@@ -24,7 +24,7 @@
     <!-- Fuentes e Iconos -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <meta name="robots" content="noindex, nofollow">
@@ -87,7 +87,16 @@
             transition: width 0.4s ease;
         }
 
-        h2 { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin-bottom: 8px; }
+        /* Cambio de Logo solicitado */
+        h2 { 
+            font-family: 'Montserrat', sans-serif; 
+            font-weight: 400; 
+            letter-spacing: -0.75px;
+            font-size: 1.8rem; /* Ajustado ligeramente para el nuevo font */
+            color: var(--primary-color); 
+            margin-bottom: 8px; 
+        }
+        
         p { color: var(--subtext-color); line-height: 1.5; font-size: 0.95rem; }
 
         /* --- STEPS --- */
@@ -132,10 +141,21 @@
 
         canvas { width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
 
-        /* --- DATE SPLIT --- */
-        .date-split-row { display: flex; gap: 10px; }
-        .date-col { display: flex; flex-direction: column; flex: 1; }
-        .date-canvas-sm { height: 110px; min-height: 110px; }
+        /* --- DATE SPLIT (MODIFICADO VERTICALMENTE) --- */
+        .date-split-row { 
+            display: flex; 
+            flex-direction: column; /* Alineación vertical */
+            gap: 20px; 
+        }
+        .date-col { 
+            display: flex; 
+            flex-direction: column; 
+            width: 100%; 
+        }
+        .date-canvas-sm { 
+            height: 110px; 
+            min-height: 110px; 
+        }
 
         /* --- DOC GRID --- */
         .doc-grid {
@@ -171,6 +191,7 @@
         .btn-container {
             margin-top: 10px;
             display: flex;
+            flex-wrap: wrap; /* Para que se ajusten si es necesario */
             gap: 12px;
             justify-content: center;
         }
@@ -188,13 +209,14 @@
             gap: 8px;
             transition: transform 0.1s;
             flex: 1;
+            min-width: 140px; /* Ancho mínimo para que no se aplasten */
             max-width: 300px;
         }
         .btn:active { transform: scale(0.98); }
         
         .btn-primary { background: var(--primary-color); color: white; box-shadow: 0 4px 10px rgba(19,48,88,0.2); }
         .btn-secondary { background: white; color: var(--text-color); border: 1px solid #d1d5db; }
-        .btn-download { background: var(--secondary-color); color: white; width: 100%; box-shadow: 0 4px 10px rgba(255,87,51,0.3); }
+        .btn-download { background: var(--secondary-color); color: white; box-shadow: 0 4px 10px rgba(255,87,51,0.3); }
         .btn:disabled { background: #e5e7eb; color: #9ca3af; box-shadow: none; pointer-events: none; }
 
         /* --- PREVIEW SECTION --- */
@@ -269,7 +291,7 @@
         
         <!-- HEADER & PROGRESS -->
         <div class="app-header" id="app-header">
-            <h2>Lulo Firmas</h2>
+            <h2>lulo</h2>
             <div class="progress-bar-bg">
                 <div id="progress-bar" class="progress-bar-fill"></div>
             </div>
@@ -323,25 +345,26 @@
             </div>
             
             <div class="date-split-row">
-                <div class="date-col" style="flex: 0.8;">
+                <!-- Se cambió a 360 el logical width para que ocupen todo el ancho y se vea bien -->
+                <div class="date-col">
                     <span class="canvas-label">Día</span>
                     <div class="canvas-wrapper date-canvas-sm">
                         <div class="check-icon"><i class="fas fa-check"></i></div>
-                        <canvas id="dayCanvasEl" data-logical-width="100" data-logical-height="100"></canvas>
+                        <canvas id="dayCanvasEl" data-logical-width="360" data-logical-height="100"></canvas>
                     </div>
                 </div>
-                <div class="date-col" style="flex: 1.5;">
+                <div class="date-col">
                     <span class="canvas-label">Mes</span>
                     <div class="canvas-wrapper date-canvas-sm">
                         <div class="check-icon"><i class="fas fa-check"></i></div>
-                        <canvas id="monthCanvasEl" data-logical-width="200" data-logical-height="100"></canvas>
+                        <canvas id="monthCanvasEl" data-logical-width="360" data-logical-height="100"></canvas>
                     </div>
                 </div>
-                <div class="date-col" style="flex: 1.2;">
+                <div class="date-col">
                     <span class="canvas-label">Año</span>
                     <div class="canvas-wrapper date-canvas-sm">
                         <div class="check-icon"><i class="fas fa-check"></i></div>
-                        <canvas id="yearCanvasEl" data-logical-width="150" data-logical-height="100"></canvas>
+                        <canvas id="yearCanvasEl" data-logical-width="360" data-logical-height="100"></canvas>
                     </div>
                 </div>
             </div>
@@ -385,16 +408,17 @@
                 <canvas id="mainDocumentCanvas"></canvas>
             </div>
 
-            <button class="btn btn-download" id="exportDocumentBtn">
-                <i class="fas fa-download"></i> Descargar Documento
-            </button>
-            
+            <!-- Botones alineados juntos -->
             <div class="btn-container">
-                <button class="btn btn-primary" id="nextDocBtn" style="display:none; width:100%;">
+                <button class="btn btn-download" id="exportDocumentBtn">
+                    <i class="fas fa-download"></i> Descargar Documento
+                </button>
+
+                <button class="btn btn-primary" id="nextDocBtn" style="display:none;">
                     Siguiente Documento <i class="fas fa-arrow-right"></i>
                 </button>
                 
-                <button class="btn btn-secondary" id="finishAllBtn" style="display:none; width:100%;">
+                <button class="btn btn-secondary" id="finishAllBtn" style="display:none;">
                     Terminar Proceso
                 </button>
             </div>
